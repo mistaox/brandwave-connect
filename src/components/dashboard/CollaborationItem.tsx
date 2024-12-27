@@ -1,7 +1,6 @@
-import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { ProposalStatus } from "@/components/proposals/ProposalStatus";
+import { CollaborationHeader } from "./CollaborationHeader";
 
 interface CollaborationItemProps {
   collaboration: {
@@ -24,50 +23,23 @@ interface CollaborationItemProps {
 }
 
 export const CollaborationItem = ({ collaboration, showInfluencer }: CollaborationItemProps) => {
-  const navigate = useNavigate();
+  const title = showInfluencer 
+    ? collaboration.influencer?.full_name 
+    : collaboration.campaigns?.title;
 
-  const getProposalStatusBadge = () => {
-    if (!collaboration.proposal_status) return null;
-
-    const statusColors = {
-      draft: "bg-gray-500",
-      submitted: "bg-blue-500",
-      accepted: "bg-green-500",
-      rejected: "bg-red-500",
-      revision_requested: "bg-yellow-500",
-    };
-
-    return (
-      <Badge className={statusColors[collaboration.proposal_status as keyof typeof statusColors]}>
-        {collaboration.proposal_status.replace("_", " ")}
-      </Badge>
-    );
-  };
+  const subtitle = showInfluencer 
+    ? `Campaign: ${collaboration.campaigns?.title}`
+    : `Campaign by ${collaboration.campaigns?.brand?.name}`;
 
   return (
     <Card className="hover:shadow-md transition-shadow">
       <CardContent className="p-6">
-        <div className="flex justify-between items-start">
-          <div>
-            <h3 className="font-semibold text-lg">
-              {showInfluencer 
-                ? collaboration.influencer?.full_name 
-                : collaboration.campaigns?.title}
-            </h3>
-            <p className="text-muted-foreground text-sm mt-1">
-              {showInfluencer 
-                ? `Campaign: ${collaboration.campaigns?.title}`
-                : `Campaign by ${collaboration.campaigns?.brand?.name}`
-              }
-            </p>
-          </div>
-          <Button
-            variant="outline"
-            onClick={() => navigate(`/collaborations/${collaboration.id}`)}
-          >
-            View Details
-          </Button>
-        </div>
+        <CollaborationHeader
+          title={title || "Untitled"}
+          subtitle={subtitle}
+          collaborationId={collaboration.id}
+        />
+        
         <div className="flex gap-4 mt-4">
           <div className="text-sm">
             <span className="text-muted-foreground">Status:</span>{" "}
@@ -75,7 +47,7 @@ export const CollaborationItem = ({ collaboration, showInfluencer }: Collaborati
           </div>
           <div className="text-sm">
             <span className="text-muted-foreground">Proposal:</span>{" "}
-            {getProposalStatusBadge() || "Not submitted"}
+            <ProposalStatus status={collaboration.proposal_status} />
           </div>
         </div>
       </CardContent>
