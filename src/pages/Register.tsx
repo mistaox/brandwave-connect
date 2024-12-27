@@ -23,8 +23,8 @@ const Register = () => {
   }, [navigate]);
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'SIGNED_UP' && session?.user) {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session?.user) {
         toast({
           title: "Registration successful",
           description: "Please check your email to verify your account.",
