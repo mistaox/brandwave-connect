@@ -1,9 +1,8 @@
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Auth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { supabase } from "@/integrations/supabase/client";
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "@/contexts/AuthContext";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/components/ui/use-toast";
@@ -11,18 +10,21 @@ import { AuthChangeEvent } from "@supabase/supabase-js";
 
 const Register = () => {
   const navigate = useNavigate();
-  const { session } = useAuth();
 
   useEffect(() => {
-    if (session) {
-      navigate("/");
-    }
-  }, [session, navigate]);
+    const checkSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        navigate("/");
+      }
+    };
+    checkSession();
+  }, [navigate]);
 
   // Set up auth state change listener to handle metadata
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event: AuthChangeEvent, session) => {
-      if (event === "SIGNED_UP" && session?.user) {
+      if (event === AuthChangeEvent.SIGNED_UP && session?.user) {
         toast({
           title: "Registration successful",
           description: "Please check your email to verify your account.",
@@ -71,15 +73,6 @@ const Register = () => {
           providers={[]}
           redirectTo={window.location.origin}
           view="sign_up"
-          localization={{
-            variables: {
-              sign_up: {
-                email_label: "Email",
-                password_label: "Password",
-                button_label: "Sign up",
-              },
-            },
-          }}
         />
       </div>
     </div>
