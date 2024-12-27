@@ -5,7 +5,10 @@ import Navbar from "@/components/layout/Navbar";
 import { DashboardMetrics } from "@/components/dashboard/DashboardMetrics";
 import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 import { RecentActivity } from "@/components/dashboard/RecentActivity";
+import { CampaignsList } from "@/components/dashboard/CampaignsList";
+import { CollaborationsList } from "@/components/dashboard/CollaborationsList";
 import { Loader2 } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const BrandDashboard = () => {
   const { user } = useAuth();
@@ -52,9 +55,26 @@ const BrandDashboard = () => {
       <main className="container mx-auto px-4 py-8">
         <DashboardHeader profile={profile} />
         <DashboardMetrics />
-        <div className="mt-8">
-          <RecentActivity />
-        </div>
+        
+        <Tabs defaultValue="campaigns" className="mt-8">
+          <TabsList className="grid w-full grid-cols-3 lg:w-[400px]">
+            <TabsTrigger value="campaigns">Campaigns</TabsTrigger>
+            <TabsTrigger value="collaborations">Collaborations</TabsTrigger>
+            <TabsTrigger value="activity">Activity</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="campaigns" className="mt-6">
+            <CampaignsList brandId={user?.id} />
+          </TabsContent>
+          
+          <TabsContent value="collaborations" className="mt-6">
+            <CollaborationsList brandId={user?.id} />
+          </TabsContent>
+          
+          <TabsContent value="activity" className="mt-6">
+            <RecentActivity />
+          </TabsContent>
+        </Tabs>
       </main>
     </div>
   );
