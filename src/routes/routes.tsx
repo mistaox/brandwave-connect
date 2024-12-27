@@ -1,4 +1,4 @@
-import { RouteObject } from "react-router-dom";
+import { RouteProps } from "react-router-dom";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import Index from "@/pages/Index";
 import Login from "@/pages/Login";
@@ -17,7 +17,7 @@ import Blogs from "@/pages/Blogs";
 import Contact from "@/pages/Contact";
 
 // Public routes configuration
-export const publicRoutes: RouteObject[] = [
+export const publicRoutes: RouteProps[] = [
   { path: "/", element: <Index /> },
   { path: "/login", element: <Login /> },
   { path: "/register", element: <Register /> },
@@ -30,7 +30,7 @@ export const publicRoutes: RouteObject[] = [
 ];
 
 // Protected routes configuration
-export const protectedRoutes: RouteObject[] = [
+export const protectedRoutes: RouteProps[] = [
   {
     path: "/dashboard",
     element: (
