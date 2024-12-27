@@ -15,11 +15,11 @@
   - [ ] Backend integration for auth
   - [ ] Password reset functionality
 
-- [ ] Marketplace Development
+- [x] Marketplace Development
   - [x] Brand listing page with filters
   - [x] Influencer listing page with search
-  - [ ] Advanced filtering system
-  - [ ] Category management
+  - [x] Advanced filtering system
+  - [x] Category management
 
 - [ ] Profile Management
   - [ ] Brand dashboard
