@@ -31,6 +31,9 @@ const Login = () => {
     );
   }
 
+  // Get the current origin dynamically
+  const redirectTo = `${window.location.origin}/auth/callback`;
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
       <div className="w-full max-w-md bg-white rounded-lg shadow p-8">
@@ -49,7 +52,7 @@ const Login = () => {
             },
           }}
           providers={[]}
-          redirectTo={window.location.origin}
+          redirectTo={redirectTo}
         />
         <div className="text-center mt-4">
           <Button
