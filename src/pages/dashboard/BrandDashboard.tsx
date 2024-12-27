@@ -6,6 +6,8 @@ import { DashboardMetrics } from "@/components/dashboard/DashboardMetrics";
 import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 import { RecentActivity } from "@/components/dashboard/RecentActivity";
 import { BrandsList } from "@/components/dashboard/BrandsList";
+import { CampaignsList } from "@/components/dashboard/CampaignsList";
+import { CollaborationsList } from "@/components/dashboard/CollaborationsList";
 import { Loader2 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -13,6 +15,7 @@ const BrandDashboard = () => {
   const { user } = useAuth();
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [selectedBrandId, setSelectedBrandId] = useState<string | null>(null);
 
   useEffect(() => {
     const getProfile = async () => {
@@ -27,6 +30,18 @@ const BrandDashboard = () => {
 
         if (error) throw error;
         setProfile(data);
+
+        // Get the first brand for initial load
+        const { data: brands } = await supabase
+          .from("brands")
+          .select("id")
+          .eq("owner_id", user.id)
+          .limit(1)
+          .single();
+
+        if (brands) {
+          setSelectedBrandId(brands.id);
+        }
       } catch (error) {
         console.error("Error loading profile:", error);
       } finally {
@@ -55,23 +70,41 @@ const BrandDashboard = () => {
         <DashboardHeader profile={profile} />
         <DashboardMetrics />
         
-        <Tabs defaultValue="brands" className="mt-8">
-          <TabsList className="grid w-full grid-cols-3 lg:w-[400px]">
+        <Tabs defaultValue="overview" className="mt-8">
+          <TabsList className="grid w-full grid-cols-4 lg:w-[600px]">
+            <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="brands">Brands</TabsTrigger>
-            <TabsTrigger value="activity">Activity</TabsTrigger>
-            <TabsTrigger value="metrics">Metrics</TabsTrigger>
+            <TabsTrigger value="campaigns">Campaigns</TabsTrigger>
+            <TabsTrigger value="collaborations">Collaborations</TabsTrigger>
           </TabsList>
           
-          <TabsContent value="brands" className="mt-6">
-            <BrandsList />
-          </TabsContent>
-          
-          <TabsContent value="activity" className="mt-6">
+          <TabsContent value="overview" className="mt-6 space-y-6">
+            <DashboardMetrics />
             <RecentActivity />
           </TabsContent>
           
-          <TabsContent value="metrics" className="mt-6">
-            <DashboardMetrics />
+          <TabsContent value="brands" className="mt-6">
+            <BrandsList onBrandSelect={setSelectedBrandId} />
+          </TabsContent>
+          
+          <TabsContent value="campaigns" className="mt-6">
+            {selectedBrandId ? (
+              <CampaignsList brandId={selectedBrandId} />
+            ) : (
+              <div className="text-center text-gray-500 py-8">
+                Please select a brand to view campaigns
+              </div>
+            )}
+          </TabsContent>
+
+          <TabsContent value="collaborations" className="mt-6">
+            {selectedBrandId ? (
+              <CollaborationsList brandId={selectedBrandId} />
+            ) : (
+              <div className="text-center text-gray-500 py-8">
+                Please select a brand to view collaborations
+              </div>
+            )}
           </TabsContent>
         </Tabs>
       </main>

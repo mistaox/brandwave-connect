@@ -16,7 +16,11 @@ import { EditBrandForm } from "./EditBrandForm";
 import { useState } from "react";
 import { Brand } from "@/types/brand";
 
-export const BrandsList = () => {
+interface BrandsListProps {
+  onBrandSelect?: (brandId: string) => void;
+}
+
+export const BrandsList = ({ onBrandSelect }: BrandsListProps) => {
   const navigate = useNavigate();
   const [editingBrand, setEditingBrand] = useState<Brand | null>(null);
 
@@ -87,7 +91,11 @@ export const BrandsList = () => {
       ) : (
         <div className="grid gap-4">
           {brands?.map((brand) => (
-            <Card key={brand.id} className="hover:shadow-md transition-shadow">
+            <Card 
+              key={brand.id} 
+              className="hover:shadow-md transition-shadow cursor-pointer"
+              onClick={() => onBrandSelect?.(brand.id)}
+            >
               <CardContent className="p-6">
                 <div className="flex justify-between items-start">
                   <div>
@@ -102,7 +110,10 @@ export const BrandsList = () => {
                         <Button
                           variant="outline"
                           size="icon"
-                          onClick={() => setEditingBrand(brand)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setEditingBrand(brand);
+                          }}
                         >
                           <Pencil className="h-4 w-4" />
                         </Button>
@@ -121,7 +132,10 @@ export const BrandsList = () => {
                     </Dialog>
                     <Button
                       variant="outline"
-                      onClick={() => navigate(`/brands/${brand.id}/campaigns`)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigate(`/brands/${brand.id}/campaigns`);
+                      }}
                     >
                       View Campaigns
                     </Button>
