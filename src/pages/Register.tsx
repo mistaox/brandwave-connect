@@ -21,7 +21,7 @@ const Register = () => {
   // Set up auth state change listener to handle metadata
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (event === 'SIGNED_UP' && session?.user) {
+      if (event === 'SIGNED_IN' && session?.user) {
         // Update the user's metadata after signup
         const { error } = await supabase.auth.updateUser({
           data: { account_type: accountType }
