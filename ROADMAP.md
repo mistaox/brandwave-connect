@@ -16,8 +16,8 @@
   - [ ] Password reset functionality
 
 - [ ] Marketplace Development
-  - [ ] Brand listing page with filters
-  - [ ] Influencer listing page with search
+  - [x] Brand listing page with filters
+  - [x] Influencer listing page with search
   - [ ] Advanced filtering system
   - [ ] Category management
 
