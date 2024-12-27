@@ -6,7 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/components/ui/use-toast";
-import { AuthError } from "@supabase/supabase-js";
+import { AuthChangeEvent } from "@supabase/supabase-js";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -23,7 +23,7 @@ const Register = () => {
 
   // Set up auth state change listener to handle metadata
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event: AuthChangeEvent, session) => {
       if (event === "SIGNED_UP" && session?.user) {
         toast({
           title: "Registration successful",
