@@ -2,6 +2,16 @@
 
 All notable changes to BrandCollab will be documented in this file.
 
+## [0.3.0] - 2024-03-22
+
+### Added
+- Brand Dashboard implementation
+  - Tabbed interface (Overview, Brands, Campaigns, Collaborations)
+  - Interactive brand selection functionality
+  - Brand management capabilities
+  - Active collaborations view
+  - Campaign tracking interface
+
 ## [0.2.0] - 2024-03-21
 
 ### Added
