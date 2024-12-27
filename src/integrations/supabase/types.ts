@@ -211,6 +211,54 @@ export type Database = {
           },
         ]
       }
+      earnings: {
+        Row: {
+          amount: number
+          collaboration_id: string | null
+          created_at: string | null
+          id: string
+          influencer_id: string
+          payment_date: string | null
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          amount: number
+          collaboration_id?: string | null
+          created_at?: string | null
+          id?: string
+          influencer_id: string
+          payment_date?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          amount?: number
+          collaboration_id?: string | null
+          created_at?: string | null
+          id?: string
+          influencer_id?: string
+          payment_date?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "earnings_collaboration_id_fkey"
+            columns: ["collaboration_id"]
+            isOneToOne: false
+            referencedRelation: "collaborations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "earnings_influencer_id_fkey"
+            columns: ["influencer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       messages: {
         Row: {
           content: string
@@ -250,6 +298,53 @@ export type Database = {
           {
             foreignKeyName: "messages_sender_id_fkey"
             columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      portfolio_items: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          engagement_metrics: Json | null
+          id: string
+          influencer_id: string
+          media_type: string | null
+          media_url: string | null
+          platform: string | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          engagement_metrics?: Json | null
+          id?: string
+          influencer_id: string
+          media_type?: string | null
+          media_url?: string | null
+          platform?: string | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          engagement_metrics?: Json | null
+          id?: string
+          influencer_id?: string
+          media_type?: string | null
+          media_url?: string | null
+          platform?: string | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "portfolio_items_influencer_id_fkey"
+            columns: ["influencer_id"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]

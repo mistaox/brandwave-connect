@@ -8,6 +8,7 @@ import { InfluencerActivity } from "@/components/dashboard/influencer/Influencer
 import { CollaborationsList } from "@/components/dashboard/CollaborationsList";
 import { PortfolioList } from "@/components/dashboard/influencer/PortfolioList";
 import { AvailableCampaigns } from "@/components/dashboard/influencer/AvailableCampaigns";
+import { EarningsTable } from "@/components/dashboard/influencer/earnings/EarningsTable";
 import { Loader2 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -83,9 +84,14 @@ const InfluencerDashboard = () => {
           </TabsContent>
 
           <TabsContent value="earnings" className="mt-6">
-            <div className="text-center text-gray-500 py-8">
-              Earnings tracking coming soon
-            </div>
+            <Card>
+              <CardHeader>
+                <CardTitle>Earnings History</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <EarningsTable />
+              </CardContent>
+            </Card>
           </TabsContent>
         </Tabs>
       </main>
