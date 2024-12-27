@@ -1,6 +1,6 @@
-import { Menu, X, User, LogOut } from "lucide-react";
+import { LogIn, LogOut, Menu, X } from "lucide-react";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import {
   DropdownMenu,
@@ -9,20 +9,28 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const { user, signOut } = useAuth();
+  const { user, signOut, profile } = useAuth();
+  const location = useLocation();
 
   const navItems = [
     { name: "Home", path: "/" },
     { name: "About", path: "/about" },
     { name: "FAQ", path: "/faq" },
-    { name: "Campaigns", path: "/campaigns" },
-    { name: "Influencers", path: "/marketplace/influencers" },
-    { name: "Blogs", path: "/blogs" },
+    ...(user ? [
+      { name: "Dashboard", path: "/dashboard" },
+      { name: "Campaigns", path: "/campaigns" },
+      { name: "Marketplace", path: "/marketplace/influencers" },
+    ] : []),
     { name: "Contact", path: "/contact" },
   ];
+
+  const isActive = (path: string) => {
+    return location.pathname === path;
+  };
 
   return (
     <nav className="fixed w-full bg-white/95 backdrop-blur-md z-50 shadow-sm">
@@ -40,7 +48,10 @@ const Navbar = () => {
               <Link
                 key={item.name}
                 to={item.path}
-                className="text-gray-600 hover:text-brandblue transition-colors font-medium"
+                className={cn(
+                  "text-gray-600 hover:text-brandblue transition-colors font-medium",
+                  isActive(item.path) && "text-brandblue"
+                )}
               >
                 {item.name}
               </Link>
@@ -48,12 +59,17 @@ const Navbar = () => {
             {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon">
-                    <User className="h-5 w-5" />
+                  <Button variant="outline" className="flex items-center gap-2">
+                    {profile?.full_name || "Profile"}
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem onClick={() => signOut()}>
+                <DropdownMenuContent align="end" className="w-48">
+                  <DropdownMenuItem asChild>
+                    <Link to="/profile" className="w-full">
+                      Profile Settings
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => signOut()} className="text-red-600">
                     <LogOut className="mr-2 h-4 w-4" />
                     <span>Log out</span>
                   </DropdownMenuItem>
@@ -62,8 +78,9 @@ const Navbar = () => {
             ) : (
               <Link
                 to="/login"
-                className="px-4 py-2 rounded-full bg-brandpink text-white hover:bg-opacity-90 transition-colors shadow-md hover:shadow-lg font-medium"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brandpink text-white hover:bg-opacity-90 transition-colors shadow-md hover:shadow-lg font-medium"
               >
+                <LogIn className="h-4 w-4" />
                 Login
               </Link>
             )}
@@ -88,28 +105,42 @@ const Navbar = () => {
                 <Link
                   key={item.name}
                   to={item.path}
-                  className="block px-3 py-2 rounded-md text-gray-600 hover:text-brandblue hover:bg-gray-50"
+                  className={cn(
+                    "block px-3 py-2 rounded-md text-gray-600 hover:text-brandblue hover:bg-gray-50",
+                    isActive(item.path) && "text-brandblue bg-gray-50"
+                  )}
                   onClick={() => setIsOpen(false)}
                 >
                   {item.name}
                 </Link>
               ))}
               {user ? (
-                <button
-                  onClick={() => {
-                    signOut();
-                    setIsOpen(false);
-                  }}
-                  className="w-full text-left px-3 py-2 text-gray-600 hover:text-brandblue hover:bg-gray-50"
-                >
-                  Log out
-                </button>
+                <>
+                  <Link
+                    to="/profile"
+                    className="block px-3 py-2 text-gray-600 hover:text-brandblue hover:bg-gray-50"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    Profile Settings
+                  </Link>
+                  <button
+                    onClick={() => {
+                      signOut();
+                      setIsOpen(false);
+                    }}
+                    className="w-full text-left px-3 py-2 text-red-600 hover:text-red-700 hover:bg-gray-50 flex items-center gap-2"
+                  >
+                    <LogOut className="h-4 w-4" />
+                    Log out
+                  </button>
+                </>
               ) : (
                 <Link
                   to="/login"
-                  className="block px-3 py-2 text-center rounded-full bg-brandpink text-white hover:bg-opacity-90"
+                  className="flex items-center gap-2 px-3 py-2 text-center rounded-full bg-brandpink text-white hover:bg-opacity-90"
                   onClick={() => setIsOpen(false)}
                 >
+                  <LogIn className="h-4 w-4" />
                   Login
                 </Link>
               )}
