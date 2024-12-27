@@ -17,6 +17,7 @@ import CreateCampaign from "@/pages/campaigns/CreateCampaign";
 import Blogs from "@/pages/Blogs";
 import Contact from "@/pages/Contact";
 import Messages from "@/pages/Messages";
+import { MarketplaceRedirect } from "@/components/marketplace/MarketplaceRedirect";
 
 // Public routes configuration
 export const publicRoutes: RouteProps[] = [
@@ -77,9 +78,17 @@ export const protectedRoutes: RouteProps[] = [
     ),
   },
   {
-    path: "/marketplace/brands",
+    path: "/marketplace",
     element: (
       <ProtectedRoute>
+        <MarketplaceRedirect />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/marketplace/brands",
+    element: (
+      <ProtectedRoute allowedAccountTypes={["influencer"]}>
         <BrandListing />
       </ProtectedRoute>
     ),
@@ -87,7 +96,7 @@ export const protectedRoutes: RouteProps[] = [
   {
     path: "/marketplace/influencers",
     element: (
-      <ProtectedRoute>
+      <ProtectedRoute allowedAccountTypes={["brand"]}>
         <InfluencerListing />
       </ProtectedRoute>
     ),
