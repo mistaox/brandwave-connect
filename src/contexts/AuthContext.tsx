@@ -9,6 +9,7 @@ interface AuthContextType {
   user: User | null;
   signOut: () => Promise<void>;
   loading: boolean;
+  profile: any | null;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -16,11 +17,13 @@ const AuthContext = createContext<AuthContextType>({
   user: null,
   signOut: async () => {},
   loading: true,
+  profile: null,
 });
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
+  const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -30,25 +33,42 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
+      if (session?.user) {
+        fetchProfile(session.user.id);
+      }
       setLoading(false);
     });
 
     // Listen for auth changes
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = supabase.auth.onAuthStateChange(async (_event, session) => {
       setSession(session);
       setUser(session?.user ?? null);
+      if (session?.user) {
+        await fetchProfile(session.user.id);
+      } else {
+        setProfile(null);
+      }
       setLoading(false);
     });
 
     return () => subscription.unsubscribe();
   }, []);
 
+  const fetchProfile = async (userId: string) => {
+    const { data } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', userId)
+      .single();
+    setProfile(data);
+  };
+
   const signOut = async () => {
     try {
       await supabase.auth.signOut();
-      navigate("/login");
+      navigate("/"); // Navigate to landing page on logout
       toast({
         title: "Signed out successfully",
         duration: 2000,
@@ -63,7 +83,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ session, user, signOut, loading }}>
+    <AuthContext.Provider value={{ session, user, signOut, loading, profile }}>
       {children}
     </AuthContext.Provider>
   );

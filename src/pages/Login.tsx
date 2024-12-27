@@ -2,19 +2,32 @@ import { Auth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 
 const Login = () => {
   const navigate = useNavigate();
-  const { session } = useAuth();
+  const { session, profile, loading } = useAuth();
 
   useEffect(() => {
-    if (session) {
-      navigate("/");
+    if (session && profile) {
+      // Redirect based on account type
+      if (profile.account_type === 'brand') {
+        navigate("/dashboard");
+      } else if (profile.account_type === 'influencer') {
+        navigate("/influencer-dashboard");
+      }
     }
-  }, [session, navigate]);
+  }, [session, profile, navigate]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
