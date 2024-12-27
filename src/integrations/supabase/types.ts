@@ -13,29 +13,53 @@ export type Database = {
         Row: {
           account_type: string | null
           avatar_url: string | null
+          bio: string | null
+          brand_company_size: string | null
+          brand_industry: string | null
           created_at: string | null
           full_name: string | null
           id: string
+          influencer_audience_size: number | null
+          influencer_categories: string[] | null
+          location: string | null
+          social_links: Json | null
           updated_at: string | null
           username: string | null
+          website_url: string | null
         }
         Insert: {
           account_type?: string | null
           avatar_url?: string | null
+          bio?: string | null
+          brand_company_size?: string | null
+          brand_industry?: string | null
           created_at?: string | null
           full_name?: string | null
           id: string
+          influencer_audience_size?: number | null
+          influencer_categories?: string[] | null
+          location?: string | null
+          social_links?: Json | null
           updated_at?: string | null
           username?: string | null
+          website_url?: string | null
         }
         Update: {
           account_type?: string | null
           avatar_url?: string | null
+          bio?: string | null
+          brand_company_size?: string | null
+          brand_industry?: string | null
           created_at?: string | null
           full_name?: string | null
           id?: string
+          influencer_audience_size?: number | null
+          influencer_categories?: string[] | null
+          location?: string | null
+          social_links?: Json | null
           updated_at?: string | null
           username?: string | null
+          website_url?: string | null
         }
         Relationships: []
       }
