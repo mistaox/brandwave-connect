@@ -23,6 +23,7 @@ const App = () => (
           <Route path="/register" element={<Register />} />
           <Route path="/marketplace/brands" element={<BrandListing />} />
           <Route path="/marketplace/influencers" element={<InfluencerListing />} />
+          <Route path="/influencers" element={<InfluencerListing />} />
         </Routes>
       </BrowserRouter>
     </TooltipProvider>
