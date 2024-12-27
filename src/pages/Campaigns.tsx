@@ -9,7 +9,7 @@ const Campaigns = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
-      <main className="container mx-auto px-4 py-8">
+      <main className="container mx-auto px-4 pt-6 pb-8">
         <Breadcrumbs />
         <CampaignsList brandId={brandId} />
       </main>
