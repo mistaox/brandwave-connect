@@ -405,6 +405,47 @@ export type Database = {
         }
         Relationships: []
       }
+      social_media_profiles: {
+        Row: {
+          created_at: string | null
+          follower_count: number
+          id: string
+          influencer_id: string
+          platform: string
+          profile_url: string
+          updated_at: string | null
+          username: string
+        }
+        Insert: {
+          created_at?: string | null
+          follower_count?: number
+          id?: string
+          influencer_id: string
+          platform: string
+          profile_url: string
+          updated_at?: string | null
+          username: string
+        }
+        Update: {
+          created_at?: string | null
+          follower_count?: number
+          id?: string
+          influencer_id?: string
+          platform?: string
+          profile_url?: string
+          updated_at?: string | null
+          username?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "social_media_profiles_influencer_id_fkey"
+            columns: ["influencer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
