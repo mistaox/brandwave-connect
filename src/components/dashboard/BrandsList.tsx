@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Plus, Building2, Loader2 } from "lucide-react";
+import { Plus, Building2, Loader2, Pencil } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import {
   Dialog,
@@ -12,11 +12,15 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { AddBrandForm } from "./AddBrandForm";
+import { EditBrandForm } from "./EditBrandForm";
+import { useState } from "react";
+import { Brand } from "@/types/brand";
 
 export const BrandsList = () => {
   const navigate = useNavigate();
+  const [editingBrand, setEditingBrand] = useState<Brand | null>(null);
 
-  const { data: brands, isLoading } = useQuery({
+  const { data: brands, isLoading, refetch } = useQuery({
     queryKey: ["brands"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -25,9 +29,14 @@ export const BrandsList = () => {
         .order("created_at", { ascending: false });
 
       if (error) throw error;
-      return data;
+      return data as Brand[];
     },
   });
+
+  const handleEditSuccess = () => {
+    refetch();
+    setEditingBrand(null);
+  };
 
   if (isLoading) {
     return (
@@ -87,12 +96,36 @@ export const BrandsList = () => {
                       {brand.industry}
                     </p>
                   </div>
-                  <Button
-                    variant="outline"
-                    onClick={() => navigate(`/brands/${brand.id}/campaigns`)}
-                  >
-                    View Campaigns
-                  </Button>
+                  <div className="flex gap-2">
+                    <Dialog open={editingBrand?.id === brand.id} onOpenChange={(open) => !open && setEditingBrand(null)}>
+                      <DialogTrigger asChild>
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          onClick={() => setEditingBrand(brand)}
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle>Edit Brand</DialogTitle>
+                        </DialogHeader>
+                        {editingBrand && (
+                          <EditBrandForm
+                            brand={editingBrand}
+                            onSuccess={handleEditSuccess}
+                          />
+                        )}
+                      </DialogContent>
+                    </Dialog>
+                    <Button
+                      variant="outline"
+                      onClick={() => navigate(`/brands/${brand.id}/campaigns`)}
+                    >
+                      View Campaigns
+                    </Button>
+                  </div>
                 </div>
                 <div className="flex gap-4 mt-4">
                   <div className="text-sm">

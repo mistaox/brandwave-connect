@@ -7,8 +7,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Brand } from "@/types/brand";
 
-export const BrandFormFields = () => {
+interface BrandFormFieldsProps {
+  defaultValues?: Partial<Brand>;
+}
+
+export const BrandFormFields = ({ defaultValues }: BrandFormFieldsProps) => {
   return (
     <>
       <div className="space-y-2">
@@ -17,13 +22,14 @@ export const BrandFormFields = () => {
           id="name"
           name="name"
           placeholder="Enter brand name"
+          defaultValue={defaultValues?.name}
           required
         />
       </div>
 
       <div className="space-y-2">
         <Label htmlFor="industry">Industry</Label>
-        <Select name="industry" required>
+        <Select name="industry" defaultValue={defaultValues?.industry || undefined}>
           <SelectTrigger>
             <SelectValue placeholder="Select industry" />
           </SelectTrigger>
@@ -41,7 +47,7 @@ export const BrandFormFields = () => {
 
       <div className="space-y-2">
         <Label htmlFor="company_size">Company Size</Label>
-        <Select name="company_size" required>
+        <Select name="company_size" defaultValue={defaultValues?.company_size || undefined}>
           <SelectTrigger>
             <SelectValue placeholder="Select company size" />
           </SelectTrigger>
@@ -61,6 +67,7 @@ export const BrandFormFields = () => {
           id="location"
           name="location"
           placeholder="Enter location"
+          defaultValue={defaultValues?.location || ""}
         />
       </div>
 
@@ -71,6 +78,7 @@ export const BrandFormFields = () => {
           name="website"
           type="url"
           placeholder="https://example.com"
+          defaultValue={defaultValues?.website || ""}
         />
       </div>
 
@@ -80,6 +88,7 @@ export const BrandFormFields = () => {
           id="description"
           name="description"
           placeholder="Brief description of your brand"
+          defaultValue={defaultValues?.description || ""}
         />
       </div>
     </>
