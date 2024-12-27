@@ -115,7 +115,12 @@ export type Database = {
           created_at: string | null
           id: string
           influencer_id: string
+          proposal_budget: number | null
+          proposal_deliverables: string[] | null
+          proposal_status: string | null
+          proposal_submitted_at: string | null
           proposal_text: string | null
+          proposal_timeline: string | null
           status: string | null
           updated_at: string | null
         }
@@ -124,7 +129,12 @@ export type Database = {
           created_at?: string | null
           id?: string
           influencer_id: string
+          proposal_budget?: number | null
+          proposal_deliverables?: string[] | null
+          proposal_status?: string | null
+          proposal_submitted_at?: string | null
           proposal_text?: string | null
+          proposal_timeline?: string | null
           status?: string | null
           updated_at?: string | null
         }
@@ -133,7 +143,12 @@ export type Database = {
           created_at?: string | null
           id?: string
           influencer_id?: string
+          proposal_budget?: number | null
+          proposal_deliverables?: string[] | null
+          proposal_status?: string | null
+          proposal_submitted_at?: string | null
           proposal_text?: string | null
+          proposal_timeline?: string | null
           status?: string | null
           updated_at?: string | null
         }
