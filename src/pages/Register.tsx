@@ -6,7 +6,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/components/ui/use-toast";
-import { AuthChangeEvent } from "@supabase/supabase-js";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -23,8 +22,8 @@ const Register = () => {
 
   // Set up auth state change listener to handle metadata
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event: AuthChangeEvent, session) => {
-      if (event === AuthChangeEvent.SIGNED_UP && session?.user) {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === 'SIGNED_UP' && session?.user) {
         toast({
           title: "Registration successful",
           description: "Please check your email to verify your account.",
