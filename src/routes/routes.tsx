@@ -15,6 +15,7 @@ import FAQ from "@/pages/FAQ";
 import Campaigns from "@/pages/Campaigns";
 import Blogs from "@/pages/Blogs";
 import Contact from "@/pages/Contact";
+import Messages from "@/pages/Messages";
 
 // Public routes configuration
 export const publicRoutes: RouteProps[] = [
@@ -87,6 +88,14 @@ export const protectedRoutes: RouteProps[] = [
     element: (
       <ProtectedRoute>
         <Campaigns />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/messages",
+    element: (
+      <ProtectedRoute>
+        <Messages />
       </ProtectedRoute>
     ),
   },
