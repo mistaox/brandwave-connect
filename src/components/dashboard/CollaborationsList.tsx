@@ -6,27 +6,35 @@ import { Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 interface CollaborationsListProps {
-  brandId: string;
+  brandId?: string;
+  influencerId?: string;
 }
 
-export const CollaborationsList = ({ brandId }: CollaborationsListProps) => {
+export const CollaborationsList = ({ brandId, influencerId }: CollaborationsListProps) => {
   const navigate = useNavigate();
 
   const { data: collaborations, isLoading } = useQuery({
-    queryKey: ["collaborations", brandId],
+    queryKey: ["collaborations", brandId, influencerId],
     queryFn: async () => {
-      const { data, error } = await supabase
+      let query = supabase
         .from("collaborations")
         .select(`
           *,
           campaigns:campaigns(*),
           influencer:profiles(*)
-        `)
-        .eq("campaigns.brand_id", brandId);
+        `);
 
+      if (brandId) {
+        query = query.eq("campaigns.brand_id", brandId);
+      } else if (influencerId) {
+        query = query.eq("influencer_id", influencerId);
+      }
+
+      const { data, error } = await query;
       if (error) throw error;
       return data;
     },
+    enabled: !!(brandId || influencerId),
   });
 
   if (isLoading) {
@@ -45,8 +53,10 @@ export const CollaborationsList = ({ brandId }: CollaborationsListProps) => {
         <Card>
           <CardContent className="flex flex-col items-center justify-center p-6">
             <p className="text-muted-foreground mb-4">No active collaborations</p>
-            <Button onClick={() => navigate("/marketplace/influencers")}>
-              Find Influencers
+            <Button 
+              onClick={() => navigate(influencerId ? "/marketplace/brands" : "/marketplace/influencers")}
+            >
+              {influencerId ? "Find Brands" : "Find Influencers"}
             </Button>
           </CardContent>
         </Card>
@@ -58,10 +68,13 @@ export const CollaborationsList = ({ brandId }: CollaborationsListProps) => {
                 <div className="flex justify-between items-start">
                   <div>
                     <h3 className="font-semibold text-lg">
-                      {collab.influencer.full_name}
+                      {influencerId ? collab.campaigns?.title : collab.influencer?.full_name}
                     </h3>
                     <p className="text-muted-foreground text-sm mt-1">
-                      Campaign: {collab.campaigns.title}
+                      {influencerId 
+                        ? `Campaign by ${collab.campaigns?.brand?.name}`
+                        : `Campaign: ${collab.campaigns?.title}`
+                      }
                     </p>
                   </div>
                   <Button
