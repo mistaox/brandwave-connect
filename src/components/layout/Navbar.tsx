@@ -7,37 +7,40 @@ const Navbar = () => {
 
   const navItems = [
     { name: "Home", path: "/" },
-    { name: "About Us", path: "/about" },
-    { name: "Services", path: "/services" },
-    { name: "Blog", path: "/blog" },
+    { name: "About", path: "/about" },
+    { name: "FAQ", path: "/faq" },
+    { name: "Campaigns", path: "/campaigns" },
+    { name: "Influencers", path: "/influencers" },
+    { name: "Blogs", path: "/blogs" },
+    { name: "Contact", path: "/contact" },
   ];
 
   return (
-    <nav className="fixed w-full bg-white/90 backdrop-blur-md z-50 shadow-sm">
+    <nav className="fixed w-full bg-white/95 backdrop-blur-md z-50 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex items-center">
-            <Link to="/" className="text-2xl font-bold text-brandblue">
-              BrandCollab
+            <Link to="/" className="text-2xl font-bold text-brandgray">
+              Brand<span className="text-brandpink">Collab</span>
             </Link>
           </div>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
+          <div className="hidden md:flex items-center space-x-6">
             {navItems.map((item) => (
               <Link
                 key={item.name}
                 to={item.path}
-                className="text-brandgray hover:text-brandblue transition-colors"
+                className="text-gray-600 hover:text-brandblue transition-colors font-medium"
               >
                 {item.name}
               </Link>
             ))}
             <Link
               to="/login"
-              className="px-4 py-2 rounded-full bg-brandblue text-white hover:bg-blue-600 transition-colors"
+              className="px-4 py-2 rounded-full bg-brandpink text-white hover:bg-opacity-90 transition-colors shadow-md hover:shadow-lg font-medium"
             >
-              Get Started
+              Login
             </Link>
           </div>
 
@@ -45,7 +48,7 @@ const Navbar = () => {
           <div className="md:hidden flex items-center">
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="text-brandgray hover:text-brandblue"
+              className="text-brandgray hover:text-brandpink"
             >
               {isOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
@@ -60,7 +63,7 @@ const Navbar = () => {
                 <Link
                   key={item.name}
                   to={item.path}
-                  className="block px-3 py-2 rounded-md text-brandgray hover:text-brandblue hover:bg-gray-50"
+                  className="block px-3 py-2 rounded-md text-gray-600 hover:text-brandblue hover:bg-gray-50"
                   onClick={() => setIsOpen(false)}
                 >
                   {item.name}
@@ -68,10 +71,10 @@ const Navbar = () => {
               ))}
               <Link
                 to="/login"
-                className="block px-3 py-2 text-center rounded-full bg-brandblue text-white hover:bg-blue-600"
+                className="block px-3 py-2 text-center rounded-full bg-brandpink text-white hover:bg-opacity-90"
                 onClick={() => setIsOpen(false)}
               >
-                Get Started
+                Login
               </Link>
             </div>
           </div>

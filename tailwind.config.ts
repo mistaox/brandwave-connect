@@ -24,9 +24,10 @@ export default {
         ring: "hsl(var(--ring))",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
-        brandblue: "#3498db",
-        brandorange: "#f7d2c4",
-        brandgray: "#3e4549",
+        brandblue: "#0073ea", // Monday.com blue
+        brandpink: "#ff3d57", // Vibrant pink/red
+        brandpurple: "#8B5CF6", // Vibrant purple
+        brandgray: "#323338", // Modern dark gray
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
