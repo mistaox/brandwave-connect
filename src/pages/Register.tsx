@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/components/ui/use-toast";
+import { AuthError } from "@supabase/supabase-js";
 
 const Register = () => {
   const navigate = useNavigate();
