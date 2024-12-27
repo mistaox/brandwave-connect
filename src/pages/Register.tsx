@@ -71,11 +71,9 @@ const Register = () => {
               }}
               providers={[]}
               view="sign_up"
-              options={{
-                emailRedirectTo: `${window.location.origin}/auth/callback`,
-                data: {
-                  account_type: accountType,
-                },
+              redirectTo={`${window.location.origin}/auth/callback`}
+              additionalData={{
+                account_type: accountType,
               }}
             />
           </div>
