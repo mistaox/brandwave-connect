@@ -29,15 +29,17 @@ export const AddBrandForm = () => {
     const formData = new FormData(e.currentTarget);
     
     try {
-      const { error } = await supabase.from("brands").insert({
-        owner_id: user.id,
-        name: formData.get("name"),
-        industry: formData.get("industry"),
-        company_size: formData.get("company_size"),
-        location: formData.get("location"),
-        website: formData.get("website"),
-        description: formData.get("description"),
-      });
+      const { error } = await supabase
+        .from("brands")
+        .insert([{  // Wrap the object in an array
+          owner_id: user.id,
+          name: formData.get("name"),
+          industry: formData.get("industry"),
+          company_size: formData.get("company_size"),
+          location: formData.get("location"),
+          website: formData.get("website"),
+          description: formData.get("description"),
+        }]);
 
       if (error) throw error;
 
