@@ -11,6 +11,7 @@ import Register from "./pages/Register";
 import ResetPassword from "./pages/ResetPassword";
 import UpdatePassword from "./pages/UpdatePassword";
 import Profile from "./pages/Profile";
+import BrandDashboard from "./pages/dashboard/BrandDashboard";
 import BrandListing from "./pages/marketplace/BrandListing";
 import InfluencerListing from "./pages/marketplace/InfluencerListing";
 import About from "./pages/About";
@@ -41,6 +42,14 @@ const App = () => (
             <Route path="/contact" element={<Contact />} />
 
             {/* Protected routes */}
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute>
+                  <BrandDashboard />
+                </ProtectedRoute>
+              }
+            />
             <Route
               path="/profile"
               element={
