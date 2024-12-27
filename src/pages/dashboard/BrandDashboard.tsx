@@ -5,8 +5,7 @@ import Navbar from "@/components/layout/Navbar";
 import { DashboardMetrics } from "@/components/dashboard/DashboardMetrics";
 import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 import { RecentActivity } from "@/components/dashboard/RecentActivity";
-import { CampaignsList } from "@/components/dashboard/CampaignsList";
-import { CollaborationsList } from "@/components/dashboard/CollaborationsList";
+import { BrandsList } from "@/components/dashboard/BrandsList";
 import { Loader2 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -56,23 +55,23 @@ const BrandDashboard = () => {
         <DashboardHeader profile={profile} />
         <DashboardMetrics />
         
-        <Tabs defaultValue="campaigns" className="mt-8">
+        <Tabs defaultValue="brands" className="mt-8">
           <TabsList className="grid w-full grid-cols-3 lg:w-[400px]">
-            <TabsTrigger value="campaigns">Campaigns</TabsTrigger>
-            <TabsTrigger value="collaborations">Collaborations</TabsTrigger>
+            <TabsTrigger value="brands">Brands</TabsTrigger>
             <TabsTrigger value="activity">Activity</TabsTrigger>
+            <TabsTrigger value="metrics">Metrics</TabsTrigger>
           </TabsList>
           
-          <TabsContent value="campaigns" className="mt-6">
-            <CampaignsList brandId={user?.id} />
-          </TabsContent>
-          
-          <TabsContent value="collaborations" className="mt-6">
-            <CollaborationsList brandId={user?.id} />
+          <TabsContent value="brands" className="mt-6">
+            <BrandsList />
           </TabsContent>
           
           <TabsContent value="activity" className="mt-6">
             <RecentActivity />
+          </TabsContent>
+          
+          <TabsContent value="metrics" className="mt-6">
+            <DashboardMetrics />
           </TabsContent>
         </Tabs>
       </main>

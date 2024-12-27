@@ -9,6 +9,56 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      brands: {
+        Row: {
+          company_size: string | null
+          created_at: string | null
+          description: string | null
+          id: string
+          industry: string | null
+          location: string | null
+          logo_url: string | null
+          name: string
+          owner_id: string
+          updated_at: string | null
+          website: string | null
+        }
+        Insert: {
+          company_size?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          industry?: string | null
+          location?: string | null
+          logo_url?: string | null
+          name: string
+          owner_id: string
+          updated_at?: string | null
+          website?: string | null
+        }
+        Update: {
+          company_size?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          industry?: string | null
+          location?: string | null
+          logo_url?: string | null
+          name?: string
+          owner_id?: string
+          updated_at?: string | null
+          website?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "brands_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       campaigns: {
         Row: {
           brand_id: string
@@ -51,10 +101,10 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "campaigns_brand_id_fkey"
+            foreignKeyName: "campaigns_brand_ref_id_fkey"
             columns: ["brand_id"]
             isOneToOne: false
-            referencedRelation: "profiles"
+            referencedRelation: "brands"
             referencedColumns: ["id"]
           },
         ]

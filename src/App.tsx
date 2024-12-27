@@ -82,6 +82,14 @@ const App = () => (
                 </ProtectedRoute>
               }
             />
+            <Route
+              path="/brands/:brandId/campaigns"
+              element={
+                <ProtectedRoute>
+                  <Campaigns />
+                </ProtectedRoute>
+              }
+            />
           </Routes>
         </AuthProvider>
       </BrowserRouter>
