@@ -68,7 +68,6 @@ const BrandDashboard = () => {
       <Navbar />
       <main className="container mx-auto px-4 py-8">
         <DashboardHeader profile={profile} />
-        <DashboardMetrics />
         
         <Tabs defaultValue="overview" className="mt-8">
           <TabsList className="grid w-full grid-cols-4 lg:w-[600px]">
@@ -79,8 +78,8 @@ const BrandDashboard = () => {
           </TabsList>
           
           <TabsContent value="overview" className="mt-6 space-y-6">
-            <DashboardMetrics />
-            <RecentActivity />
+            <DashboardMetrics brandId={selectedBrandId || undefined} />
+            <RecentActivity brandId={selectedBrandId || undefined} />
           </TabsContent>
           
           <TabsContent value="brands" className="mt-6">
