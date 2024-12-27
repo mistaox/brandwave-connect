@@ -10,9 +10,9 @@
 - [ ] Authentication System
   - [x] Login/Register pages
   - [x] Account type selection in registration
+  - [x] Authentication context and protected routes
+  - [x] Backend integration for auth
   - [ ] User profiles (Brands & Influencers)
-  - [ ] Authentication context and protected routes
-  - [ ] Backend integration for auth
   - [ ] Password reset functionality
 
 - [x] Marketplace Development
