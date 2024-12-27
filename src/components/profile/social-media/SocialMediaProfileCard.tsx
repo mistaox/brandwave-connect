@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Instagram, Facebook, Twitter, Youtube, Linkedin, Edit, Trash2 } from "lucide-react";
 import { EditSocialMediaProfileDialog } from "./EditSocialMediaProfileDialog";
+import { SocialMediaProfile, SocialMediaPlatform } from "@/types/social-media";
 
 const platformIcons = {
   instagram: Instagram,
@@ -13,21 +14,13 @@ const platformIcons = {
   twitter: Twitter,
   youtube: Youtube,
   linkedin: Linkedin,
-};
-
-interface SocialMediaProfile {
-  id: string;
-  platform: keyof typeof platformIcons;
-  username: string;
-  profile_url: string;
-  follower_count: number;
-}
+} as const;
 
 export const SocialMediaProfileCard = ({ profile }: { profile: SocialMediaProfile }) => {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const Icon = platformIcons[profile.platform] || Instagram;
+  const Icon = platformIcons[profile.platform as keyof typeof platformIcons] || Instagram;
 
   const handleDelete = async () => {
     try {

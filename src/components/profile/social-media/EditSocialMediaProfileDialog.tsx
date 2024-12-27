@@ -12,14 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Loader2 } from "lucide-react";
-
-interface SocialMediaProfile {
-  id: string;
-  platform: string;
-  username: string;
-  profile_url: string;
-  follower_count: number;
-}
+import { SocialMediaProfile } from "@/types/social-media";
 
 interface EditSocialMediaProfileDialogProps {
   open: boolean;
@@ -42,8 +35,8 @@ export const EditSocialMediaProfileDialog = ({
 
     const formData = new FormData(e.currentTarget);
     const data = {
-      username: formData.get("username"),
-      profile_url: formData.get("profile_url"),
+      username: String(formData.get("username")),
+      profile_url: String(formData.get("profile_url")),
       follower_count: Number(formData.get("follower_count")),
     };
 

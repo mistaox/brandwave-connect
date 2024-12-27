@@ -19,6 +19,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Loader2 } from "lucide-react";
+import { SocialMediaPlatform } from "@/types/social-media";
 
 interface AddSocialMediaProfileDialogProps {
   open: boolean;
@@ -42,9 +43,9 @@ export const AddSocialMediaProfileDialog = ({
     const formData = new FormData(e.currentTarget);
     const data = {
       influencer_id: userId,
-      platform: formData.get("platform"),
-      username: formData.get("username"),
-      profile_url: formData.get("profile_url"),
+      platform: formData.get("platform") as SocialMediaPlatform,
+      username: String(formData.get("username")),
+      profile_url: String(formData.get("profile_url")),
       follower_count: Number(formData.get("follower_count")),
     };
 
