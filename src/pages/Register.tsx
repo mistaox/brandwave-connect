@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Auth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
@@ -6,9 +6,11 @@ import { supabase } from "@/integrations/supabase/client";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/components/ui/use-toast";
+import { Card } from "@/components/ui/card";
 
 const Register = () => {
   const navigate = useNavigate();
+  const [accountType, setAccountType] = useState("brand");
 
   useEffect(() => {
     const checkSession = async () => {
@@ -20,7 +22,6 @@ const Register = () => {
     checkSession();
   }, [navigate]);
 
-  // Set up auth state change listener to handle metadata
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === 'SIGNED_UP' && session?.user) {
@@ -35,14 +36,18 @@ const Register = () => {
   }, []);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-      <div className="w-full max-w-md bg-white rounded-lg shadow p-8">
-        <h2 className="text-2xl font-bold text-center mb-6">Create Your Account</h2>
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 py-12">
+      <Card className="w-full max-w-md p-8 space-y-6">
+        <div className="space-y-2 text-center">
+          <h1 className="text-2xl font-bold tracking-tight">Create an Account</h1>
+          <p className="text-gray-500">Choose your account type and sign up below</p>
+        </div>
         
-        <div className="mb-6">
-          <Label className="text-base mb-2 block">I am a...</Label>
+        <div className="space-y-4">
+          <Label className="text-base">I am a...</Label>
           <RadioGroup
-            defaultValue="brand"
+            value={accountType}
+            onValueChange={setAccountType}
             className="flex gap-4"
           >
             <div className="flex items-center space-x-2">
@@ -72,8 +77,11 @@ const Register = () => {
           providers={[]}
           redirectTo={window.location.origin}
           view="sign_up"
+          additionalData={{
+            account_type: accountType,
+          }}
         />
-      </div>
+      </Card>
     </div>
   );
 };
