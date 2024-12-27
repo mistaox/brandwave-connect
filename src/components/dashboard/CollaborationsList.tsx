@@ -20,7 +20,13 @@ export const CollaborationsList = ({ brandId, influencerId }: CollaborationsList
         .from("collaborations")
         .select(`
           *,
-          campaigns:campaigns(*),
+          campaigns:campaigns(
+            *,
+            brand:brands(
+              id,
+              name
+            )
+          ),
           influencer:profiles(*)
         `);
 
