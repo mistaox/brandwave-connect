@@ -33,6 +33,7 @@ export const BrandFormFields = () => {
             <SelectItem value="food">Food & Beverage</SelectItem>
             <SelectItem value="health">Health & Wellness</SelectItem>
             <SelectItem value="entertainment">Entertainment</SelectItem>
+            <SelectItem value="social_media">Social Media</SelectItem>
             <SelectItem value="other">Other</SelectItem>
           </SelectContent>
         </Select>
