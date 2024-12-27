@@ -3,6 +3,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { AuthProvider } from "./contexts/AuthContext";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -19,22 +20,24 @@ const queryClient = new QueryClient();
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <Toaster />
-      <Sonner />
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/marketplace/brands" element={<BrandListing />} />
-          <Route path="/marketplace/influencers" element={<InfluencerListing />} />
-          <Route path="/influencers" element={<InfluencerListing />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/faq" element={<FAQ />} />
-          <Route path="/campaigns" element={<Campaigns />} />
-          <Route path="/blogs" element={<Blogs />} />
-          <Route path="/contact" element={<Contact />} />
-        </Routes>
+        <AuthProvider>
+          <Toaster />
+          <Sonner />
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/marketplace/brands" element={<BrandListing />} />
+            <Route path="/marketplace/influencers" element={<InfluencerListing />} />
+            <Route path="/influencers" element={<InfluencerListing />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/faq" element={<FAQ />} />
+            <Route path="/campaigns" element={<Campaigns />} />
+            <Route path="/blogs" element={<Blogs />} />
+            <Route path="/contact" element={<Contact />} />
+          </Routes>
+        </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>

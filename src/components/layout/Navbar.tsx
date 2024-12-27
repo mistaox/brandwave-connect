@@ -1,9 +1,18 @@
-import { Menu, X } from "lucide-react";
+import { Menu, X, User, LogOut } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const { user, signOut } = useAuth();
 
   const navItems = [
     { name: "Home", path: "/" },
@@ -36,12 +45,28 @@ const Navbar = () => {
                 {item.name}
               </Link>
             ))}
-            <Link
-              to="/login"
-              className="px-4 py-2 rounded-full bg-brandpink text-white hover:bg-opacity-90 transition-colors shadow-md hover:shadow-lg font-medium"
-            >
-              Login
-            </Link>
+            {user ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon">
+                    <User className="h-5 w-5" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={() => signOut()}>
+                    <LogOut className="mr-2 h-4 w-4" />
+                    <span>Log out</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Link
+                to="/login"
+                className="px-4 py-2 rounded-full bg-brandpink text-white hover:bg-opacity-90 transition-colors shadow-md hover:shadow-lg font-medium"
+              >
+                Login
+              </Link>
+            )}
           </div>
 
           {/* Mobile menu button */}
@@ -69,13 +94,25 @@ const Navbar = () => {
                   {item.name}
                 </Link>
               ))}
-              <Link
-                to="/login"
-                className="block px-3 py-2 text-center rounded-full bg-brandpink text-white hover:bg-opacity-90"
-                onClick={() => setIsOpen(false)}
-              >
-                Login
-              </Link>
+              {user ? (
+                <button
+                  onClick={() => {
+                    signOut();
+                    setIsOpen(false);
+                  }}
+                  className="w-full text-left px-3 py-2 text-gray-600 hover:text-brandblue hover:bg-gray-50"
+                >
+                  Log out
+                </button>
+              ) : (
+                <Link
+                  to="/login"
+                  className="block px-3 py-2 text-center rounded-full bg-brandpink text-white hover:bg-opacity-90"
+                  onClick={() => setIsOpen(false)}
+                >
+                  Login
+                </Link>
+              )}
             </div>
           </div>
         )}
