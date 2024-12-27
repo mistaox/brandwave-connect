@@ -12,7 +12,7 @@
   - [x] Account type selection in registration
   - [x] Authentication context and protected routes
   - [x] Backend integration for auth
-  - [ ] User profiles (Brands & Influencers)
+  - [x] User profiles (Brands & Influencers)
   - [ ] Password reset functionality
 
 - [x] Marketplace Development
@@ -24,7 +24,7 @@
 - [ ] Profile Management
   - [ ] Brand dashboard
   - [ ] Influencer dashboard
-  - [ ] Profile editing capabilities
+  - [x] Profile editing capabilities
   - [ ] Portfolio/showcase section
 
 ## Phase 3: Interaction Features
