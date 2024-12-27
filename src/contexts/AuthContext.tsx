@@ -57,23 +57,38 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   const fetchProfile = async (userId: string) => {
-    const { data } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', userId)
-      .single();
-    setProfile(data);
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .single();
+      
+      if (error) throw error;
+      setProfile(data);
+    } catch (error) {
+      console.error('Error fetching profile:', error);
+      toast({
+        title: "Error fetching profile",
+        description: "Please try logging in again",
+        variant: "destructive",
+      });
+    }
   };
 
   const signOut = async () => {
     try {
       await supabase.auth.signOut();
-      navigate("/"); // Navigate to landing page on logout
+      setSession(null);
+      setUser(null);
+      setProfile(null);
+      navigate("/login");
       toast({
         title: "Signed out successfully",
         duration: 2000,
       });
     } catch (error) {
+      console.error('Error signing out:', error);
       toast({
         title: "Error signing out",
         description: "Please try again",

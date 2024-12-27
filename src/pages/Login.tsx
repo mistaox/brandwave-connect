@@ -16,7 +16,9 @@ const Login = () => {
       if (profile.account_type === 'brand') {
         navigate("/dashboard");
       } else if (profile.account_type === 'influencer') {
-        navigate("/influencer-dashboard");
+        navigate("/marketplace/influencers");
+      } else {
+        navigate("/"); // Fallback to home if account type is not set
       }
     }
   }, [session, profile, navigate]);
@@ -47,7 +49,7 @@ const Login = () => {
             },
           }}
           providers={[]}
-          redirectTo={window.location.origin}
+          redirectTo={`${window.location.origin}/dashboard`}
         />
         <div className="text-center mt-4">
           <Button
