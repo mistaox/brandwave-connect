@@ -22,8 +22,8 @@ const Register = () => {
 
   // Set up auth state change listener to handle metadata
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (event === 'SIGNED_UP' && session?.user) {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === "SIGNED_UP" && session?.user) {
         toast({
           title: "Registration successful",
           description: "Please check your email to verify your account.",
