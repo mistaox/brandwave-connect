@@ -1,12 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Send } from "lucide-react";
-import { formatDistanceToNow } from "date-fns";
+import { MessageBubble } from "./MessageBubble";
+import { MessageInput } from "./MessageInput";
+import { ConversationHeader } from "./ConversationHeader";
 
 interface Message {
   id: string;
@@ -35,12 +33,12 @@ export const MessagingInterface = ({ conversationId }: MessagingInterfaceProps) 
 
     const fetchMessages = async () => {
       try {
-        // Fetch messages
+        // Fetch messages with sender profile information
         const { data: messagesData, error: messagesError } = await supabase
           .from("messages")
           .select(`
             *,
-            sender:sender_id(full_name, avatar_url)
+            sender:profiles!messages_sender_id_fkey(full_name, avatar_url)
           `)
           .eq("conversation_id", conversationId)
           .order("created_at", { ascending: true });
@@ -48,13 +46,13 @@ export const MessagingInterface = ({ conversationId }: MessagingInterfaceProps) 
         if (messagesError) throw messagesError;
         setMessages(messagesData || []);
 
-        // Fetch conversation details
+        // Fetch conversation details with participant information
         const { data: conversationData, error: conversationError } = await supabase
           .from("conversations")
           .select(`
             *,
-            participant1:participant1_id(id, full_name, avatar_url),
-            participant2:participant2_id(id, full_name, avatar_url)
+            participant1:profiles!conversations_participant1_id_fkey(id, full_name, avatar_url),
+            participant2:profiles!conversations_participant2_id_fkey(id, full_name, avatar_url)
           `)
           .eq("id", conversationId)
           .single();
@@ -141,75 +139,21 @@ export const MessagingInterface = ({ conversationId }: MessagingInterfaceProps) 
 
   return (
     <div className="h-[calc(100vh-12rem)] flex flex-col">
-      {otherParticipant && (
-        <div className="p-4 border-b flex items-center gap-3">
-          <Avatar>
-            <AvatarImage src={otherParticipant.avatar_url} />
-            <AvatarFallback>
-              {otherParticipant.full_name?.charAt(0) || "U"}
-            </AvatarFallback>
-          </Avatar>
-          <div>
-            <h2 className="font-semibold">{otherParticipant.full_name}</h2>
-          </div>
-        </div>
-      )}
+      <ConversationHeader otherParticipant={otherParticipant} />
 
       <ScrollArea ref={scrollAreaRef} className="flex-1 p-4">
         <div className="space-y-4">
           {messages.map((message) => (
-            <div
-              key={message.id}
-              className={`flex gap-2 ${
-                message.sender_id === user?.id ? "justify-end" : "justify-start"
-              }`}
-            >
-              {message.sender_id !== user?.id && (
-                <Avatar className="h-8 w-8">
-                  <AvatarImage src={message.sender?.avatar_url} />
-                  <AvatarFallback>
-                    {message.sender?.full_name?.charAt(0) || "U"}
-                  </AvatarFallback>
-                </Avatar>
-              )}
-              <div
-                className={`max-w-[70%] ${
-                  message.sender_id === user?.id
-                    ? "bg-blue-500 text-white"
-                    : "bg-gray-100"
-                } rounded-lg p-3`}
-              >
-                <p>{message.content}</p>
-                <p
-                  className={`text-xs mt-1 ${
-                    message.sender_id === user?.id
-                      ? "text-blue-100"
-                      : "text-gray-500"
-                  }`}
-                >
-                  {formatDistanceToNow(new Date(message.created_at), {
-                    addSuffix: true,
-                  })}
-                </p>
-              </div>
-            </div>
+            <MessageBubble key={message.id} message={message} />
           ))}
         </div>
       </ScrollArea>
 
-      <form onSubmit={handleSendMessage} className="p-4 border-t">
-        <div className="flex gap-2">
-          <Input
-            value={newMessage}
-            onChange={(e) => setNewMessage(e.target.value)}
-            placeholder="Type a message..."
-            className="flex-1"
-          />
-          <Button type="submit" disabled={!newMessage.trim()}>
-            <Send className="h-4 w-4" />
-          </Button>
-        </div>
-      </form>
+      <MessageInput
+        newMessage={newMessage}
+        setNewMessage={setNewMessage}
+        handleSendMessage={handleSendMessage}
+      />
     </div>
   );
 };

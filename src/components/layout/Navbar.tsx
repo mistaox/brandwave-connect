@@ -24,7 +24,7 @@ const Navbar = () => {
       { name: "Dashboard", path: "/dashboard" },
       { name: "Campaigns", path: "/campaigns" },
       { name: "Marketplace", path: "/marketplace/influencers" },
-      { name: "Messages", path: "/messages" }, // Add this line
+      { name: "Messages", path: "/messages" },
     ] : []),
     { name: "Contact", path: "/contact" },
   ];
