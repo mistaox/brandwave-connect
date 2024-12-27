@@ -31,14 +31,14 @@ export const AddBrandForm = () => {
     try {
       const { error } = await supabase
         .from("brands")
-        .insert([{  // Wrap the object in an array
+        .insert([{
           owner_id: user.id,
-          name: formData.get("name"),
-          industry: formData.get("industry"),
-          company_size: formData.get("company_size"),
-          location: formData.get("location"),
-          website: formData.get("website"),
-          description: formData.get("description"),
+          name: String(formData.get("name")),
+          industry: formData.get("industry")?.toString() || null,
+          company_size: formData.get("company_size")?.toString() || null,
+          location: formData.get("location")?.toString() || null,
+          website: formData.get("website")?.toString() || null,
+          description: formData.get("description")?.toString() || null,
         }]);
 
       if (error) throw error;
