@@ -42,7 +42,7 @@
   - [x] User presence indicators
 
 - [ ] Campaign Management
-  - [ ] Campaign creation tools
+  - [x] Campaign creation tools
   - [ ] Proposal system
   - [ ] Contract management
   - [ ] Payment integration

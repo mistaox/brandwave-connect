@@ -13,6 +13,7 @@ import InfluencerListing from "@/pages/marketplace/InfluencerListing";
 import About from "@/pages/About";
 import FAQ from "@/pages/FAQ";
 import Campaigns from "@/pages/Campaigns";
+import CreateCampaign from "@/pages/campaigns/CreateCampaign";
 import Blogs from "@/pages/Blogs";
 import Contact from "@/pages/Contact";
 import Messages from "@/pages/Messages";
@@ -38,6 +39,14 @@ export const protectedRoutes: RouteProps[] = [
     element: (
       <ProtectedRoute allowedAccountTypes={["brand"]}>
         <BrandDashboard />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/campaigns/create",
+    element: (
+      <ProtectedRoute allowedAccountTypes={["brand"]}>
+        <CreateCampaign />
       </ProtectedRoute>
     ),
   },
