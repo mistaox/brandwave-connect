@@ -2,6 +2,14 @@
 
 All notable changes to BrandCollab will be documented in this file.
 
+## [0.2.0] - 2024-03-21
+
+### Added
+- Authentication pages (Login and Register)
+- Route configuration for authentication pages
+- Account type selection in registration
+- Form layouts using shadcn/ui components
+
 ## [0.1.0] - 2024-03-20
 
 ### Added

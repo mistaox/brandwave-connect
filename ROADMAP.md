@@ -1,14 +1,14 @@
 # BrandCollab Development Roadmap
 
-## Phase 1: Foundation (Current)
+## Phase 1: Foundation (Completed)
 - [x] Initial project setup
 - [x] Basic landing page with hero section
 - [x] Navigation system
 - [x] Featured influencers showcase
 
-## Phase 2: Core Features (Next)
-- [ ] Authentication System
-  - [ ] Login/Register pages
+## Phase 2: Core Features (In Progress)
+- [x] Authentication System
+  - [x] Login/Register pages
   - [ ] User profiles (Brands & Influencers)
   - [ ] Authentication context and protected routes
 
