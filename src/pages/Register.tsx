@@ -56,9 +56,9 @@ const Register = () => {
           }}
           providers={[]}
           redirectTo={window.location.origin}
-          options={{
+          supabaseClientOptions={{
             signUp: {
-              metadata: {
+              data: {
                 account_type: accountType,
               },
             },
