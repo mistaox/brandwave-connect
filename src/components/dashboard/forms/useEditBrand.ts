@@ -13,12 +13,12 @@ export const useEditBrand = (brand: Brand, onSuccess?: () => void) => {
 
     const formData = new FormData(e.currentTarget);
     const updates = {
-      name: formData.get("name"),
-      industry: formData.get("industry"),
-      company_size: formData.get("company_size"),
-      location: formData.get("location"),
-      website: formData.get("website"),
-      description: formData.get("description"),
+      name: formData.get("name")?.toString() || "",
+      industry: formData.get("industry")?.toString() || null,
+      company_size: formData.get("company_size")?.toString() || null,
+      location: formData.get("location")?.toString() || null,
+      website: formData.get("website")?.toString() || null,
+      description: formData.get("description")?.toString() || null,
       updated_at: new Date().toISOString(),
     };
 
