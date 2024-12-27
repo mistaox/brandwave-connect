@@ -7,10 +7,13 @@
 - [x] Featured influencers showcase
 
 ## Phase 2: Core Features (In Progress)
-- [x] Authentication System
+- [ ] Authentication System
   - [x] Login/Register pages
+  - [x] Account type selection in registration
   - [ ] User profiles (Brands & Influencers)
   - [ ] Authentication context and protected routes
+  - [ ] Backend integration for auth
+  - [ ] Password reset functionality
 
 - [ ] Marketplace Development
   - [ ] Brand listing page with filters
