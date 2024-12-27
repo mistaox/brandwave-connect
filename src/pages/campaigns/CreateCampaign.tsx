@@ -28,14 +28,23 @@ const CreateCampaign = () => {
       if (brandError) throw brandError;
       if (!brands?.id) throw new Error("No brand found for user");
 
+      const title = formData.get("title");
+      const description = formData.get("description");
+      const budget = formData.get("budget");
+      const requirements = formData.get("requirements");
+      const start_date = formData.get("start_date");
+      const end_date = formData.get("end_date");
+
+      if (!title || typeof title !== "string") throw new Error("Title is required");
+
       const { error } = await supabase.from("campaigns").insert([{
         brand_id: brands.id,
-        title: formData.get("title"),
-        description: formData.get("description"),
-        budget: Number(formData.get("budget")),
-        requirements: formData.get("requirements"),
-        start_date: formData.get("start_date"),
-        end_date: formData.get("end_date"),
+        title,
+        description: description?.toString() || null,
+        budget: budget ? Number(budget) : null,
+        requirements: requirements?.toString() || null,
+        start_date: start_date?.toString() || null,
+        end_date: end_date?.toString() || null,
         status: "draft",
       }]);
 
