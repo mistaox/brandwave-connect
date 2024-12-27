@@ -56,11 +56,10 @@ const Register = () => {
           }}
           providers={[]}
           redirectTo={window.location.origin}
-          supabaseClientOptions={{
-            signUp: {
-              data: {
-                account_type: accountType,
-              },
+          options={{
+            emailRedirectTo: window.location.origin,
+            data: {
+              account_type: accountType,
             },
           }}
         />
