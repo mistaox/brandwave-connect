@@ -56,8 +56,16 @@ const Register = () => {
               },
             },
           }}
-          data={{
-            account_type: accountType,
+          onSubmit={(formData) => {
+            // Add account type to the metadata
+            return {
+              ...formData,
+              options: {
+                data: {
+                  account_type: accountType,
+                },
+              },
+            };
           }}
         />
       </div>

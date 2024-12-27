@@ -26,11 +26,11 @@ export const ProfileForm = ({ profile, setProfile }: ProfileFormProps) => {
     setLoading(true);
     const formData = new FormData(e.currentTarget);
     const updates = {
-      full_name: formData.get("full_name"),
-      username: formData.get("username"),
-      bio: formData.get("bio"),
-      website_url: formData.get("website_url"),
-      location: formData.get("location"),
+      full_name: String(formData.get("full_name")),
+      username: String(formData.get("username")),
+      bio: String(formData.get("bio")),
+      website_url: String(formData.get("website_url")),
+      location: String(formData.get("location")),
       updated_at: new Date().toISOString(),
     };
 
