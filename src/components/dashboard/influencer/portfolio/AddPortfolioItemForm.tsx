@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -16,25 +17,29 @@ import { Loader2 } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 
 export const AddPortfolioItemForm = ({ onClose }: { onClose: () => void }) => {
+  const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!user) return;
+    
     setLoading(true);
 
     const formData = new FormData(e.currentTarget);
     const data = {
-      title: formData.get("title"),
-      description: formData.get("description"),
-      media_url: formData.get("media_url"),
-      media_type: formData.get("media_type"),
-      platform: formData.get("platform"),
+      influencer_id: user.id,
+      title: formData.get("title") as string,
+      description: formData.get("description") as string,
+      media_url: formData.get("media_url") as string,
+      media_type: formData.get("media_type") as string,
+      platform: formData.get("platform") as string,
       engagement_metrics: {
-        likes: formData.get("likes"),
-        comments: formData.get("comments"),
-        shares: formData.get("shares"),
+        likes: Number(formData.get("likes")),
+        comments: Number(formData.get("comments")),
+        shares: Number(formData.get("shares")),
       },
     };
 

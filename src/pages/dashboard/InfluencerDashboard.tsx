@@ -11,6 +11,7 @@ import { AvailableCampaigns } from "@/components/dashboard/influencer/AvailableC
 import { EarningsTable } from "@/components/dashboard/influencer/earnings/EarningsTable";
 import { Loader2 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const InfluencerDashboard = () => {
   const { user } = useAuth();
