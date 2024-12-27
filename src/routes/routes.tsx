@@ -31,22 +31,33 @@ export const publicRoutes: RouteProps[] = [
 
 // Protected routes configuration
 export const protectedRoutes: RouteProps[] = [
+  // Brand-only routes
   {
     path: "/dashboard",
     element: (
-      <ProtectedRoute>
+      <ProtectedRoute allowedAccountTypes={["brand"]}>
         <BrandDashboard />
       </ProtectedRoute>
     ),
   },
   {
+    path: "/brands/:brandId/campaigns",
+    element: (
+      <ProtectedRoute allowedAccountTypes={["brand"]}>
+        <Campaigns />
+      </ProtectedRoute>
+    ),
+  },
+  // Influencer-only routes
+  {
     path: "/influencer/dashboard",
     element: (
-      <ProtectedRoute>
+      <ProtectedRoute allowedAccountTypes={["influencer"]}>
         <InfluencerDashboard />
       </ProtectedRoute>
     ),
   },
+  // Shared protected routes
   {
     path: "/profile",
     element: (
@@ -73,14 +84,6 @@ export const protectedRoutes: RouteProps[] = [
   },
   {
     path: "/campaigns",
-    element: (
-      <ProtectedRoute>
-        <Campaigns />
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: "/brands/:brandId/campaigns",
     element: (
       <ProtectedRoute>
         <Campaigns />
