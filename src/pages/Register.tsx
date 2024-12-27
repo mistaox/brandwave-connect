@@ -18,6 +18,24 @@ const Register = () => {
     }
   }, [session, navigate]);
 
+  // Set up auth state change listener to handle metadata
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === 'SIGNED_UP' && session?.user) {
+        // Update the user's metadata after signup
+        const { error } = await supabase.auth.updateUser({
+          data: { account_type: accountType }
+        });
+
+        if (error) {
+          console.error('Error updating user metadata:', error);
+        }
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [accountType]);
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
       <div className="w-full max-w-md bg-white rounded-lg shadow p-8">
@@ -55,17 +73,6 @@ const Register = () => {
                 button_label: "Sign up",
               },
             },
-          }}
-          onSubmit={(formData) => {
-            // Add account type to the metadata
-            return {
-              ...formData,
-              options: {
-                data: {
-                  account_type: accountType,
-                },
-              },
-            };
           }}
         />
       </div>
