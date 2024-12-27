@@ -28,16 +28,16 @@ const CreateCampaign = () => {
       if (brandError) throw brandError;
       if (!brands?.id) throw new Error("No brand found for user");
 
-      const { error } = await supabase.from("campaigns").insert({
+      const { error } = await supabase.from("campaigns").insert([{
         brand_id: brands.id,
         title: formData.get("title"),
         description: formData.get("description"),
-        budget: formData.get("budget"),
+        budget: Number(formData.get("budget")),
         requirements: formData.get("requirements"),
         start_date: formData.get("start_date"),
         end_date: formData.get("end_date"),
         status: "draft",
-      });
+      }]);
 
       if (error) throw error;
 
