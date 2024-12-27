@@ -56,23 +56,8 @@ const Register = () => {
               },
             },
           }}
-          onSubmit={async (formData) => {
-            // Add account type to the sign up data
-            if (formData.email && formData.password) {
-              const { data, error } = await supabase.auth.signUp({
-                email: formData.email,
-                password: formData.password,
-                options: {
-                  data: {
-                    account_type: accountType,
-                  },
-                },
-              });
-              if (error) {
-                console.error("Error signing up:", error.message);
-              }
-              return { data, error };
-            }
+          data={{
+            account_type: accountType,
           }}
         />
       </div>
