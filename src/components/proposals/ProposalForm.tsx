@@ -43,9 +43,9 @@ export const ProposalForm = ({ collaborationId, onSubmit, initialData }: Proposa
     try {
       const formData = new FormData(e.currentTarget);
       const proposalData = {
-        proposal_text: formData.get("proposal_text"),
+        proposal_text: formData.get("proposal_text")?.toString() || "",
         proposal_budget: Number(formData.get("proposal_budget")),
-        proposal_timeline: formData.get("proposal_timeline"),
+        proposal_timeline: formData.get("proposal_timeline")?.toString() || "",
         proposal_deliverables: deliverables,
         proposal_status: "submitted",
         proposal_submitted_at: new Date().toISOString(),
