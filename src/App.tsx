@@ -12,6 +12,7 @@ import ResetPassword from "./pages/ResetPassword";
 import UpdatePassword from "./pages/UpdatePassword";
 import Profile from "./pages/Profile";
 import BrandDashboard from "./pages/dashboard/BrandDashboard";
+import InfluencerDashboard from "./pages/dashboard/InfluencerDashboard";
 import BrandListing from "./pages/marketplace/BrandListing";
 import InfluencerListing from "./pages/marketplace/InfluencerListing";
 import About from "./pages/About";
@@ -47,6 +48,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <BrandDashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/influencer/dashboard"
+              element={
+                <ProtectedRoute>
+                  <InfluencerDashboard />
                 </ProtectedRoute>
               }
             />
