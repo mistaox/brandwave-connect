@@ -6,11 +6,12 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
+import { toast } from "@/components/ui/use-toast";
 
 const Register = () => {
   const navigate = useNavigate();
   const { session } = useAuth();
-  const [accountType, setAccountType] = useState<"brand" | "influencer">("influencer");
+  const [accountType, setAccountType] = useState<"brand" | "influencer">("brand");
 
   useEffect(() => {
     if (session) {
@@ -18,23 +19,32 @@ const Register = () => {
     }
   }, [session, navigate]);
 
-  // Set up auth state change listener to handle metadata
-  useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (event === 'SIGNED_IN' && session?.user) {
-        // Update the user's metadata after signup
-        const { error } = await supabase.auth.updateUser({
-          data: { account_type: accountType }
-        });
-
-        if (error) {
-          console.error('Error updating user metadata:', error);
-        }
-      }
+  const handleSignUp = async (email: string, password: string) => {
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          account_type: accountType,
+          username: email.split('@')[0], // Simple username from email
+          full_name: email.split('@')[0], // Placeholder full name
+        },
+      },
     });
 
-    return () => subscription.unsubscribe();
-  }, [accountType]);
+    if (error) {
+      toast({
+        title: "Registration failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    } else {
+      toast({
+        title: "Registration successful",
+        description: "Please check your email to verify your account.",
+      });
+    }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
@@ -49,12 +59,12 @@ const Register = () => {
             className="flex gap-4"
           >
             <div className="flex items-center space-x-2">
-              <RadioGroupItem value="influencer" id="influencer" />
-              <Label htmlFor="influencer">Influencer</Label>
-            </div>
-            <div className="flex items-center space-x-2">
               <RadioGroupItem value="brand" id="brand" />
               <Label htmlFor="brand">Brand</Label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value="influencer" id="influencer" />
+              <Label htmlFor="influencer">Influencer</Label>
             </div>
           </RadioGroup>
         </div>
@@ -65,6 +75,11 @@ const Register = () => {
           providers={[]}
           redirectTo={window.location.origin}
           view="sign_up"
+          onSubmit={async (formData: any) => {
+            const email = formData.get('email');
+            const password = formData.get('password');
+            await handleSignUp(email, password);
+          }}
           localization={{
             variables: {
               sign_up: {
