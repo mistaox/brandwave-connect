@@ -77,8 +77,20 @@ const Register = () => {
           providers={[]}
           redirectTo={window.location.origin}
           view="sign_up"
-          additionalData={{
-            account_type: accountType,
+          localization={{
+            variables: {
+              sign_up: {
+                email_label: "Email",
+                password_label: "Password",
+                button_label: "Sign up",
+              },
+            },
+          }}
+          options={{
+            emailRedirectTo: `${window.location.origin}`,
+            data: {
+              account_type: accountType,
+            },
           }}
         />
       </Card>
