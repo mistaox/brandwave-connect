@@ -5,6 +5,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { MessageBubble } from "./MessageBubble";
 import { MessageInput } from "./MessageInput";
 import { ConversationHeader } from "./ConversationHeader";
+import { useToast } from "@/components/ui/use-toast";
 
 interface Message {
   id: string;
@@ -27,6 +28,7 @@ export const MessagingInterface = ({ conversationId }: MessagingInterfaceProps) 
   const [newMessage, setNewMessage] = useState("");
   const [otherParticipant, setOtherParticipant] = useState<any>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const { toast } = useToast();
 
   useEffect(() => {
     if (!conversationId) return;
@@ -66,6 +68,11 @@ export const MessagingInterface = ({ conversationId }: MessagingInterfaceProps) 
         setOtherParticipant(other);
       } catch (error) {
         console.error("Error fetching messages:", error);
+        toast({
+          title: "Error loading messages",
+          description: "Please try again later",
+          variant: "destructive",
+        });
       }
     };
 
@@ -73,7 +80,7 @@ export const MessagingInterface = ({ conversationId }: MessagingInterfaceProps) 
 
     // Subscribe to new messages
     const channel = supabase
-      .channel("messages-channel")
+      .channel(`messages-${conversationId}`)
       .on(
         "postgres_changes",
         {
@@ -82,10 +89,27 @@ export const MessagingInterface = ({ conversationId }: MessagingInterfaceProps) 
           table: "messages",
           filter: `conversation_id=eq.${conversationId}`,
         },
-        (payload) => {
+        async (payload) => {
           console.log("Message change received:", payload);
           if (payload.eventType === "INSERT") {
-            setMessages((current) => [...current, payload.new as Message]);
+            // Fetch the complete message with sender information
+            const { data: newMessage, error } = await supabase
+              .from("messages")
+              .select(`
+                *,
+                sender:profiles!messages_sender_id_fkey(full_name, avatar_url)
+              `)
+              .eq("id", payload.new.id)
+              .single();
+
+            if (!error && newMessage) {
+              setMessages((current) => [...current, newMessage]);
+              // Play a notification sound if the message is from the other participant
+              if (newMessage.sender_id !== user?.id) {
+                const audio = new Audio("/message-notification.mp3");
+                audio.play().catch(console.error);
+              }
+            }
           }
         }
       )
@@ -94,7 +118,7 @@ export const MessagingInterface = ({ conversationId }: MessagingInterfaceProps) 
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [conversationId, user]);
+  }, [conversationId, user, toast]);
 
   useEffect(() => {
     // Scroll to bottom when messages change
@@ -108,24 +132,31 @@ export const MessagingInterface = ({ conversationId }: MessagingInterfaceProps) 
     if (!newMessage.trim() || !conversationId || !user) return;
 
     try {
-      const { error } = await supabase.from("messages").insert({
+      const { error: messageError } = await supabase.from("messages").insert({
         conversation_id: conversationId,
         content: newMessage.trim(),
         sender_id: user.id,
         receiver_id: otherParticipant.id,
       });
 
-      if (error) throw error;
+      if (messageError) throw messageError;
 
       // Update conversation last_message_at
-      await supabase
+      const { error: conversationError } = await supabase
         .from("conversations")
         .update({ last_message_at: new Date().toISOString() })
         .eq("id", conversationId);
 
+      if (conversationError) throw conversationError;
+
       setNewMessage("");
     } catch (error) {
       console.error("Error sending message:", error);
+      toast({
+        title: "Error sending message",
+        description: "Please try again",
+        variant: "destructive",
+      });
     }
   };
 
