@@ -43,24 +43,36 @@ const Register = () => {
 
         <Auth
           supabaseClient={supabase}
-          appearance={{
-            theme: ThemeSupa,
+          appearance={{ theme: ThemeSupa }}
+          providers={[]}
+          redirectTo={window.location.origin}
+          view="sign_up"
+          localization={{
             variables: {
-              default: {
-                colors: {
-                  brand: "#0073ea",
-                  brandAccent: "#ff3d57",
-                },
+              sign_up: {
+                email_label: "Email",
+                password_label: "Password",
+                button_label: "Sign up",
               },
             },
           }}
-          providers={[]}
-          redirectTo={window.location.origin}
-          options={{
-            emailRedirectTo: window.location.origin,
-            data: {
-              account_type: accountType,
-            },
+          onSubmit={async (formData) => {
+            // Add account type to the sign up data
+            if (formData.email && formData.password) {
+              const { data, error } = await supabase.auth.signUp({
+                email: formData.email,
+                password: formData.password,
+                options: {
+                  data: {
+                    account_type: accountType,
+                  },
+                },
+              });
+              if (error) {
+                console.error("Error signing up:", error.message);
+              }
+              return { data, error };
+            }
           }}
         />
       </div>
