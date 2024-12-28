@@ -40,7 +40,6 @@ const Navbar = () => {
     return [
       ...commonItems,
       { name: "Marketplace", path: "/marketplace/brands" },
-      { name: "Available Campaigns", path: "/marketplace/campaigns" },
     ];
   };
 
