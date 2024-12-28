@@ -5,6 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PerformanceChart } from "./PerformanceChart";
 import { EngagementMetrics } from "./EngagementMetrics";
 import { AudienceInsights } from "./AudienceInsights";
+import { RevenueAnalytics } from "./RevenueAnalytics";
 import { Loader2 } from "lucide-react";
 
 export const AnalyticsOverview = () => {
@@ -42,10 +43,11 @@ export const AnalyticsOverview = () => {
       </CardHeader>
       <CardContent>
         <Tabs defaultValue="performance" className="space-y-4">
-          <TabsList>
+          <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="performance">Performance</TabsTrigger>
             <TabsTrigger value="engagement">Engagement</TabsTrigger>
             <TabsTrigger value="audience">Audience</TabsTrigger>
+            <TabsTrigger value="revenue">Revenue</TabsTrigger>
           </TabsList>
 
           <TabsContent value="performance">
@@ -58,6 +60,10 @@ export const AnalyticsOverview = () => {
 
           <TabsContent value="audience">
             <AudienceInsights data={analyticsData} />
+          </TabsContent>
+
+          <TabsContent value="revenue">
+            <RevenueAnalytics data={analyticsData} />
           </TabsContent>
         </Tabs>
       </CardContent>
