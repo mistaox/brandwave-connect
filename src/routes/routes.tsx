@@ -1,129 +1,33 @@
 import { RouteProps } from "react-router-dom";
-import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import Index from "@/pages/Index";
-import Login from "@/pages/Login";
-import Register from "@/pages/Register";
-import ResetPassword from "@/pages/ResetPassword";
-import UpdatePassword from "@/pages/UpdatePassword";
-import Profile from "@/pages/Profile";
+import About from "@/pages/About";
+import FAQ from "@/pages/FAQ";
+import Blogs from "@/pages/Blogs";
+import Contact from "@/pages/Contact";
 import BrandDashboard from "@/pages/dashboard/BrandDashboard";
 import InfluencerDashboard from "@/pages/dashboard/InfluencerDashboard";
 import BrandListing from "@/pages/marketplace/BrandListing";
 import InfluencerListing from "@/pages/marketplace/InfluencerListing";
-import About from "@/pages/About";
-import FAQ from "@/pages/FAQ";
 import Campaigns from "@/pages/Campaigns";
 import CreateCampaign from "@/pages/campaigns/CreateCampaign";
 import EditCampaign from "@/pages/campaigns/EditCampaign";
-import Blogs from "@/pages/Blogs";
-import Contact from "@/pages/Contact";
 import Messages from "@/pages/Messages";
-import { MarketplaceRedirect } from "@/components/marketplace/MarketplaceRedirect";
+import Profile from "@/pages/Profile";
 
-// Public routes configuration
+// All routes are now public
 export const publicRoutes: RouteProps[] = [
   { path: "/", element: <Index /> },
-  { path: "/login", element: <Login /> },
-  { path: "/register", element: <Register /> },
-  { path: "/reset-password", element: <ResetPassword /> },
-  { path: "/update-password", element: <UpdatePassword /> },
   { path: "/about", element: <About /> },
   { path: "/faq", element: <FAQ /> },
   { path: "/blogs", element: <Blogs /> },
   { path: "/contact", element: <Contact /> },
-];
-
-// Protected routes configuration
-export const protectedRoutes: RouteProps[] = [
-  // Brand-only routes
-  {
-    path: "/dashboard",
-    element: (
-      <ProtectedRoute allowedAccountTypes={["brand"]}>
-        <BrandDashboard />
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: "/campaigns/create",
-    element: (
-      <ProtectedRoute allowedAccountTypes={["brand"]}>
-        <CreateCampaign />
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: "/campaigns/:campaignId/edit",
-    element: (
-      <ProtectedRoute allowedAccountTypes={["brand"]}>
-        <EditCampaign />
-      </ProtectedRoute>
-    ),
-  },
-  // Influencer-only routes
-  {
-    path: "/influencer/dashboard",
-    element: (
-      <ProtectedRoute allowedAccountTypes={["influencer"]}>
-        <InfluencerDashboard />
-      </ProtectedRoute>
-    ),
-  },
-  // Shared protected routes
-  {
-    path: "/profile",
-    element: (
-      <ProtectedRoute>
-        <Profile />
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: "/marketplace",
-    element: (
-      <ProtectedRoute>
-        <MarketplaceRedirect />
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: "/marketplace/brands",
-    element: (
-      <ProtectedRoute allowedAccountTypes={["influencer"]}>
-        <BrandListing />
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: "/marketplace/influencers",
-    element: (
-      <ProtectedRoute allowedAccountTypes={["brand"]}>
-        <InfluencerListing />
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: "/marketplace/campaigns",
-    element: (
-      <ProtectedRoute allowedAccountTypes={["influencer"]}>
-        <Campaigns />
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: "/campaigns",
-    element: (
-      <ProtectedRoute>
-        <Campaigns />
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: "/messages",
-    element: (
-      <ProtectedRoute>
-        <Messages />
-      </ProtectedRoute>
-    ),
-  },
+  { path: "/dashboard", element: <BrandDashboard /> },
+  { path: "/influencer/dashboard", element: <InfluencerDashboard /> },
+  { path: "/profile", element: <Profile /> },
+  { path: "/marketplace/brands", element: <BrandListing /> },
+  { path: "/marketplace/influencers", element: <InfluencerListing /> },
+  { path: "/campaigns", element: <Campaigns /> },
+  { path: "/campaigns/create", element: <CreateCampaign /> },
+  { path: "/campaigns/:campaignId/edit", element: <EditCampaign /> },
+  { path: "/messages", element: <Messages /> },
 ];
