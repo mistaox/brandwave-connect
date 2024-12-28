@@ -32,7 +32,7 @@ const BrandDashboard = () => {
           .from("profiles")
           .select("*")
           .eq("id", user.id)
-          .single();
+          .maybeSingle();
 
         if (error) {
           console.error("Error loading profile:", error);
@@ -42,14 +42,16 @@ const BrandDashboard = () => {
         }
 
         // Get the first brand for initial load
-        const { data: brands } = await supabase
+        const { data: brands, error: brandsError } = await supabase
           .from("brands")
           .select("id")
           .eq("owner_id", user.id)
           .limit(1)
-          .single();
+          .maybeSingle(); // Changed from single() to maybeSingle()
 
-        if (brands) {
+        if (brandsError) {
+          console.error("Error loading brands:", brandsError);
+        } else if (brands) {
           setSelectedBrandId(brands.id);
         }
       } catch (error) {
