@@ -10,14 +10,19 @@ import { PortfolioList } from "@/components/dashboard/influencer/PortfolioList";
 import { AvailableCampaigns } from "@/components/dashboard/influencer/AvailableCampaigns";
 import { EarningsTable } from "@/components/dashboard/influencer/earnings/EarningsTable";
 import { AnalyticsOverview } from "@/components/dashboard/influencer/analytics/AnalyticsOverview";
+import { MessagingInterface } from "@/components/messaging/MessagingInterface";
+import { ConversationsList } from "@/components/messaging/ConversationsList";
 import { Loader2 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useToast } from "@/components/ui/use-toast";
 
 const InfluencerDashboard = () => {
   const { user } = useAuth();
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [selectedConversation, setSelectedConversation] = useState<string | null>(null);
+  const { toast } = useToast();
 
   useEffect(() => {
     const getProfile = async () => {
@@ -34,13 +39,18 @@ const InfluencerDashboard = () => {
         setProfile(data);
       } catch (error) {
         console.error("Error loading profile:", error);
+        toast({
+          title: "Error loading profile",
+          description: "Please try again later",
+          variant: "destructive",
+        });
       } finally {
         setLoading(false);
       }
     };
 
     getProfile();
-  }, [user]);
+  }, [user, toast]);
 
   if (loading) {
     return (
@@ -60,13 +70,14 @@ const InfluencerDashboard = () => {
         <InfluencerHeader profile={profile} />
         
         <Tabs defaultValue="overview" className="mt-8">
-          <TabsList className="grid w-full grid-cols-6 lg:w-[900px]">
+          <TabsList className="grid w-full grid-cols-7 lg:w-[1050px]">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="analytics">Analytics</TabsTrigger>
             <TabsTrigger value="portfolio">Portfolio</TabsTrigger>
             <TabsTrigger value="campaigns">Find Campaigns</TabsTrigger>
             <TabsTrigger value="collaborations">My Collaborations</TabsTrigger>
             <TabsTrigger value="earnings">Earnings</TabsTrigger>
+            <TabsTrigger value="messages">Messages</TabsTrigger>
           </TabsList>
           
           <TabsContent value="overview" className="mt-6 space-y-6">
@@ -99,6 +110,20 @@ const InfluencerDashboard = () => {
                 <EarningsTable />
               </CardContent>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="messages" className="mt-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="bg-white rounded-lg shadow">
+                <ConversationsList
+                  selectedConversation={selectedConversation}
+                  onSelectConversation={setSelectedConversation}
+                />
+              </div>
+              <div className="md:col-span-2 bg-white rounded-lg shadow">
+                <MessagingInterface conversationId={selectedConversation} />
+              </div>
+            </div>
           </TabsContent>
         </Tabs>
       </main>
