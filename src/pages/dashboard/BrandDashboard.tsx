@@ -8,6 +8,8 @@ import { RecentActivity } from "@/components/dashboard/RecentActivity";
 import { BrandsList } from "@/components/dashboard/BrandsList";
 import { CampaignsList } from "@/components/dashboard/CampaignsList";
 import { CollaborationsList } from "@/components/dashboard/CollaborationsList";
+import { MessagingInterface } from "@/components/messaging/MessagingInterface";
+import { ConversationsList } from "@/components/messaging/ConversationsList";
 import { Loader2 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/components/ui/use-toast";
@@ -17,6 +19,7 @@ const BrandDashboard = () => {
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [selectedBrandId, setSelectedBrandId] = useState<string | null>(null);
+  const [selectedConversation, setSelectedConversation] = useState<string | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -32,14 +35,10 @@ const BrandDashboard = () => {
           .from("profiles")
           .select("*")
           .eq("id", user.id)
-          .maybeSingle();
+          .single();
 
-        if (error) {
-          console.error("Error loading profile:", error);
-          setProfile(authProfile);
-        } else {
-          setProfile(data);
-        }
+        if (error) throw error;
+        setProfile(data);
 
         // Get the first brand for initial load
         const { data: brands, error: brandsError } = await supabase
@@ -47,7 +46,7 @@ const BrandDashboard = () => {
           .select("id")
           .eq("owner_id", user.id)
           .limit(1)
-          .maybeSingle(); // Changed from single() to maybeSingle()
+          .maybeSingle();
 
         if (brandsError) {
           console.error("Error loading brands:", brandsError);
@@ -88,11 +87,12 @@ const BrandDashboard = () => {
         <DashboardHeader profile={profile} />
         
         <Tabs defaultValue="overview" className="mt-8">
-          <TabsList className="grid w-full grid-cols-4 lg:w-[600px]">
+          <TabsList className="grid w-full grid-cols-5 lg:w-[750px]">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="brands">Brands</TabsTrigger>
             <TabsTrigger value="campaigns">Campaigns</TabsTrigger>
             <TabsTrigger value="collaborations">Collaborations</TabsTrigger>
+            <TabsTrigger value="messages">Messages</TabsTrigger>
           </TabsList>
           
           <TabsContent value="overview" className="mt-6 space-y-6">
@@ -122,6 +122,20 @@ const BrandDashboard = () => {
                 Please select a brand to view collaborations
               </div>
             )}
+          </TabsContent>
+
+          <TabsContent value="messages" className="mt-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="bg-white rounded-lg shadow">
+                <ConversationsList
+                  selectedConversation={selectedConversation}
+                  onSelectConversation={setSelectedConversation}
+                />
+              </div>
+              <div className="md:col-span-2 bg-white rounded-lg shadow">
+                <MessagingInterface conversationId={selectedConversation} />
+              </div>
+            </div>
           </TabsContent>
         </Tabs>
       </main>
