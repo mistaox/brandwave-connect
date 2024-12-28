@@ -33,18 +33,20 @@ const Register = () => {
       }
     });
 
-    // Listen for auth errors
-    const authListener = supabase.auth.onError((error) => {
-      if (error.message.includes('user_already_exists')) {
-        setError('This email is already registered. Please try logging in instead.');
-      } else {
-        setError(error.message);
+    // Listen for auth state changes that might include errors
+    const errorSubscription = supabase.auth.onAuthStateChange((event, session, error) => {
+      if (error) {
+        if (error.message.includes('user_already_exists')) {
+          setError('This email is already registered. Please try logging in instead.');
+        } else {
+          setError(error.message);
+        }
       }
     });
 
     return () => {
       subscription.unsubscribe();
-      authListener.data.subscription.unsubscribe();
+      errorSubscription.unsubscribe();
     };
   }, [navigate, toast]);
 
