@@ -53,7 +53,7 @@ export const CampaignsList = ({ brandId, mode = 'brand' }: CampaignsListProps) =
       if (error) throw error;
       return data;
     },
-    enabled: mode === 'influencer' ? !!user?.id : !!brandId,
+    enabled: mode === 'brand' ? !!brandId : true, // Allow query to run in influencer mode regardless of brandId
   });
 
   if (mode === 'brand' && !brandId) {
