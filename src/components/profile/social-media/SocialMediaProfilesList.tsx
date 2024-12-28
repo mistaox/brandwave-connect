@@ -2,9 +2,10 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Plus, Instagram, Facebook, Twitter, Youtube, Linkedin } from "lucide-react";
+import { Plus } from "lucide-react";
 import { AddSocialMediaProfileDialog } from "./AddSocialMediaProfileDialog";
 import { SocialMediaProfileCard } from "./SocialMediaProfileCard";
+import { SocialMediaProfile } from "@/types/social-media";
 
 export const SocialMediaProfilesList = ({ userId }: { userId: string }) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -18,7 +19,12 @@ export const SocialMediaProfilesList = ({ userId }: { userId: string }) => {
         .eq("influencer_id", userId);
 
       if (error) throw error;
-      return data;
+      
+      // Cast the platform string to SocialMediaPlatform type
+      return data.map(profile => ({
+        ...profile,
+        platform: profile.platform as SocialMediaProfile['platform']
+      }));
     },
   });
 
