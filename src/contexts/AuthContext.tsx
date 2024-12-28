@@ -16,22 +16,32 @@ const AuthContext = createContext<AuthContextType>({
 
 const isDevelopment = import.meta.env.DEV;
 
-// Development user data - you can modify these IDs with actual user IDs from your database
+// Development user data with real UUIDs from the database
 const DEV_USERS = {
   brand: {
-    id: "your-brand-user-id-here", // Replace with an actual user ID from your database
+    id: "4ff3c51e-4598-4c73-b078-5578f767a5b9",
     email: "brand@example.com",
+    aud: "authenticated",
+    app_metadata: {},
     user_metadata: {
       account_type: "brand"
-    }
-  },
+    },
+    created_at: new Date().toISOString(),
+    role: "authenticated",
+    updated_at: new Date().toISOString()
+  } as User,
   influencer: {
-    id: "your-influencer-user-id-here", // Replace with an actual user ID from your database
+    id: "7c2d1397-5c33-4c2d-96d7-0e9469a7c5c1",
     email: "influencer@example.com",
+    aud: "authenticated",
+    app_metadata: {},
     user_metadata: {
       account_type: "influencer"
-    }
-  }
+    },
+    created_at: new Date().toISOString(),
+    role: "authenticated",
+    updated_at: new Date().toISOString()
+  } as User
 };
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
@@ -43,7 +53,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (isDevelopment) {
       // In development, use the brand user by default
       const devUser = DEV_USERS.brand;
-      setUser(devUser as User);
+      setUser(devUser);
       getProfile(devUser.id);
     } else {
       // In production, use normal authentication
