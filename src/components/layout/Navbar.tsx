@@ -2,12 +2,15 @@ import { Menu, X } from "lucide-react";
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/contexts/AuthContext";
+import { Button } from "@/components/ui/button";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
+  const { user, signOut } = useAuth();
 
-  const navItems = [
+  const navItems = user ? [
     { name: "Home", path: "/" },
     { name: "About", path: "/about" },
     { name: "FAQ", path: "/faq" },
@@ -16,6 +19,11 @@ const Navbar = () => {
     { name: "Campaigns", path: "/campaigns" },
     { name: "Marketplace", path: "/marketplace/influencers" },
     { name: "Messages", path: "/messages" },
+  ] : [
+    { name: "Home", path: "/" },
+    { name: "About", path: "/about" },
+    { name: "FAQ", path: "/faq" },
+    { name: "Contact", path: "/contact" },
   ];
 
   const isActive = (path: string) => {
@@ -47,6 +55,28 @@ const Navbar = () => {
                   {item.name}
                 </Link>
               ))}
+              {user ? (
+                <Button
+                  variant="ghost"
+                  onClick={() => signOut()}
+                  className="text-gray-600 hover:text-brandblue"
+                >
+                  Sign Out
+                </Button>
+              ) : (
+                <div className="flex items-center space-x-4">
+                  <Link to="/login">
+                    <Button variant="ghost" className="text-gray-600 hover:text-brandblue">
+                      Sign In
+                    </Button>
+                  </Link>
+                  <Link to="/register">
+                    <Button className="bg-brandblue text-white hover:bg-brandblue/90">
+                      Sign Up
+                    </Button>
+                  </Link>
+                </div>
+              )}
             </div>
 
             {/* Mobile menu button */}
@@ -77,6 +107,35 @@ const Navbar = () => {
                     {item.name}
                   </Link>
                 ))}
+                {user ? (
+                  <Button
+                    variant="ghost"
+                    onClick={() => {
+                      signOut();
+                      setIsOpen(false);
+                    }}
+                    className="w-full text-left px-3 py-2 text-gray-600 hover:text-brandblue"
+                  >
+                    Sign Out
+                  </Button>
+                ) : (
+                  <>
+                    <Link
+                      to="/login"
+                      onClick={() => setIsOpen(false)}
+                      className="block px-3 py-2 text-gray-600 hover:text-brandblue"
+                    >
+                      Sign In
+                    </Link>
+                    <Link
+                      to="/register"
+                      onClick={() => setIsOpen(false)}
+                      className="block px-3 py-2 text-brandblue hover:text-brandblue/90"
+                    >
+                      Sign Up
+                    </Link>
+                  </>
+                )}
               </div>
             </div>
           )}

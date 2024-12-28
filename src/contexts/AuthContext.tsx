@@ -1,46 +1,79 @@
-import { createContext, useContext, ReactNode } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import type { User } from "@supabase/supabase-js";
 
 interface AuthContextType {
-  user: { id: string } | null;
-  profile: {
-    id: string;
-    account_type?: string;
-    full_name?: string;
-  } | null;
-  signOut: () => void;
+  user: User | null;
+  profile: any | null;
+  signOut: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType>({
-  user: { id: "00000000-0000-0000-0000-000000000000" },
-  profile: {
-    id: "00000000-0000-0000-0000-000000000000",
-    account_type: "brand",
-    full_name: "Demo User"
-  },
-  signOut: () => {},
+  user: null,
+  profile: null,
+  signOut: async () => {},
 });
 
-export function AuthProvider({ children }: { children: ReactNode }) {
-  const mockUser = { id: "00000000-0000-0000-0000-000000000000" };
-  const mockProfile = {
-    id: "00000000-0000-0000-0000-000000000000",
-    account_type: "brand",
-    full_name: "Demo User"
-  };
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const [user, setUser] = useState<User | null>(null);
+  const [profile, setProfile] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
 
-  const signOut = () => {
-    console.log("Sign out clicked - no actual authentication in place");
+  useEffect(() => {
+    // Get initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+      if (session?.user) {
+        getProfile(session.user.id);
+      }
+    });
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+      if (session?.user) {
+        getProfile(session.user.id);
+      } else {
+        setProfile(null);
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  async function getProfile(userId: string) {
+    try {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", userId)
+        .single();
+
+      if (error) {
+        throw error;
+      }
+
+      setProfile(data);
+    } catch (error) {
+      console.error("Error loading profile:", error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const signOut = async () => {
+    try {
+      await supabase.auth.signOut();
+      setUser(null);
+      setProfile(null);
+    } catch (error) {
+      console.error("Error signing out:", error);
+    }
   };
 
   return (
-    <AuthContext.Provider
-      value={{
-        user: mockUser,
-        profile: mockProfile,
-        signOut,
-      }}
-    >
-      {children}
+    <AuthContext.Provider value={{ user, profile, signOut }}>
+      {!loading && children}
     </AuthContext.Provider>
   );
 }

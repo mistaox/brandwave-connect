@@ -13,14 +13,17 @@ import CreateCampaign from "@/pages/campaigns/CreateCampaign";
 import EditCampaign from "@/pages/campaigns/EditCampaign";
 import Messages from "@/pages/Messages";
 import Profile from "@/pages/Profile";
+import Login from "@/pages/auth/Login";
+import Register from "@/pages/auth/Register";
 
-// All routes are now public
 export const publicRoutes: RouteProps[] = [
   { path: "/", element: <Index /> },
   { path: "/about", element: <About /> },
   { path: "/faq", element: <FAQ /> },
   { path: "/blogs", element: <Blogs /> },
   { path: "/contact", element: <Contact /> },
+  { path: "/login", element: <Login /> },
+  { path: "/register", element: <Register /> },
   { path: "/dashboard", element: <BrandDashboard /> },
   { path: "/influencer/dashboard", element: <InfluencerDashboard /> },
   { path: "/profile", element: <Profile /> },
