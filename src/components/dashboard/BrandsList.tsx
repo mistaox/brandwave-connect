@@ -15,6 +15,8 @@ import { AddBrandForm } from "./AddBrandForm";
 import { EditBrandForm } from "./EditBrandForm";
 import { useState } from "react";
 import { Brand } from "@/types/brand";
+import { useAuth } from "@/contexts/AuthContext";
+import { useToast } from "@/components/ui/use-toast";
 
 interface BrandsListProps {
   onBrandSelect?: (brandId: string) => void;
@@ -23,18 +25,32 @@ interface BrandsListProps {
 export const BrandsList = ({ onBrandSelect }: BrandsListProps) => {
   const navigate = useNavigate();
   const [editingBrand, setEditingBrand] = useState<Brand | null>(null);
+  const { user } = useAuth();
+  const { toast } = useToast();
 
   const { data: brands, isLoading, refetch } = useQuery({
-    queryKey: ["brands"],
+    queryKey: ["brands", user?.id],
     queryFn: async () => {
+      if (!user) throw new Error("No authenticated user");
+
       const { data, error } = await supabase
         .from("brands")
         .select("*")
+        .eq("owner_id", user.id)
         .order("created_at", { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        toast({
+          title: "Error loading brands",
+          description: error.message,
+          variant: "destructive",
+        });
+        throw error;
+      }
+      
       return data as Brand[];
     },
+    enabled: !!user,
   });
 
   const handleEditSuccess = () => {
