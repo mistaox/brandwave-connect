@@ -1,15 +1,23 @@
-import { Menu, X } from "lucide-react";
+import { Menu, X, UserCircle2 } from "lucide-react";
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { NavItems } from "./nav/NavItems";
 import { AuthButtons } from "./nav/AuthButtons";
 import { MobileNav } from "./nav/MobileNav";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
-  const { user, profile, signOut } = useAuth();
+  const { user, profile, signOut, impersonateRole } = useAuth();
+  const isDevelopment = import.meta.env.DEV;
 
   const getNavItems = () => {
     if (!user) {
@@ -63,6 +71,24 @@ const Navbar = () => {
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center space-x-6">
               <NavItems items={navItems} isActive={isActive} />
+              {isDevelopment && user && (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" size="sm">
+                      <UserCircle2 className="mr-2 h-4 w-4" />
+                      {profile?.account_type || 'Select Role'}
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem onClick={() => impersonateRole('brand')}>
+                      Brand
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => impersonateRole('influencer')}>
+                      Influencer
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              )}
               <AuthButtons onSignOut={signOut} isAuthenticated={!!user} />
             </div>
 
@@ -85,6 +111,9 @@ const Navbar = () => {
             onSignOut={signOut}
             isAuthenticated={!!user}
             onClose={() => setIsOpen(false)}
+            isDevelopment={isDevelopment}
+            impersonateRole={impersonateRole}
+            profile={profile}
           />
         </div>
       </nav>

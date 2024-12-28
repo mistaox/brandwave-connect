@@ -6,12 +6,14 @@ interface AuthContextType {
   user: User | null;
   profile: any | null;
   signOut: () => Promise<void>;
+  impersonateRole: (role: 'brand' | 'influencer') => void;
 }
 
 const AuthContext = createContext<AuthContextType>({
   user: null,
   profile: null,
   signOut: async () => {},
+  impersonateRole: () => {},
 });
 
 const isDevelopment = import.meta.env.DEV;
@@ -98,12 +100,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
+  const impersonateRole = (role: 'brand' | 'influencer') => {
+    if (!isDevelopment) return;
+    const devUser = DEV_USERS[role];
+    setUser(devUser);
+    getProfile(devUser.id);
+  };
+
   useEffect(() => {
     if (isDevelopment) {
       // In development, use the influencer user by default
-      const devUser = DEV_USERS.influencer; // Changed this line to use influencer
-      setUser(devUser);
-      getProfile(devUser.id);
+      impersonateRole('influencer');
     } else {
       // In production, use normal authentication
       supabase.auth.getSession().then(({ data: { session } }) => {
@@ -143,7 +150,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, profile, signOut }}>
+    <AuthContext.Provider value={{ user, profile, signOut, impersonateRole }}>
       {!loading && children}
     </AuthContext.Provider>
   );
