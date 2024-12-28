@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,34 +6,26 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Loader2 } from "lucide-react";
+import { DeliverablesList } from "./DeliverablesList";
+import { submitProposal } from "./utils/proposalFormUtils";
+import type { ProposalFormData } from "./utils/proposalFormUtils";
 
 interface ProposalFormProps {
   collaborationId: string;
   onSubmit: () => void;
-  initialData?: {
-    proposal_text?: string;
-    proposal_budget?: number;
-    proposal_timeline?: string;
-    proposal_deliverables?: string[];
-  };
+  initialData?: Partial<ProposalFormData>;
 }
 
-export const ProposalForm = ({ collaborationId, onSubmit, initialData }: ProposalFormProps) => {
+export const ProposalForm = ({
+  collaborationId,
+  onSubmit,
+  initialData,
+}: ProposalFormProps) => {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
-  const [deliverable, setDeliverable] = useState("");
-  const [deliverables, setDeliverables] = useState<string[]>(initialData?.proposal_deliverables || []);
-
-  const handleAddDeliverable = () => {
-    if (deliverable.trim()) {
-      setDeliverables([...deliverables, deliverable.trim()]);
-      setDeliverable("");
-    }
-  };
-
-  const handleRemoveDeliverable = (index: number) => {
-    setDeliverables(deliverables.filter((_, i) => i !== index));
-  };
+  const [deliverables, setDeliverables] = useState<string[]>(
+    initialData?.proposal_deliverables || []
+  );
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -42,21 +33,14 @@ export const ProposalForm = ({ collaborationId, onSubmit, initialData }: Proposa
 
     try {
       const formData = new FormData(e.currentTarget);
-      const proposalData = {
+      const proposalData: ProposalFormData = {
         proposal_text: formData.get("proposal_text")?.toString() || "",
         proposal_budget: Number(formData.get("proposal_budget")),
         proposal_timeline: formData.get("proposal_timeline")?.toString() || "",
         proposal_deliverables: deliverables,
-        proposal_status: "submitted",
-        proposal_submitted_at: new Date().toISOString(),
       };
 
-      const { error } = await supabase
-        .from("collaborations")
-        .update(proposalData)
-        .eq("id", collaborationId);
-
-      if (error) throw error;
+      await submitProposal(collaborationId, proposalData);
 
       toast({
         title: "Proposal submitted successfully",
@@ -122,33 +106,13 @@ export const ProposalForm = ({ collaborationId, onSubmit, initialData }: Proposa
 
           <div className="space-y-2">
             <Label>Deliverables</Label>
-            <div className="flex gap-2">
-              <Input
-                value={deliverable}
-                onChange={(e) => setDeliverable(e.target.value)}
-                placeholder="Add a deliverable"
-              />
-              <Button type="button" onClick={handleAddDeliverable}>
-                Add
-              </Button>
-            </div>
-            {deliverables.length > 0 && (
-              <ul className="mt-2 space-y-2">
-                {deliverables.map((item, index) => (
-                  <li key={index} className="flex items-center justify-between bg-muted p-2 rounded">
-                    <span>{item}</span>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleRemoveDeliverable(index)}
-                    >
-                      Remove
-                    </Button>
-                  </li>
-                ))}
-              </ul>
-            )}
+            <DeliverablesList
+              deliverables={deliverables}
+              onAdd={(deliverable) => setDeliverables([...deliverables, deliverable])}
+              onRemove={(index) =>
+                setDeliverables(deliverables.filter((_, i) => i !== index))
+              }
+            />
           </div>
 
           <Button type="submit" className="w-full" disabled={loading}>
