@@ -16,7 +16,6 @@ const Navbar = () => {
   const { user, signOut, profile } = useAuth();
   const location = useLocation();
 
-  // Define navigation items based on authentication state and user type
   const getNavItems = () => {
     const baseItems = [
       { name: "Home", path: "/" },
@@ -49,8 +48,12 @@ const Navbar = () => {
   };
 
   const handleSignOut = async () => {
-    await signOut();
-    setIsOpen(false); // Close mobile menu after logout
+    try {
+      await signOut();
+      setIsOpen(false); // Close mobile menu after logout
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
   };
 
   return (
