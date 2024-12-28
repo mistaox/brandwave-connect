@@ -15,19 +15,29 @@ export const CampaignsList = ({ brandId, mode = 'brand' }: CampaignsListProps) =
   const navigate = useNavigate();
   const { user } = useAuth();
 
-  const { data: campaigns, isLoading } = useQuery({
+  console.log('CampaignsList props:', { brandId, mode, userId: user?.id });
+
+  const { data: campaigns, isLoading, error } = useQuery({
     queryKey: ["campaigns", brandId, mode],
     queryFn: async () => {
+      console.log('Starting campaign query execution');
       // First, get existing collaborations for the influencer
       let excludedCampaignIds: string[] = [];
       
       if (mode === 'influencer' && user?.id) {
-        const { data: existingCollaborations } = await supabase
+        console.log('Fetching existing collaborations for influencer:', user.id);
+        const { data: existingCollaborations, error: collabError } = await supabase
           .from("collaborations")
           .select("campaign_id")
           .eq("influencer_id", user.id);
         
+        if (collabError) {
+          console.error('Error fetching collaborations:', collabError);
+          throw collabError;
+        }
+        
         excludedCampaignIds = existingCollaborations?.map(c => c.campaign_id) || [];
+        console.log('Excluded campaign IDs:', excludedCampaignIds);
       }
 
       // Build the base query
@@ -44,8 +54,10 @@ export const CampaignsList = ({ brandId, mode = 'brand' }: CampaignsListProps) =
 
       // Apply filters based on mode
       if (mode === 'brand' && brandId) {
+        console.log('Applying brand filter:', brandId);
         query = query.eq("brand_id", brandId);
       } else if (mode === 'influencer') {
+        console.log('Applying influencer filters');
         // For influencers, show only active campaigns they haven't collaborated on
         query = query.eq("status", "active");
         if (excludedCampaignIds.length > 0) {
@@ -56,12 +68,21 @@ export const CampaignsList = ({ brandId, mode = 'brand' }: CampaignsListProps) =
       // Add ordering
       query = query.order("created_at", { ascending: false });
 
+      console.log('Executing final query');
       const { data, error } = await query;
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching campaigns:', error);
+        throw error;
+      }
+      console.log('Campaigns fetched:', data?.length);
       return data;
     },
     enabled: mode === 'brand' ? !!brandId : true, // Enable for influencer mode regardless of brandId
   });
+
+  if (error) {
+    console.error('Query error:', error);
+  }
 
   if (mode === 'brand' && !brandId) {
     return (
