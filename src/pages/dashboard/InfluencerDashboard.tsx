@@ -9,6 +9,7 @@ import { CollaborationsList } from "@/components/dashboard/CollaborationsList";
 import { PortfolioList } from "@/components/dashboard/influencer/PortfolioList";
 import { AvailableCampaigns } from "@/components/dashboard/influencer/AvailableCampaigns";
 import { EarningsTable } from "@/components/dashboard/influencer/earnings/EarningsTable";
+import { AnalyticsOverview } from "@/components/dashboard/influencer/analytics/AnalyticsOverview";
 import { Loader2 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -59,8 +60,9 @@ const InfluencerDashboard = () => {
         <InfluencerHeader profile={profile} />
         
         <Tabs defaultValue="overview" className="mt-8">
-          <TabsList className="grid w-full grid-cols-5 lg:w-[750px]">
+          <TabsList className="grid w-full grid-cols-6 lg:w-[900px]">
             <TabsTrigger value="overview">Overview</TabsTrigger>
+            <TabsTrigger value="analytics">Analytics</TabsTrigger>
             <TabsTrigger value="portfolio">Portfolio</TabsTrigger>
             <TabsTrigger value="campaigns">Find Campaigns</TabsTrigger>
             <TabsTrigger value="collaborations">My Collaborations</TabsTrigger>
@@ -70,6 +72,10 @@ const InfluencerDashboard = () => {
           <TabsContent value="overview" className="mt-6 space-y-6">
             <InfluencerMetrics />
             <InfluencerActivity />
+          </TabsContent>
+
+          <TabsContent value="analytics" className="mt-6">
+            <AnalyticsOverview />
           </TabsContent>
           
           <TabsContent value="portfolio" className="mt-6">

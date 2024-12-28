@@ -59,6 +59,53 @@ export type Database = {
           },
         ]
       }
+      campaign_analytics: {
+        Row: {
+          clicks: number | null
+          collaboration_id: string | null
+          conversions: number | null
+          created_at: string | null
+          engagement_rate: number | null
+          id: string
+          metrics_date: string
+          revenue: number | null
+          updated_at: string | null
+          views: number | null
+        }
+        Insert: {
+          clicks?: number | null
+          collaboration_id?: string | null
+          conversions?: number | null
+          created_at?: string | null
+          engagement_rate?: number | null
+          id?: string
+          metrics_date: string
+          revenue?: number | null
+          updated_at?: string | null
+          views?: number | null
+        }
+        Update: {
+          clicks?: number | null
+          collaboration_id?: string | null
+          conversions?: number | null
+          created_at?: string | null
+          engagement_rate?: number | null
+          id?: string
+          metrics_date?: string
+          revenue?: number | null
+          updated_at?: string | null
+          views?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "campaign_analytics_collaboration_id_fkey"
+            columns: ["collaboration_id"]
+            isOneToOne: false
+            referencedRelation: "collaborations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       campaigns: {
         Row: {
           brand_id: string
@@ -115,6 +162,8 @@ export type Database = {
           created_at: string | null
           id: string
           influencer_id: string
+          metrics: Json | null
+          performance_data: Json | null
           proposal_budget: number | null
           proposal_deliverables: string[] | null
           proposal_status: string | null
@@ -129,6 +178,8 @@ export type Database = {
           created_at?: string | null
           id?: string
           influencer_id: string
+          metrics?: Json | null
+          performance_data?: Json | null
           proposal_budget?: number | null
           proposal_deliverables?: string[] | null
           proposal_status?: string | null
@@ -143,6 +194,8 @@ export type Database = {
           created_at?: string | null
           id?: string
           influencer_id?: string
+          metrics?: Json | null
+          performance_data?: Json | null
           proposal_budget?: number | null
           proposal_deliverables?: string[] | null
           proposal_status?: string | null
