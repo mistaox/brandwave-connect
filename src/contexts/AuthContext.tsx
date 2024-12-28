@@ -42,20 +42,28 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     // Listen for auth changes
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      console.log("Auth state changed:", _event, session);
-      setSession(session);
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        await fetchProfile(session.user.id);
-      } else {
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log("Auth state changed:", event, session);
+      
+      if (event === 'SIGNED_OUT') {
+        // Clear all auth state
+        setSession(null);
+        setUser(null);
         setProfile(null);
+        navigate("/");
+      } else if (event === 'SIGNED_IN' && session) {
+        setSession(session);
+        setUser(session.user);
+        if (session.user) {
+          await fetchProfile(session.user.id);
+        }
       }
+      
       setLoading(false);
     });
 
     return () => subscription.unsubscribe();
-  }, []);
+  }, [navigate]);
 
   const fetchProfile = async (userId: string) => {
     try {
@@ -82,19 +90,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
       
-      // Clear all auth state
-      setSession(null);
-      setUser(null);
-      setProfile(null);
-      
-      // Show success message
+      // The actual state clearing will be handled by the onAuthStateChange listener
       toast({
         title: "Signed out successfully",
         duration: 2000,
       });
       
-      // Navigate to home page
-      navigate("/");
     } catch (error) {
       console.error('Error signing out:', error);
       toast({
