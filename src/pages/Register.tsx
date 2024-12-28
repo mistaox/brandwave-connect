@@ -1,7 +1,7 @@
 import { Auth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { supabase } from "@/integrations/supabase/client";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -11,6 +11,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 const Register = () => {
   const navigate = useNavigate();
   const { session, profile } = useAuth();
+  const [accountType, setAccountType] = useState('brand');
 
   useEffect(() => {
     if (session && profile) {
@@ -24,6 +25,14 @@ const Register = () => {
       }
     }
   }, [session, profile, navigate]);
+
+  const handleAccountTypeChange = (value: string) => {
+    setAccountType(value);
+    // Store the account type in the user metadata
+    supabase.auth.updateUser({
+      data: { account_type: value }
+    });
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
@@ -39,11 +48,8 @@ const Register = () => {
             <div className="space-y-2">
               <Label>Account Type</Label>
               <RadioGroup
-                defaultValue="brand"
-                onValueChange={(value) => {
-                  const metaData = { account_type: value };
-                  supabase.auth.updateUser({ data: metaData });
-                }}
+                defaultValue={accountType}
+                onValueChange={handleAccountTypeChange}
                 className="flex gap-4"
               >
                 <div className="flex items-center space-x-2">
