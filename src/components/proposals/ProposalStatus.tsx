@@ -11,9 +11,9 @@ export const ProposalStatus = ({ status }: ProposalStatusProps) => {
     case "draft":
       return <Badge variant="secondary">Draft</Badge>;
     case "submitted":
-      return <Badge variant="primary">Under Review</Badge>;
+      return <Badge variant="default">Under Review</Badge>;
     case "approved":
-      return <Badge variant="success">Approved</Badge>;
+      return <Badge variant="outline">Approved</Badge>;
     case "rejected":
       return <Badge variant="destructive">Rejected</Badge>;
     default:

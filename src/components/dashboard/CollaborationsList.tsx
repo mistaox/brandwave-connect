@@ -57,14 +57,23 @@ export const CollaborationsList = ({ brandId, influencerId }: CollaborationsList
     <div>
       <h2 className="text-xl font-semibold mb-6">Active Collaborations</h2>
       
-      {collaborations?.length === 0 ? (
+      {!collaborations?.length ? (
         <EmptyCollaborations isInfluencer={!!influencerId} />
       ) : (
         <div className="grid gap-4">
           {collaborations?.map((collab) => (
             <CollaborationItem 
               key={collab.id} 
-              collaboration={collab}
+              collaboration={{
+                ...collab,
+                campaigns: {
+                  ...collab.campaigns,
+                  brand: {
+                    name: collab.campaigns?.brand?.name || '',
+                    owner_id: collab.campaigns?.brand?.owner_id || ''
+                  }
+                }
+              }}
               showInfluencer={!influencerId}
             />
           ))}

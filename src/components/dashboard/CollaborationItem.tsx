@@ -15,9 +15,9 @@ interface CollaborationItemProps {
     proposal_budget: number | null;
     proposal_timeline: string | null;
     proposal_deliverables: string[] | null;
-    campaigns?: {
+    campaigns: {
       title: string;
-      brand?: {
+      brand: {
         name: string;
         owner_id: string;
       };
