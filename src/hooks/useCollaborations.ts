@@ -13,7 +13,8 @@ export const useCollaborations = (brandId?: string, influencerId?: string) => {
             *,
             brand:brands(
               id,
-              name
+              name,
+              owner_id
             )
           ),
           influencer:profiles(*)
