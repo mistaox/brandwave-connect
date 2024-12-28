@@ -82,7 +82,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setSession(null);
       setUser(null);
       setProfile(null);
-      navigate("/login");
+      navigate("/"); // Redirect to landing page after sign out
       toast({
         title: "Signed out successfully",
         duration: 2000,
