@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { publicRoutes } from "./routes/routes";
 import { useState } from "react";
+import { AuthProvider } from "./contexts/AuthContext";
 
 const App = () => {
   const [queryClient] = useState(
@@ -22,21 +23,23 @@ const App = () => {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <TooltipProvider>
-          <Routes>
-            {publicRoutes.map((route) => (
-              <Route
-                key={route.path}
-                path={route.path}
-                element={route.element}
-              />
-            ))}
-          </Routes>
-          <Toaster />
-          <Sonner />
-        </TooltipProvider>
-      </BrowserRouter>
+      <AuthProvider>
+        <BrowserRouter>
+          <TooltipProvider>
+            <Routes>
+              {publicRoutes.map((route) => (
+                <Route
+                  key={route.path}
+                  path={route.path}
+                  element={route.element}
+                />
+              ))}
+            </Routes>
+            <Toaster />
+            <Sonner />
+          </TooltipProvider>
+        </BrowserRouter>
+      </AuthProvider>
     </QueryClientProvider>
   );
 };
