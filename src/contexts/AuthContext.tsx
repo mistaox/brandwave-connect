@@ -1,6 +1,5 @@
 import { createContext, useContext, ReactNode } from "react";
 
-// Define the shape of our auth context
 interface AuthContextType {
   user: { id: string } | null;
   profile: {
@@ -11,23 +10,20 @@ interface AuthContextType {
   signOut: () => void;
 }
 
-// Create the context with a default value
 const AuthContext = createContext<AuthContextType>({
-  user: { id: "demo-user-id" },
+  user: { id: "00000000-0000-0000-0000-000000000000" },
   profile: {
-    id: "demo-user-id",
+    id: "00000000-0000-0000-0000-000000000000",
     account_type: "brand",
     full_name: "Demo User"
   },
   signOut: () => {},
 });
 
-// Create the provider component
 export function AuthProvider({ children }: { children: ReactNode }) {
-  // For now, we'll just provide a mock user and profile
-  const mockUser = { id: "demo-user-id" };
+  const mockUser = { id: "00000000-0000-0000-0000-000000000000" };
   const mockProfile = {
-    id: "demo-user-id",
+    id: "00000000-0000-0000-0000-000000000000",
     account_type: "brand",
     full_name: "Demo User"
   };
@@ -49,7 +45,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   );
 }
 
-// Create the hook for using auth context
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {

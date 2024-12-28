@@ -10,17 +10,23 @@ import { CampaignsList } from "@/components/dashboard/CampaignsList";
 import { CollaborationsList } from "@/components/dashboard/CollaborationsList";
 import { Loader2 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useToast } from "@/components/ui/use-toast";
 
 const BrandDashboard = () => {
-  const { user } = useAuth();
+  const { user, profile: authProfile } = useAuth();
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [selectedBrandId, setSelectedBrandId] = useState<string | null>(null);
+  const { toast } = useToast();
 
   useEffect(() => {
     const getProfile = async () => {
       try {
-        if (!user?.id) return;
+        if (!user?.id) {
+          setProfile(authProfile);
+          setLoading(false);
+          return;
+        }
         
         const { data, error } = await supabase
           .from("profiles")
@@ -28,8 +34,12 @@ const BrandDashboard = () => {
           .eq("id", user.id)
           .single();
 
-        if (error) throw error;
-        setProfile(data);
+        if (error) {
+          console.error("Error loading profile:", error);
+          setProfile(authProfile);
+        } else {
+          setProfile(data);
+        }
 
         // Get the first brand for initial load
         const { data: brands } = await supabase
@@ -44,13 +54,19 @@ const BrandDashboard = () => {
         }
       } catch (error) {
         console.error("Error loading profile:", error);
+        toast({
+          title: "Error loading profile",
+          description: "Using demo profile instead",
+          variant: "destructive",
+        });
+        setProfile(authProfile);
       } finally {
         setLoading(false);
       }
     };
 
     getProfile();
-  }, [user]);
+  }, [user, authProfile, toast]);
 
   if (loading) {
     return (
