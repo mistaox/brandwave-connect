@@ -12,7 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { ProposalStatus } from "./ProposalStatus";
-import { Loader2 } from "lucide-react";
+import { ProposalActions } from "./ProposalActions";
 
 interface ManageProposalDialogProps {
   collaborationId: string;
@@ -86,35 +86,11 @@ export const ManageProposalDialog = ({
             />
           </div>
 
-          <div className="flex justify-end gap-2">
-            <Button
-              variant="outline"
-              onClick={() => handleUpdateStatus("rejected")}
-              disabled={loading}
-            >
-              {loading ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Rejecting...
-                </>
-              ) : (
-                "Reject"
-              )}
-            </Button>
-            <Button
-              onClick={() => handleUpdateStatus("approved")}
-              disabled={loading}
-            >
-              {loading ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Approving...
-                </>
-              ) : (
-                "Approve"
-              )}
-            </Button>
-          </div>
+          <ProposalActions
+            onApprove={() => handleUpdateStatus("approved")}
+            onReject={() => handleUpdateStatus("rejected")}
+            loading={loading}
+          />
         </div>
       </DialogContent>
     </Dialog>
