@@ -4,8 +4,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Loader2 } from "lucide-react";
 
 export const DashboardRedirect = () => {
-  const { profile } = useAuth();
   const navigate = useNavigate();
+  const { profile } = useAuth();
 
   useEffect(() => {
     if (profile) {
@@ -18,7 +18,7 @@ export const DashboardRedirect = () => {
   }, [profile, navigate]);
 
   return (
-    <div className="flex items-center justify-center min-h-screen">
+    <div className="min-h-screen flex items-center justify-center">
       <Loader2 className="h-8 w-8 animate-spin" />
     </div>
   );
