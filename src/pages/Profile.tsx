@@ -16,17 +16,27 @@ const Profile = () => {
   useEffect(() => {
     const getProfile = async () => {
       try {
-        if (!user?.id) return;
+        if (!user?.id) {
+          setLoading(false);
+          return;
+        }
         
+        console.log("Fetching profile for user:", user.id);
         const { data, error } = await supabase
           .from("profiles")
           .select("*")
           .eq("id", user.id)
           .single();
 
-        if (error) throw error;
+        if (error) {
+          console.error("Error fetching profile:", error);
+          throw error;
+        }
+
+        console.log("Profile data:", data);
         setProfile(data);
       } catch (error: any) {
+        console.error("Profile fetch error:", error);
         toast({
           title: "Error fetching profile",
           description: error.message,
@@ -40,12 +50,34 @@ const Profile = () => {
     getProfile();
   }, [user, toast]);
 
+  if (!user) {
+    return (
+      <div className="min-h-screen">
+        <Navbar />
+        <div className="flex items-center justify-center h-[calc(100vh-4rem)]">
+          <p className="text-gray-500">Please log in to view your profile.</p>
+        </div>
+      </div>
+    );
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen">
         <Navbar />
         <div className="flex items-center justify-center h-[calc(100vh-4rem)]">
           <Loader2 className="h-8 w-8 animate-spin" />
+        </div>
+      </div>
+    );
+  }
+
+  if (!profile) {
+    return (
+      <div className="min-h-screen">
+        <Navbar />
+        <div className="flex items-center justify-center h-[calc(100vh-4rem)]">
+          <p className="text-gray-500">Profile not found.</p>
         </div>
       </div>
     );
