@@ -16,10 +16,11 @@ export const ProtectedRoute = ({
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!loading) {
-      if (!user) {
+    const timeoutId = setTimeout(() => {
+      if (!loading && !user) {
         navigate("/login");
       } else if (
+        !loading &&
         allowedAccountTypes && 
         profile && 
         !allowedAccountTypes.includes(profile.account_type)
@@ -31,7 +32,9 @@ export const ProtectedRoute = ({
           navigate("/influencer/dashboard");
         }
       }
-    }
+    }, 500); // Add a small delay to prevent flash of loading state
+
+    return () => clearTimeout(timeoutId);
   }, [user, loading, navigate, allowedAccountTypes, profile]);
 
   if (loading) {
@@ -42,5 +45,9 @@ export const ProtectedRoute = ({
     );
   }
 
-  return user ? <>{children}</> : null;
+  // Only render children if user is authenticated and has correct account type
+  if (!user) return null;
+  if (allowedAccountTypes && profile && !allowedAccountTypes.includes(profile.account_type)) return null;
+
+  return <>{children}</>;
 };
