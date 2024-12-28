@@ -16,18 +16,33 @@ const Navbar = () => {
   const { user, signOut, profile } = useAuth();
   const location = useLocation();
 
-  const navItems = [
-    { name: "Home", path: "/" },
-    { name: "About", path: "/about" },
-    { name: "FAQ", path: "/faq" },
-    ...(user ? [
-      { name: "Dashboard", path: "/dashboard" },
-      { name: "Campaigns", path: "/campaigns" },
-      { name: "Marketplace", path: "/marketplace/influencers" },
+  // Define navigation items based on authentication state and user type
+  const getNavItems = () => {
+    const baseItems = [
+      { name: "Home", path: "/" },
+      { name: "About", path: "/about" },
+      { name: "FAQ", path: "/faq" },
+      { name: "Contact", path: "/contact" },
+    ];
+
+    if (!user) return baseItems;
+
+    const authenticatedItems = [
+      ...(profile?.account_type === 'brand' ? [
+        { name: "Dashboard", path: "/dashboard" },
+        { name: "Campaigns", path: "/campaigns" },
+        { name: "Marketplace", path: "/marketplace/influencers" },
+      ] : [
+        { name: "Dashboard", path: "/influencer/dashboard" },
+        { name: "Marketplace", path: "/marketplace/brands" },
+      ]),
       { name: "Messages", path: "/messages" },
-    ] : []),
-    { name: "Contact", path: "/contact" },
-  ];
+    ];
+
+    return [...baseItems, ...authenticatedItems];
+  };
+
+  const navItems = getNavItems();
 
   const isActive = (path: string) => {
     return location.pathname === path;
