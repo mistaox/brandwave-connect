@@ -1,46 +1,29 @@
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { Auth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/components/ui/use-toast";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertCircle } from "lucide-react";
-import { Button } from "@/components/ui/button";
 
 const Register = () => {
   const navigate = useNavigate();
-  const { toast } = useToast();
-  const [accountType, setAccountType] = useState<"brand" | "influencer">("brand");
-  const [error, setError] = useState<string | null>(null);
+  const { session, profile } = useAuth();
 
   useEffect(() => {
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'SIGNED_IN' && session?.user) {
-        toast({
-          title: "Registration successful!",
-          description: "Welcome to BrandCollab",
-        });
+    if (session && profile) {
+      // Redirect based on account type
+      if (profile.account_type === 'brand') {
         navigate("/dashboard");
-      } else if (event === 'USER_UPDATED' && session?.user) {
-        navigate("/dashboard");
+      } else if (profile.account_type === 'influencer') {
+        navigate("/influencer/dashboard");
+      } else {
+        navigate("/"); // Fallback to home if account type is not set
       }
-    });
-
-    // Cleanup subscription when component unmounts
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [navigate, toast]);
-
-  const handleLoginClick = () => {
-    navigate('/login');
-  };
+    }
+  }, [session, profile, navigate]);
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
@@ -48,34 +31,19 @@ const Register = () => {
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold">Create an account</CardTitle>
           <CardDescription>
-            Choose your account type and sign up to get started
+            Choose your account type and sign up
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {error && (
-              <Alert variant="destructive">
-                <AlertCircle className="h-4 w-4" />
-                <AlertDescription className="ml-2">
-                  {error}
-                  {error.includes('already registered') && (
-                    <Button
-                      variant="link"
-                      className="p-0 ml-2 text-white underline"
-                      onClick={handleLoginClick}
-                    >
-                      Go to login
-                    </Button>
-                  )}
-                </AlertDescription>
-              </Alert>
-            )}
-
             <div className="space-y-2">
               <Label>Account Type</Label>
               <RadioGroup
-                defaultValue={accountType}
-                onValueChange={(value) => setAccountType(value as "brand" | "influencer")}
+                defaultValue="brand"
+                onValueChange={(value) => {
+                  const metaData = { account_type: value };
+                  supabase.auth.updateUser({ data: metaData });
+                }}
                 className="flex gap-4"
               >
                 <div className="flex items-center space-x-2">
@@ -105,9 +73,6 @@ const Register = () => {
               providers={[]}
               view="sign_up"
               redirectTo={`${window.location.origin}/auth/callback`}
-              additionalData={{
-                account_type: accountType,
-              }}
             />
           </div>
         </CardContent>

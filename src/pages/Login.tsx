@@ -4,11 +4,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { Button } from "@/components/ui/button";
 
 const Login = () => {
   const navigate = useNavigate();
-  const { session, profile, loading } = useAuth();
+  const { session, profile } = useAuth();
 
   useEffect(() => {
     if (session && profile) {
@@ -22,17 +21,6 @@ const Login = () => {
       }
     }
   }, [session, profile, navigate]);
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900" />
-      </div>
-    );
-  }
-
-  // Get the current origin dynamically
-  const redirectTo = `${window.location.origin}/auth/callback`;
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
@@ -52,17 +40,8 @@ const Login = () => {
             },
           }}
           providers={[]}
-          redirectTo={redirectTo}
+          redirectTo={`${window.location.origin}/auth/callback`}
         />
-        <div className="text-center mt-4">
-          <Button
-            variant="link"
-            onClick={() => navigate("/reset-password")}
-            type="button"
-          >
-            Forgot Password?
-          </Button>
-        </div>
       </div>
     </div>
   );
