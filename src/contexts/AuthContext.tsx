@@ -19,7 +19,7 @@ const isDevelopment = import.meta.env.DEV;
 // Development user data with real UUIDs from the database
 const DEV_USERS = {
   brand: {
-    id: "4ff3c51e-4598-4c73-b078-5578f767a5b9",
+    id: "d63a9067-6971-4b56-9eaf-1bfb972167a6",
     email: "brand@example.com",
     aud: "authenticated",
     app_metadata: {},
@@ -31,7 +31,7 @@ const DEV_USERS = {
     updated_at: new Date().toISOString()
   } as User,
   influencer: {
-    id: "7c2d1397-5c33-4c2d-96d7-0e9469a7c5c1",
+    id: "e6f1a5df-6a23-4234-b0b3-0cf257accf92",
     email: "influencer@example.com",
     aud: "authenticated",
     app_metadata: {},
