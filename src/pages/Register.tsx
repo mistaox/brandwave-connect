@@ -7,25 +7,45 @@ import { useToast } from "@/components/ui/use-toast";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { AlertCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const Register = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [accountType, setAccountType] = useState<"brand" | "influencer">("brand");
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (session?.user) {
+      if (event === 'SIGNED_IN' && session?.user) {
         toast({
           title: "Registration successful!",
           description: "Welcome to BrandCollab",
         });
         navigate("/dashboard");
       }
+      
+      if (event === 'USER_UPDATED' && session?.user) {
+        navigate("/dashboard");
+      }
     });
 
     return () => subscription.unsubscribe();
   }, [navigate, toast]);
+
+  const handleAuthError = (error: any) => {
+    if (error.message.includes('user_already_exists')) {
+      setError('This email is already registered. Please try logging in instead.');
+    } else {
+      setError(error.message);
+    }
+  };
+
+  const handleLoginClick = () => {
+    navigate('/login');
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
@@ -38,6 +58,24 @@ const Register = () => {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
+            {error && (
+              <Alert variant="destructive">
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription className="ml-2">
+                  {error}
+                  {error.includes('already registered') && (
+                    <Button
+                      variant="link"
+                      className="p-0 ml-2 text-white underline"
+                      onClick={handleLoginClick}
+                    >
+                      Go to login
+                    </Button>
+                  )}
+                </AlertDescription>
+              </Alert>
+            )}
+
             <div className="space-y-2">
               <Label>Account Type</Label>
               <RadioGroup
@@ -72,6 +110,7 @@ const Register = () => {
               providers={[]}
               view="sign_up"
               redirectTo={`${window.location.origin}/auth/callback`}
+              onError={handleAuthError}
               additionalData={{
                 account_type: accountType,
               }}
