@@ -18,7 +18,9 @@ const Register = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === 'SIGNED_IN' && session?.user) {
         toast({
           title: "Registration successful!",
@@ -27,26 +29,12 @@ const Register = () => {
         navigate("/dashboard");
       } else if (event === 'USER_UPDATED' && session?.user) {
         navigate("/dashboard");
-      } else if (event === 'SIGNED_UP') {
-        // Clear any existing errors on successful signup
-        setError(null);
       }
     });
 
-    // Listen for auth state changes that might include errors
-    const errorSubscription = supabase.auth.onAuthStateChange((event, session, error) => {
-      if (error) {
-        if (error.message.includes('user_already_exists')) {
-          setError('This email is already registered. Please try logging in instead.');
-        } else {
-          setError(error.message);
-        }
-      }
-    });
-
+    // Cleanup subscription when component unmounts
     return () => {
       subscription.unsubscribe();
-      errorSubscription.unsubscribe();
     };
   }, [navigate, toast]);
 
