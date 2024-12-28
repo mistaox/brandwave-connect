@@ -3,11 +3,11 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
+import { useQuery } from "@tanstack/react-query";
 import Navbar from "@/components/layout/Navbar";
 import { CampaignForm } from "@/components/campaigns/CampaignForm";
 import { Breadcrumbs } from "@/components/navigation/Breadcrumbs";
 import { Loader2 } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
 
 const CreateCampaign = () => {
   const { user } = useAuth();
@@ -43,29 +43,27 @@ const CreateCampaign = () => {
       return;
     }
 
+    const brandId = formData.get("brand_id")?.toString();
+    if (!brandId) {
+      toast({
+        title: "Error",
+        description: "Please select a brand for this campaign",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setLoading(true);
 
     try {
-      // Use the first brand if user has multiple brands
-      const brandId = brands[0].id;
-
-      const title = formData.get("title")?.toString();
-      const description = formData.get("description")?.toString();
-      const budget = formData.get("budget")?.toString();
-      const requirements = formData.get("requirements")?.toString();
-      const start_date = formData.get("start_date")?.toString();
-      const end_date = formData.get("end_date")?.toString();
-
-      if (!title) throw new Error("Title is required");
-
       const { error } = await supabase.from("campaigns").insert([{
         brand_id: brandId,
-        title,
-        description,
-        budget: budget ? Number(budget) : null,
-        requirements,
-        start_date,
-        end_date,
+        title: formData.get("title")?.toString(),
+        description: formData.get("description")?.toString(),
+        budget: formData.get("budget") ? Number(formData.get("budget")) : null,
+        requirements: formData.get("requirements")?.toString(),
+        start_date: formData.get("start_date")?.toString(),
+        end_date: formData.get("end_date")?.toString(),
         status: "draft",
       }]);
 
@@ -130,7 +128,7 @@ const CreateCampaign = () => {
         <Breadcrumbs />
         <div className="max-w-3xl mx-auto">
           <h1 className="text-3xl font-bold mb-8">Create New Campaign</h1>
-          <CampaignForm onSubmit={handleSubmit} loading={loading} />
+          <CampaignForm onSubmit={handleSubmit} loading={loading} brands={brands} />
         </div>
       </main>
     </div>

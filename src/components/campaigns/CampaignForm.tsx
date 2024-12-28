@@ -3,10 +3,23 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Loader2 } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+interface Brand {
+  id: string;
+  name: string;
+}
 
 interface CampaignFormProps {
   onSubmit: (formData: FormData) => void;
   loading?: boolean;
+  brands?: Brand[];
   defaultValues?: {
     title?: string;
     description?: string;
@@ -14,10 +27,11 @@ interface CampaignFormProps {
     requirements?: string;
     start_date?: string;
     end_date?: string;
+    brand_id?: string;
   };
 }
 
-export const CampaignForm = ({ onSubmit, loading, defaultValues }: CampaignFormProps) => {
+export const CampaignForm = ({ onSubmit, loading, brands, defaultValues }: CampaignFormProps) => {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
@@ -26,6 +40,24 @@ export const CampaignForm = ({ onSubmit, loading, defaultValues }: CampaignFormP
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
+      {brands && brands.length > 0 && (
+        <div className="space-y-2">
+          <Label htmlFor="brand_id">Select Brand</Label>
+          <Select name="brand_id" defaultValue={defaultValues?.brand_id}>
+            <SelectTrigger>
+              <SelectValue placeholder="Select a brand" />
+            </SelectTrigger>
+            <SelectContent>
+              {brands.map((brand) => (
+                <SelectItem key={brand.id} value={brand.id}>
+                  {brand.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      )}
+
       <div className="space-y-2">
         <Label htmlFor="title">Campaign Title</Label>
         <Input
