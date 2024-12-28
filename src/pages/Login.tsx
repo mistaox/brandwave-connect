@@ -35,6 +35,7 @@ const Login = () => {
         <CardContent>
           <Auth
             supabaseClient={supabase}
+            view="sign_in"
             appearance={{
               theme: ThemeSupa,
               variables: {
@@ -48,6 +49,8 @@ const Login = () => {
             }}
             providers={[]}
             redirectTo={`${window.location.origin}/auth/callback`}
+            showLinks={true}
+            onlyThirdPartyProviders={false}
           />
         </CardContent>
       </Card>

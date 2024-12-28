@@ -65,6 +65,7 @@ const Register = () => {
 
             <Auth
               supabaseClient={supabase}
+              view="sign_up"
               appearance={{
                 theme: ThemeSupa,
                 variables: {
@@ -77,8 +78,9 @@ const Register = () => {
                 },
               }}
               providers={[]}
-              view="sign_up"
               redirectTo={`${window.location.origin}/auth/callback`}
+              showLinks={true}
+              onlyThirdPartyProviders={false}
             />
           </div>
         </CardContent>
