@@ -14,6 +14,7 @@ import About from "@/pages/About";
 import FAQ from "@/pages/FAQ";
 import Campaigns from "@/pages/Campaigns";
 import CreateCampaign from "@/pages/campaigns/CreateCampaign";
+import EditCampaign from "@/pages/campaigns/EditCampaign";
 import Blogs from "@/pages/Blogs";
 import Contact from "@/pages/Contact";
 import Messages from "@/pages/Messages";
@@ -48,6 +49,14 @@ export const protectedRoutes: RouteProps[] = [
     element: (
       <ProtectedRoute allowedAccountTypes={["brand"]}>
         <CreateCampaign />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/campaigns/:campaignId/edit",
+    element: (
+      <ProtectedRoute allowedAccountTypes={["brand"]}>
+        <EditCampaign />
       </ProtectedRoute>
     ),
   },

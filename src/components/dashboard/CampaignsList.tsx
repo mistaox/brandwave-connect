@@ -114,12 +114,22 @@ export const CampaignsList = ({ brandId, mode = 'brand' }: CampaignsListProps) =
                     </p>
                     <p className="text-sm mt-2">{campaign.description}</p>
                   </div>
-                  <Button
-                    variant="outline"
-                    onClick={() => navigate(`/campaigns/${campaign.id}`)}
-                  >
-                    View Details
-                  </Button>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      onClick={() => navigate(`/campaigns/${campaign.id}`)}
+                    >
+                      View Details
+                    </Button>
+                    {mode === 'brand' && (
+                      <Button
+                        variant="outline"
+                        onClick={() => navigate(`/campaigns/${campaign.id}/edit`)}
+                      >
+                        Edit
+                      </Button>
+                    )}
+                  </div>
                 </div>
                 <div className="flex gap-4 mt-4">
                   <div className="text-sm">
