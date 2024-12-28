@@ -51,14 +51,6 @@ export const protectedRoutes: RouteProps[] = [
       </ProtectedRoute>
     ),
   },
-  {
-    path: "/brands/:brandId/campaigns",
-    element: (
-      <ProtectedRoute allowedAccountTypes={["brand"]}>
-        <Campaigns />
-      </ProtectedRoute>
-    ),
-  },
   // Influencer-only routes
   {
     path: "/influencer/dashboard",
@@ -98,6 +90,14 @@ export const protectedRoutes: RouteProps[] = [
     element: (
       <ProtectedRoute allowedAccountTypes={["brand"]}>
         <InfluencerListing />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/marketplace/campaigns",
+    element: (
+      <ProtectedRoute allowedAccountTypes={["influencer"]}>
+        <Campaigns />
       </ProtectedRoute>
     ),
   },
