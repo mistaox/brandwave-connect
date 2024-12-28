@@ -1,18 +1,22 @@
 import { Badge } from "@/components/ui/badge";
-import { getProposalStatusColor } from "@/utils/proposalStatus";
 
 interface ProposalStatusProps {
   status: string | null;
 }
 
 export const ProposalStatus = ({ status }: ProposalStatusProps) => {
-  if (!status) return null;
+  if (!status) return <Badge variant="secondary">Not Submitted</Badge>;
 
-  const statusColor = getProposalStatusColor(status);
-  
-  return (
-    <Badge className={statusColor}>
-      {status.replace("_", " ")}
-    </Badge>
-  );
+  switch (status.toLowerCase()) {
+    case "draft":
+      return <Badge variant="secondary">Draft</Badge>;
+    case "submitted":
+      return <Badge variant="primary">Under Review</Badge>;
+    case "approved":
+      return <Badge variant="success">Approved</Badge>;
+    case "rejected":
+      return <Badge variant="destructive">Rejected</Badge>;
+    default:
+      return <Badge variant="secondary">{status}</Badge>;
+  }
 };
