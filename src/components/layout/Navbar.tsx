@@ -1,9 +1,10 @@
 import { Menu, X } from "lucide-react";
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
-import { Button } from "@/components/ui/button";
+import { NavItems } from "./nav/NavItems";
+import { AuthButtons } from "./nav/AuthButtons";
+import { MobileNav } from "./nav/MobileNav";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -26,7 +27,6 @@ const Navbar = () => {
       { name: "FAQ", path: "/faq" },
       { name: "Contact", path: "/contact" },
       { name: "Dashboard", path: "/dashboard" },
-      { name: "Messages", path: "/messages" },
     ];
 
     if (profile?.account_type === "brand") {
@@ -62,40 +62,8 @@ const Navbar = () => {
 
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center space-x-6">
-              {navItems.map((item) => (
-                <Link
-                  key={item.name}
-                  to={item.path}
-                  className={cn(
-                    "text-gray-600 hover:text-brandblue transition-colors font-medium",
-                    isActive(item.path) && "text-brandblue"
-                  )}
-                >
-                  {item.name}
-                </Link>
-              ))}
-              {user ? (
-                <Button
-                  variant="ghost"
-                  onClick={() => signOut()}
-                  className="text-gray-600 hover:text-brandblue"
-                >
-                  Sign Out
-                </Button>
-              ) : (
-                <div className="flex items-center space-x-4">
-                  <Link to="/login">
-                    <Button variant="ghost" className="text-gray-600 hover:text-brandblue">
-                      Sign In
-                    </Button>
-                  </Link>
-                  <Link to="/register">
-                    <Button className="bg-brandblue text-white hover:bg-brandblue/90">
-                      Sign Up
-                    </Button>
-                  </Link>
-                </div>
-              )}
+              <NavItems items={navItems} isActive={isActive} />
+              <AuthButtons onSignOut={signOut} isAuthenticated={!!user} />
             </div>
 
             {/* Mobile menu button */}
@@ -110,54 +78,14 @@ const Navbar = () => {
           </div>
 
           {/* Mobile Navigation */}
-          {isOpen && (
-            <div className="md:hidden">
-              <div className="px-2 pt-2 pb-3 space-y-1">
-                {navItems.map((item) => (
-                  <Link
-                    key={item.name}
-                    to={item.path}
-                    className={cn(
-                      "block px-3 py-2 rounded-md text-gray-600 hover:text-brandblue hover:bg-gray-50",
-                      isActive(item.path) && "text-brandblue bg-gray-50"
-                    )}
-                    onClick={() => setIsOpen(false)}
-                  >
-                    {item.name}
-                  </Link>
-                ))}
-                {user ? (
-                  <Button
-                    variant="ghost"
-                    onClick={() => {
-                      signOut();
-                      setIsOpen(false);
-                    }}
-                    className="w-full text-left px-3 py-2 text-gray-600 hover:text-brandblue"
-                  >
-                    Sign Out
-                  </Button>
-                ) : (
-                  <>
-                    <Link
-                      to="/login"
-                      onClick={() => setIsOpen(false)}
-                      className="block px-3 py-2 text-gray-600 hover:text-brandblue"
-                    >
-                      Sign In
-                    </Link>
-                    <Link
-                      to="/register"
-                      onClick={() => setIsOpen(false)}
-                      className="block px-3 py-2 text-brandblue hover:text-brandblue/90"
-                    >
-                      Sign Up
-                    </Link>
-                  </>
-                )}
-              </div>
-            </div>
-          )}
+          <MobileNav
+            isOpen={isOpen}
+            navItems={navItems}
+            isActive={isActive}
+            onSignOut={signOut}
+            isAuthenticated={!!user}
+            onClose={() => setIsOpen(false)}
+          />
         </div>
       </nav>
       {/* Spacer div to prevent content from being hidden behind the navbar */}
