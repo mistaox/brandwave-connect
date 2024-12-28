@@ -25,23 +25,28 @@ const Register = () => {
           description: "Welcome to BrandCollab",
         });
         navigate("/dashboard");
-      }
-      
-      if (event === 'USER_UPDATED' && session?.user) {
+      } else if (event === 'USER_UPDATED' && session?.user) {
         navigate("/dashboard");
+      } else if (event === 'SIGNED_UP') {
+        // Clear any existing errors on successful signup
+        setError(null);
       }
     });
 
-    return () => subscription.unsubscribe();
-  }, [navigate, toast]);
+    // Listen for auth errors
+    const authListener = supabase.auth.onError((error) => {
+      if (error.message.includes('user_already_exists')) {
+        setError('This email is already registered. Please try logging in instead.');
+      } else {
+        setError(error.message);
+      }
+    });
 
-  const handleAuthError = (error: any) => {
-    if (error.message.includes('user_already_exists')) {
-      setError('This email is already registered. Please try logging in instead.');
-    } else {
-      setError(error.message);
-    }
-  };
+    return () => {
+      subscription.unsubscribe();
+      authListener.data.subscription.unsubscribe();
+    };
+  }, [navigate, toast]);
 
   const handleLoginClick = () => {
     navigate('/login');
@@ -110,7 +115,6 @@ const Register = () => {
               providers={[]}
               view="sign_up"
               redirectTo={`${window.location.origin}/auth/callback`}
-              onError={handleAuthError}
               additionalData={{
                 account_type: accountType,
               }}
