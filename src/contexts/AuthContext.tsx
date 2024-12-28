@@ -49,6 +49,54 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
+  async function getProfile(userId: string) {
+    try {
+      console.log("Fetching profile for user:", userId);
+      
+      // Try to get the existing profile
+      const { data: existingProfile, error } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", userId)
+        .maybeSingle();
+
+      if (error) {
+        throw error;
+      }
+
+      // If no profile exists and we're in development, create one
+      if (!existingProfile && isDevelopment) {
+        const devUser = user?.user_metadata?.account_type === 'influencer' 
+          ? DEV_USERS.influencer 
+          : DEV_USERS.brand;
+
+        const { data: newProfile, error: insertError } = await supabase
+          .from("profiles")
+          .insert([{
+            id: userId,
+            account_type: devUser.user_metadata.account_type,
+            full_name: devUser.user_metadata.account_type === 'brand' ? 'Demo Brand' : 'Demo Influencer',
+          }])
+          .select()
+          .single();
+
+        if (insertError) {
+          throw insertError;
+        }
+
+        console.log("Created new profile:", newProfile);
+        setProfile(newProfile);
+      } else {
+        console.log("Found existing profile:", existingProfile);
+        setProfile(existingProfile);
+      }
+    } catch (error) {
+      console.error("Error loading profile:", error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
   useEffect(() => {
     if (isDevelopment) {
       // In development, use the brand user by default
@@ -76,26 +124,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return () => subscription.unsubscribe();
     }
   }, []);
-
-  async function getProfile(userId: string) {
-    try {
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("id", userId)
-        .single();
-
-      if (error) {
-        throw error;
-      }
-
-      setProfile(data);
-    } catch (error) {
-      console.error("Error loading profile:", error);
-    } finally {
-      setLoading(false);
-    }
-  }
 
   const signOut = async () => {
     if (isDevelopment) {
