@@ -6,7 +6,7 @@ import { Plus, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 interface CampaignsListProps {
-  brandId: string;
+  brandId?: string;
 }
 
 export const CampaignsList = ({ brandId }: CampaignsListProps) => {
@@ -24,7 +24,18 @@ export const CampaignsList = ({ brandId }: CampaignsListProps) => {
       if (error) throw error;
       return data;
     },
+    enabled: !!brandId, // Only run query when brandId is defined
   });
+
+  if (!brandId) {
+    return (
+      <Card>
+        <CardContent className="flex flex-col items-center justify-center p-6">
+          <p className="text-muted-foreground mb-4">Please select a brand to view campaigns</p>
+        </CardContent>
+      </Card>
+    );
+  }
 
   if (isLoading) {
     return (
