@@ -18,6 +18,19 @@ export const CampaignsList = ({ brandId, mode = 'brand' }: CampaignsListProps) =
   const { data: campaigns, isLoading } = useQuery({
     queryKey: ["campaigns", brandId, mode],
     queryFn: async () => {
+      // First, get existing collaborations for the influencer
+      let excludedCampaignIds: string[] = [];
+      
+      if (mode === 'influencer' && user?.id) {
+        const { data: existingCollaborations } = await supabase
+          .from("collaborations")
+          .select("campaign_id")
+          .eq("influencer_id", user.id);
+        
+        excludedCampaignIds = existingCollaborations?.map(c => c.campaign_id) || [];
+      }
+
+      // Build the base query
       let query = supabase
         .from("campaigns")
         .select(`
@@ -27,33 +40,27 @@ export const CampaignsList = ({ brandId, mode = 'brand' }: CampaignsListProps) =
             industry,
             location
           )
-        `)
-        .order("created_at", { ascending: false });
+        `);
 
-      // If in brand mode, filter by brandId
+      // Apply filters based on mode
       if (mode === 'brand' && brandId) {
         query = query.eq("brand_id", brandId);
       } else if (mode === 'influencer') {
-        // For influencers, show active campaigns they haven't collaborated on yet
-        const { data: existingCollaborations } = await supabase
-          .from("collaborations")
-          .select("campaign_id")
-          .eq("influencer_id", user?.id);
-
-        const excludedCampaignIds = existingCollaborations?.map(c => c.campaign_id) || [];
-        
+        // For influencers, show only active campaigns they haven't collaborated on
+        query = query.eq("status", "active");
         if (excludedCampaignIds.length > 0) {
           query = query.not("id", "in", `(${excludedCampaignIds.join(",")})`);
         }
-        
-        query = query.eq("status", "active");
       }
+
+      // Add ordering
+      query = query.order("created_at", { ascending: false });
 
       const { data, error } = await query;
       if (error) throw error;
       return data;
     },
-    enabled: mode === 'brand' ? !!brandId : true, // Allow query to run in influencer mode regardless of brandId
+    enabled: mode === 'brand' ? !!brandId : true, // Enable for influencer mode regardless of brandId
   });
 
   if (mode === 'brand' && !brandId) {
