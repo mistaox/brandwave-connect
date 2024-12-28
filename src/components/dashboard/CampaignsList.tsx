@@ -4,30 +4,59 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Plus, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface CampaignsListProps {
   brandId?: string;
+  mode?: 'brand' | 'influencer';
 }
 
-export const CampaignsList = ({ brandId }: CampaignsListProps) => {
+export const CampaignsList = ({ brandId, mode = 'brand' }: CampaignsListProps) => {
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   const { data: campaigns, isLoading } = useQuery({
-    queryKey: ["campaigns", brandId],
+    queryKey: ["campaigns", brandId, mode],
     queryFn: async () => {
-      const { data, error } = await supabase
+      let query = supabase
         .from("campaigns")
-        .select("*")
-        .eq("brand_id", brandId)
+        .select(`
+          *,
+          brand:brands(
+            name,
+            industry,
+            location
+          )
+        `)
         .order("created_at", { ascending: false });
 
+      // If in brand mode, filter by brandId
+      if (mode === 'brand' && brandId) {
+        query = query.eq("brand_id", brandId);
+      } else if (mode === 'influencer') {
+        // For influencers, show active campaigns they haven't collaborated on yet
+        const { data: existingCollaborations } = await supabase
+          .from("collaborations")
+          .select("campaign_id")
+          .eq("influencer_id", user?.id);
+
+        const excludedCampaignIds = existingCollaborations?.map(c => c.campaign_id) || [];
+        
+        if (excludedCampaignIds.length > 0) {
+          query = query.not("id", "in", `(${excludedCampaignIds.join(",")})`);
+        }
+        
+        query = query.eq("status", "active");
+      }
+
+      const { data, error } = await query;
       if (error) throw error;
       return data;
     },
-    enabled: !!brandId, // Only run query when brandId is defined
+    enabled: mode === 'influencer' ? !!user?.id : !!brandId,
   });
 
-  if (!brandId) {
+  if (mode === 'brand' && !brandId) {
     return (
       <Card>
         <CardContent className="flex flex-col items-center justify-center p-6">
@@ -48,20 +77,28 @@ export const CampaignsList = ({ brandId }: CampaignsListProps) => {
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-xl font-semibold">Your Campaigns</h2>
-        <Button onClick={() => navigate("/campaigns/create")}>
-          <Plus className="h-4 w-4 mr-2" />
-          New Campaign
-        </Button>
+        <h2 className="text-xl font-semibold">
+          {mode === 'brand' ? 'Your Campaigns' : 'Available Campaigns'}
+        </h2>
+        {mode === 'brand' && (
+          <Button onClick={() => navigate("/campaigns/create")}>
+            <Plus className="h-4 w-4 mr-2" />
+            New Campaign
+          </Button>
+        )}
       </div>
 
       {campaigns?.length === 0 ? (
         <Card>
           <CardContent className="flex flex-col items-center justify-center p-6">
-            <p className="text-muted-foreground mb-4">No campaigns yet</p>
-            <Button onClick={() => navigate("/campaigns/create")}>
-              Create your first campaign
-            </Button>
+            <p className="text-muted-foreground mb-4">
+              {mode === 'brand' ? 'No campaigns yet' : 'No available campaigns at the moment'}
+            </p>
+            {mode === 'brand' && (
+              <Button onClick={() => navigate("/campaigns/create")}>
+                Create your first campaign
+              </Button>
+            )}
           </CardContent>
         </Card>
       ) : (
@@ -72,9 +109,10 @@ export const CampaignsList = ({ brandId }: CampaignsListProps) => {
                 <div className="flex justify-between items-start">
                   <div>
                     <h3 className="font-semibold text-lg">{campaign.title}</h3>
-                    <p className="text-muted-foreground text-sm mt-1">
-                      {campaign.description}
+                    <p className="text-sm text-muted-foreground mt-1">
+                      by {campaign.brand?.name} • {campaign.brand?.industry}
                     </p>
+                    <p className="text-sm mt-2">{campaign.description}</p>
                   </div>
                   <Button
                     variant="outline"
@@ -88,10 +126,12 @@ export const CampaignsList = ({ brandId }: CampaignsListProps) => {
                     <span className="text-muted-foreground">Budget:</span>{" "}
                     ${campaign.budget}
                   </div>
-                  <div className="text-sm">
-                    <span className="text-muted-foreground">Status:</span>{" "}
-                    <span className="capitalize">{campaign.status}</span>
-                  </div>
+                  {campaign.brand?.location && (
+                    <div className="text-sm">
+                      <span className="text-muted-foreground">Location:</span>{" "}
+                      {campaign.brand.location}
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>
