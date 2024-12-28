@@ -35,7 +35,6 @@ export const MessagingInterface = ({ conversationId }: MessagingInterfaceProps) 
 
     const fetchMessages = async () => {
       try {
-        // Fetch messages with sender profile information
         const { data: messagesData, error: messagesError } = await supabase
           .from("messages")
           .select(`
@@ -48,7 +47,6 @@ export const MessagingInterface = ({ conversationId }: MessagingInterfaceProps) 
         if (messagesError) throw messagesError;
         setMessages(messagesData || []);
 
-        // Fetch conversation details with participant information
         const { data: conversationData, error: conversationError } = await supabase
           .from("conversations")
           .select(`
@@ -61,7 +59,6 @@ export const MessagingInterface = ({ conversationId }: MessagingInterfaceProps) 
 
         if (conversationError) throw conversationError;
         
-        // Set other participant
         const other = conversationData.participant1.id === user?.id
           ? conversationData.participant2
           : conversationData.participant1;
@@ -84,31 +81,29 @@ export const MessagingInterface = ({ conversationId }: MessagingInterfaceProps) 
       .on(
         "postgres_changes",
         {
-          event: "*",
+          event: "INSERT",
           schema: "public",
           table: "messages",
           filter: `conversation_id=eq.${conversationId}`,
         },
         async (payload) => {
-          console.log("Message change received:", payload);
-          if (payload.eventType === "INSERT") {
-            // Fetch the complete message with sender information
-            const { data: newMessage, error } = await supabase
-              .from("messages")
-              .select(`
-                *,
-                sender:profiles!messages_sender_id_fkey(full_name, avatar_url)
-              `)
-              .eq("id", payload.new.id)
-              .single();
+          console.log("New message received:", payload);
+          // Fetch the complete message with sender information
+          const { data: newMessage, error } = await supabase
+            .from("messages")
+            .select(`
+              *,
+              sender:profiles!messages_sender_id_fkey(full_name, avatar_url)
+            `)
+            .eq("id", payload.new.id)
+            .single();
 
-            if (!error && newMessage) {
-              setMessages((current) => [...current, newMessage]);
-              // Play a notification sound if the message is from the other participant
-              if (newMessage.sender_id !== user?.id) {
-                const audio = new Audio("/message-notification.mp3");
-                audio.play().catch(console.error);
-              }
+          if (!error && newMessage) {
+            setMessages((current) => [...current, newMessage]);
+            // Play notification sound if message is from other participant
+            if (newMessage.sender_id !== user?.id) {
+              const audio = new Audio("/message-notification.mp3");
+              audio.play().catch(console.error);
             }
           }
         }
