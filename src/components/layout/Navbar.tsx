@@ -48,6 +48,11 @@ const Navbar = () => {
     return location.pathname === path;
   };
 
+  const handleSignOut = async () => {
+    await signOut();
+    setIsOpen(false); // Close mobile menu after logout
+  };
+
   return (
     <>
       <nav className="fixed w-full bg-white/95 backdrop-blur-md z-50 shadow-sm">
@@ -86,7 +91,7 @@ const Navbar = () => {
                         Profile Settings
                       </Link>
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => signOut()} className="text-red-600">
+                    <DropdownMenuItem onClick={handleSignOut} className="text-red-600">
                       <LogOut className="mr-2 h-4 w-4" />
                       <span>Log out</span>
                     </DropdownMenuItem>
@@ -141,10 +146,7 @@ const Navbar = () => {
                       Profile Settings
                     </Link>
                     <button
-                      onClick={() => {
-                        signOut();
-                        setIsOpen(false);
-                      }}
+                      onClick={handleSignOut}
                       className="w-full text-left px-3 py-2 text-red-600 hover:text-red-700 hover:bg-gray-50 flex items-center gap-2"
                     >
                       <LogOut className="h-4 w-4" />
