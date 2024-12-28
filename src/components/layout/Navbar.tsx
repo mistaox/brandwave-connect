@@ -8,23 +8,43 @@ import { Button } from "@/components/ui/button";
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
-  const { user, signOut } = useAuth();
+  const { user, profile, signOut } = useAuth();
 
-  const navItems = user ? [
-    { name: "Home", path: "/" },
-    { name: "About", path: "/about" },
-    { name: "FAQ", path: "/faq" },
-    { name: "Contact", path: "/contact" },
-    { name: "Dashboard", path: "/dashboard" },
-    { name: "Campaigns", path: "/campaigns" },
-    { name: "Marketplace", path: "/marketplace/influencers" },
-    { name: "Messages", path: "/messages" },
-  ] : [
-    { name: "Home", path: "/" },
-    { name: "About", path: "/about" },
-    { name: "FAQ", path: "/faq" },
-    { name: "Contact", path: "/contact" },
-  ];
+  const getNavItems = () => {
+    if (!user) {
+      return [
+        { name: "Home", path: "/" },
+        { name: "About", path: "/about" },
+        { name: "FAQ", path: "/faq" },
+        { name: "Contact", path: "/contact" },
+      ];
+    }
+
+    const commonItems = [
+      { name: "Home", path: "/" },
+      { name: "About", path: "/about" },
+      { name: "FAQ", path: "/faq" },
+      { name: "Contact", path: "/contact" },
+      { name: "Dashboard", path: "/dashboard" },
+      { name: "Messages", path: "/messages" },
+    ];
+
+    if (profile?.account_type === "brand") {
+      return [
+        ...commonItems,
+        { name: "Marketplace", path: "/marketplace/influencers" },
+        { name: "Campaigns", path: "/campaigns" },
+      ];
+    }
+
+    return [
+      ...commonItems,
+      { name: "Marketplace", path: "/marketplace/brands" },
+      { name: "Available Campaigns", path: "/marketplace/campaigns" },
+    ];
+  };
+
+  const navItems = getNavItems();
 
   const isActive = (path: string) => {
     return location.pathname === path;

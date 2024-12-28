@@ -6,6 +6,7 @@ import Blogs from "@/pages/Blogs";
 import Contact from "@/pages/Contact";
 import BrandDashboard from "@/pages/dashboard/BrandDashboard";
 import InfluencerDashboard from "@/pages/dashboard/InfluencerDashboard";
+import { MarketplaceRedirect } from "@/components/marketplace/MarketplaceRedirect";
 import BrandListing from "@/pages/marketplace/BrandListing";
 import InfluencerListing from "@/pages/marketplace/InfluencerListing";
 import Campaigns from "@/pages/Campaigns";
@@ -15,6 +16,7 @@ import Messages from "@/pages/Messages";
 import Profile from "@/pages/Profile";
 import Login from "@/pages/auth/Login";
 import Register from "@/pages/auth/Register";
+import { DashboardRedirect } from "@/components/dashboard/DashboardRedirect";
 
 export const publicRoutes: RouteProps[] = [
   { path: "/", element: <Index /> },
@@ -24,9 +26,11 @@ export const publicRoutes: RouteProps[] = [
   { path: "/contact", element: <Contact /> },
   { path: "/login", element: <Login /> },
   { path: "/register", element: <Register /> },
-  { path: "/dashboard", element: <BrandDashboard /> },
-  { path: "/influencer/dashboard", element: <InfluencerDashboard /> },
+  { path: "/dashboard", element: <DashboardRedirect /> },
+  { path: "/dashboard/brand", element: <BrandDashboard /> },
+  { path: "/dashboard/influencer", element: <InfluencerDashboard /> },
   { path: "/profile", element: <Profile /> },
+  { path: "/marketplace", element: <MarketplaceRedirect /> },
   { path: "/marketplace/brands", element: <BrandListing /> },
   { path: "/marketplace/influencers", element: <InfluencerListing /> },
   { path: "/campaigns", element: <Campaigns /> },
