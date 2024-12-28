@@ -458,6 +458,57 @@ export type Database = {
         }
         Relationships: []
       }
+      proposal_revisions: {
+        Row: {
+          collaboration_id: string
+          created_at: string | null
+          created_by: string | null
+          id: string
+          proposal_budget: number | null
+          proposal_deliverables: string[] | null
+          proposal_text: string | null
+          proposal_timeline: string | null
+          revision_number: number
+        }
+        Insert: {
+          collaboration_id: string
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          proposal_budget?: number | null
+          proposal_deliverables?: string[] | null
+          proposal_text?: string | null
+          proposal_timeline?: string | null
+          revision_number: number
+        }
+        Update: {
+          collaboration_id?: string
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          proposal_budget?: number | null
+          proposal_deliverables?: string[] | null
+          proposal_text?: string | null
+          proposal_timeline?: string | null
+          revision_number?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "proposal_revisions_collaboration_id_fkey"
+            columns: ["collaboration_id"]
+            isOneToOne: false
+            referencedRelation: "collaborations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "proposal_revisions_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       social_media_profiles: {
         Row: {
           created_at: string | null
