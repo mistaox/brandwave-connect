@@ -76,6 +76,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             id: userId,
             account_type: devUser.user_metadata.account_type,
             full_name: devUser.user_metadata.account_type === 'brand' ? 'Demo Brand' : 'Demo Influencer',
+            username: devUser.user_metadata.account_type === 'brand' ? 'demobrand' : 'demoinfluencer',
           }])
           .select()
           .single();
@@ -99,8 +100,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (isDevelopment) {
-      // In development, use the brand user by default
-      const devUser = DEV_USERS.brand;
+      // In development, use the influencer user by default
+      const devUser = DEV_USERS.influencer; // Changed this line to use influencer
       setUser(devUser);
       getProfile(devUser.id);
     } else {
