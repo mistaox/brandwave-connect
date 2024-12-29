@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Loader2 } from "lucide-react";
@@ -17,6 +18,7 @@ interface ProfileFormProps {
 export const ProfileForm = ({ profile, setProfile }: ProfileFormProps) => {
   const { user } = useAuth();
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -56,6 +58,7 @@ export const ProfileForm = ({ profile, setProfile }: ProfileFormProps) => {
         title: "Profile updated successfully",
         duration: 3000,
       });
+      navigate("/profile");
     } catch (error: any) {
       console.error("Error updating profile:", error);
       toast({
