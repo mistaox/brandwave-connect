@@ -10,14 +10,14 @@ interface NavItemsProps {
 
 export const NavItems = ({ items, isActive, onClose, className }: NavItemsProps) => {
   return (
-    <div className={cn("flex md:items-center md:space-x-4 flex-col md:flex-row space-y-2 md:space-y-0", className)}>
+    <div className={cn("flex md:items-center md:space-x-6 flex-col md:flex-row space-y-2 md:space-y-0", className)}>
       {items.map((item) => (
         <Link
           key={item.name}
           to={item.path}
           className={cn(
-            "block text-gray-600 hover:text-brandblue transition-colors font-medium",
-            isActive(item.path) && "text-brandblue"
+            "text-gray-600 hover:text-gray-900 transition-colors font-medium",
+            isActive(item.path) && "text-gray-900"
           )}
           onClick={onClose}
         >

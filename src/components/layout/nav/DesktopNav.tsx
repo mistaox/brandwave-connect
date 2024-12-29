@@ -56,21 +56,18 @@ export const DesktopNav = ({
           )}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-                {profile?.avatar_url ? (
-                  <img
-                    src={profile.avatar_url}
-                    alt={profile?.full_name || "Profile"}
-                    className="h-8 w-8 rounded-full object-cover"
-                  />
-                ) : (
-                  <UserCircle2 className="h-6 w-6" />
-                )}
+              <Button variant="ghost" size="icon" className="relative h-8 w-8 rounded-full">
+                <UserCircle2 className="h-6 w-6" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56">
-              <DropdownMenuLabel>
-                {profile?.full_name || "My Account"}
+            <DropdownMenuContent align="end" className="w-56 bg-white">
+              <DropdownMenuLabel className="font-normal">
+                <div className="flex flex-col space-y-1">
+                  <p className="text-sm font-medium leading-none">{profile?.full_name || "My Account"}</p>
+                  <p className="text-xs leading-none text-muted-foreground">
+                    {profile?.email || user.email}
+                  </p>
+                </div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={handleProfileClick}>
