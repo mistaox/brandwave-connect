@@ -7,14 +7,15 @@ import { publicRoutes } from "./routes/routes";
 import { useState, useEffect } from "react";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import { supabase } from "./integrations/supabase/client";
+import { Loader2 } from "lucide-react";
 
 const AppContent = () => {
   const navigate = useNavigate();
-  const { user, profile } = useAuth();
+  const { user, profile, loading } = useAuth();
 
   useEffect(() => {
     // Log the current auth state for debugging
-    console.log("Current auth state:", { user, profile });
+    console.log("Current auth state:", { user, profile, loading });
 
     const handleAuthChange = async (event: string, session: any) => {
       console.log("Auth state changed:", event, session);
@@ -27,7 +28,6 @@ const AppContent = () => {
 
       if (event === 'SIGNED_IN' && session) {
         console.log("User signed in, waiting for profile");
-        // Wait for profile to be loaded
         if (profile) {
           console.log("Profile loaded, redirecting based on account type:", profile.account_type);
           switch (profile.account_type) {
@@ -73,6 +73,14 @@ const AppContent = () => {
       subscription.unsubscribe();
     };
   }, [navigate, user, profile]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <Routes>
