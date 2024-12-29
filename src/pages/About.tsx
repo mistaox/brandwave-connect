@@ -1,9 +1,6 @@
-import Navbar from "@/components/layout/Navbar";
-
 const About = () => {
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navbar />
       <main className="container mx-auto px-4 py-24">
         <h1 className="text-4xl font-bold text-center mb-8">About BrandCollab</h1>
         <div className="max-w-3xl mx-auto prose prose-blue">

@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
-import Navbar from "@/components/layout/Navbar";
 import { MessagingInterface } from "@/components/messaging/MessagingInterface";
 import { ConversationsList } from "@/components/messaging/ConversationsList";
 import { Loader2 } from "lucide-react";
@@ -27,7 +26,6 @@ const Messages = () => {
   if (loading) {
     return (
       <div className="min-h-screen">
-        <Navbar />
         <div className="flex items-center justify-center h-[calc(100vh-4rem)]">
           <Loader2 className="h-8 w-8 animate-spin" />
         </div>
@@ -37,7 +35,6 @@ const Messages = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navbar />
       <main className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
           <div className="md:col-span-1 bg-white rounded-lg shadow">

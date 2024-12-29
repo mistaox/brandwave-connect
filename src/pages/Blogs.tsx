@@ -1,9 +1,6 @@
-import Navbar from "@/components/layout/Navbar";
-
 const Blogs = () => {
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navbar />
       <main className="container mx-auto px-4 py-24">
         <h1 className="text-4xl font-bold text-center mb-8">Blog Posts</h1>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

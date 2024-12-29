@@ -1,6 +1,5 @@
 import { useAuth } from "@/contexts/AuthContext";
 import { Navigate } from "react-router-dom";
-import Navbar from "@/components/layout/Navbar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Settings as SettingsIcon } from "lucide-react";
 
@@ -14,7 +13,6 @@ const AdminSettings = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navbar />
       <main className="container mx-auto px-4 py-8">
         <div className="flex items-center gap-2 mb-6">
           <SettingsIcon className="h-6 w-6 text-gray-600" />
