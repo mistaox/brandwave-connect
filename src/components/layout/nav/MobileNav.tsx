@@ -1,6 +1,8 @@
 import { NavItems } from "./NavItems";
 import { AuthButtons } from "./AuthButtons";
 import { RoleSelector } from "./RoleSelector";
+import { UserCircle2 } from "lucide-react";
+import { Link } from "react-router-dom";
 
 interface MobileNavProps {
   isOpen: boolean;
@@ -32,6 +34,21 @@ export const MobileNav = ({
   return (
     <div className="md:hidden">
       <div className="px-2 pt-2 pb-3 space-y-1">
+        {isAuthenticated && (
+          <div className="flex items-center space-x-3 px-3 py-2 mb-2">
+            <UserCircle2 className="h-8 w-8" />
+            <div>
+              <div className="font-medium">{profile?.full_name || "User"}</div>
+              <Link
+                to="/profile"
+                className="text-sm text-gray-500"
+                onClick={onClose}
+              >
+                View Profile
+              </Link>
+            </div>
+          </div>
+        )}
         <NavItems items={navItems} isActive={isActive} onClose={onClose} />
         {isDevelopment && isAdmin && isAuthenticated && (
           <div className="py-2">
@@ -42,11 +59,13 @@ export const MobileNav = ({
             />
           </div>
         )}
-        <AuthButtons
-          onSignOut={onSignOut}
-          isAuthenticated={isAuthenticated}
-          onClose={onClose}
-        />
+        <div className="pt-2">
+          <AuthButtons
+            onSignOut={onSignOut}
+            isAuthenticated={isAuthenticated}
+            onClose={onClose}
+          />
+        </div>
       </div>
     </div>
   );
