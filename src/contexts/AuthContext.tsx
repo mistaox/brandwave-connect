@@ -55,7 +55,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       console.log("Fetching profile for user:", userId);
       
-      // Try to get the existing profile
       const { data: existingProfile, error } = await supabase
         .from("profiles")
         .select("*")
@@ -66,7 +65,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         throw error;
       }
 
-      // If no profile exists and we're in development, create one
       if (!existingProfile && isDevelopment) {
         const devUser = user?.user_metadata?.account_type === 'influencer' 
           ? DEV_USERS.influencer 
@@ -109,10 +107,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (isDevelopment) {
-      // In development, use the influencer user by default
       impersonateRole('influencer');
     } else {
-      // In production, use normal authentication
       supabase.auth.getSession().then(({ data: { session } }) => {
         setUser(session?.user ?? null);
         if (session?.user) {
@@ -121,6 +117,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       });
 
       const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+        console.log("Auth state changed:", _event, session);
         setUser(session?.user ?? null);
         if (session?.user) {
           getProfile(session.user.id);
@@ -134,18 +131,34 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const signOut = async () => {
-    if (isDevelopment) {
-      // In development, just clear the user state
-      setUser(null);
-      setProfile(null);
-    } else {
-      try {
-        await supabase.auth.signOut();
+    try {
+      if (isDevelopment) {
+        // In development, just clear the state
         setUser(null);
         setProfile(null);
-      } catch (error) {
-        console.error("Error signing out:", error);
+      } else {
+        // In production, sign out from Supabase and clear local storage
+        const { error } = await supabase.auth.signOut();
+        if (error) throw error;
+        
+        // Clear all local storage data
+        localStorage.clear();
+        
+        // Reset state
+        setUser(null);
+        setProfile(null);
+        
+        // Clear any session cookies
+        document.cookie.split(";").forEach((c) => {
+          document.cookie = c
+            .replace(/^ +/, "")
+            .replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+        });
+        
+        console.log("Successfully signed out and cleared all session data");
       }
+    } catch (error) {
+      console.error("Error signing out:", error);
     }
   };
 
