@@ -1,20 +1,19 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
-import { supabase } from "@/integrations/supabase/client";
 import { InfluencerMetrics } from "@/components/dashboard/influencer/InfluencerMetrics";
 import { InfluencerHeader } from "@/components/dashboard/influencer/InfluencerHeader";
 import { InfluencerActivity } from "@/components/dashboard/influencer/InfluencerActivity";
 import { CollaborationsList } from "@/components/dashboard/CollaborationsList";
-import { PortfolioList } from "@/components/dashboard/influencer/PortfolioList";
+import { PortfolioManager } from "@/components/dashboard/influencer/portfolio/PortfolioManager";
 import { AvailableCampaigns } from "@/components/dashboard/influencer/AvailableCampaigns";
 import { EarningsTable } from "@/components/dashboard/influencer/earnings/EarningsTable";
 import { AnalyticsOverview } from "@/components/dashboard/influencer/analytics/AnalyticsOverview";
+import { PerformanceMetrics } from "@/components/dashboard/influencer/analytics/PerformanceMetrics";
 import { MessagingInterface } from "@/components/messaging/MessagingInterface";
 import { ConversationsList } from "@/components/messaging/ConversationsList";
 import { Loader2 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useToast } from "@/components/ui/use-toast";
 
 const InfluencerDashboard = () => {
   const { user, profile } = useAuth();
@@ -66,15 +65,19 @@ const InfluencerDashboard = () => {
           
           <TabsContent value="overview" className="mt-6 space-y-6">
             <InfluencerMetrics />
+            <PerformanceMetrics />
             <InfluencerActivity />
           </TabsContent>
 
           <TabsContent value="analytics" className="mt-6">
-            <AnalyticsOverview />
+            <div className="grid gap-6">
+              <AnalyticsOverview />
+              <PerformanceMetrics />
+            </div>
           </TabsContent>
           
           <TabsContent value="portfolio" className="mt-6">
-            <PortfolioList />
+            <PortfolioManager />
           </TabsContent>
           
           <TabsContent value="campaigns" className="mt-6">
