@@ -12,8 +12,12 @@
   - [x] Account type selection in registration
   - [x] Authentication context and protected routes
   - [x] Backend integration for auth
+    - [x] Email verification settings
+    - [x] Password policies
+    - [x] Auth providers configuration
+    - [x] URL redirects setup
   - [x] User profiles (Brands & Influencers)
-  - [ ] Password reset functionality
+  - [x] Password reset functionality
 
 - [x] Marketplace Development
   - [x] Brand listing page with filters
