@@ -4,7 +4,6 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import { useQuery } from "@tanstack/react-query";
-import Navbar from "@/components/layout/Navbar";
 import { CampaignForm } from "@/components/campaigns/CampaignForm";
 import { Breadcrumbs } from "@/components/navigation/Breadcrumbs";
 import { Loader2 } from "lucide-react";
@@ -89,7 +88,6 @@ const CreateCampaign = () => {
   if (brandsLoading) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <Navbar />
         <main className="container mx-auto px-4 py-8">
           <div className="flex justify-center items-center h-[60vh]">
             <Loader2 className="h-8 w-8 animate-spin" />
@@ -102,7 +100,6 @@ const CreateCampaign = () => {
   if (!brands?.length) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <Navbar />
         <main className="container mx-auto px-4 py-8">
           <div className="max-w-3xl mx-auto text-center">
             <h1 className="text-3xl font-bold mb-4">Create a Brand First</h1>
@@ -123,7 +120,6 @@ const CreateCampaign = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navbar />
       <main className="container mx-auto px-4 py-8">
         <Breadcrumbs />
         <div className="max-w-3xl mx-auto">
