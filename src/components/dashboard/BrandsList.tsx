@@ -23,7 +23,6 @@ interface BrandsListProps {
 }
 
 export const BrandsList = ({ onBrandSelect }: BrandsListProps) => {
-  const navigate = useNavigate();
   const [editingBrand, setEditingBrand] = useState<Brand | null>(null);
   const { user } = useAuth();
   const { toast } = useToast();
