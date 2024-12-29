@@ -3,6 +3,7 @@ import { RoleSelector } from "./RoleSelector";
 import { AuthButtons } from "./AuthButtons";
 import { Button } from "@/components/ui/button";
 import { UserCircle2 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,7 +12,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 interface DesktopNavProps {
   navItems: Array<{ name: string; path: string }>;
@@ -47,33 +48,40 @@ export const DesktopNav = ({
         <RoleSelector profile={profile} impersonateRole={impersonateRole} />
       )}
       {user ? (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-              {profile?.avatar_url ? (
-                <img
-                  src={profile.avatar_url}
-                  alt={profile?.full_name || "Profile"}
-                  className="h-8 w-8 rounded-full object-cover"
-                />
-              ) : (
-                <UserCircle2 className="h-6 w-6" />
-              )}
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-56">
-            <DropdownMenuLabel>
-              {profile?.full_name || "My Account"}
-            </DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={handleProfileClick}>
-              Profile Settings
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={signOut}>
-              Sign Out
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <div className="flex items-center gap-3">
+          {profile?.account_type && (
+            <Badge variant="outline" className="capitalize">
+              {profile.account_type}
+            </Badge>
+          )}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                {profile?.avatar_url ? (
+                  <img
+                    src={profile.avatar_url}
+                    alt={profile?.full_name || "Profile"}
+                    className="h-8 w-8 rounded-full object-cover"
+                  />
+                ) : (
+                  <UserCircle2 className="h-6 w-6" />
+                )}
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuLabel>
+                {profile?.full_name || "My Account"}
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={handleProfileClick}>
+                Profile Settings
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={signOut}>
+                Sign Out
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       ) : (
         <AuthButtons onSignOut={signOut} isAuthenticated={!!user} />
       )}

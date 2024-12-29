@@ -2,6 +2,7 @@ import { NavItems } from "./NavItems";
 import { AuthButtons } from "./AuthButtons";
 import { RoleSelector } from "./RoleSelector";
 import { UserCircle2 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { useNavigate } from "react-router-dom";
 
 interface MobileNavProps {
@@ -46,9 +47,14 @@ export const MobileNav = ({
             <UserCircle2 className="h-8 w-8" />
             <div>
               <div className="font-medium">{profile?.full_name || "User"}</div>
+              {profile?.account_type && (
+                <Badge variant="outline" className="capitalize mb-2">
+                  {profile.account_type}
+                </Badge>
+              )}
               <button
                 onClick={handleProfileClick}
-                className="text-sm text-gray-500 hover:text-gray-700"
+                className="text-sm text-gray-500 hover:text-gray-700 block mt-1"
               >
                 View Profile
               </button>
