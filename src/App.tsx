@@ -9,6 +9,7 @@ import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { RouteHandler } from "@/components/auth/RouteHandler";
 import { AuthStateHandler } from "@/components/auth/AuthStateHandler";
+import Navbar from "@/components/layout/Navbar";
 
 const AppContent = () => {
   const navigate = useNavigate();
@@ -28,13 +29,21 @@ const AppContent = () => {
   console.log("Current auth state:", { user, profile, loading });
 
   if (loading) {
-    return <LoadingSpinner />;
+    return (
+      <div className="min-h-screen">
+        <Navbar />
+        <div className="flex items-center justify-center h-[calc(100vh-4rem)]">
+          <LoadingSpinner />
+        </div>
+      </div>
+    );
   }
 
   return (
     <>
       <AuthStateHandler onAuthStateChange={handleAuthChange} />
       <RouteHandler />
+      <Navbar />
       <Routes>
         {publicRoutes.map((route) => (
           <Route

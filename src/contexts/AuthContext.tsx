@@ -64,10 +64,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         .maybeSingle();
 
       if (error) {
+        console.error("Error fetching profile:", error);
         throw error;
       }
 
       if (!existingProfile && isDevelopment) {
+        console.log("Creating demo profile for development...");
         const devUser = user?.user_metadata?.account_type === 'influencer' 
           ? DEV_USERS.influencer 
           : DEV_USERS.brand;
@@ -84,6 +86,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           .single();
 
         if (insertError) {
+          console.error("Error creating demo profile:", insertError);
           throw insertError;
         }
 
@@ -94,9 +97,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setProfile(existingProfile);
       }
     } catch (error) {
-      console.error("Error loading profile:", error);
-    } finally {
-      setLoading(false);
+      console.error("Error in getProfile:", error);
+      // Don't set loading to false here, let the caller handle it
+      throw error;
     }
   }
 
@@ -104,25 +107,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (!isDevelopment) return;
     const devUser = DEV_USERS[role];
     setUser(devUser);
-    getProfile(devUser.id);
+    getProfile(devUser.id).catch(console.error);
   };
 
   useEffect(() => {
     const initializeAuth = async () => {
       try {
+        console.log("Initializing auth...");
         const { data: { session } } = await supabase.auth.getSession();
         console.log("Initial session:", session);
         
         if (session?.user) {
           setUser(session.user);
           await getProfile(session.user.id);
-        } else {
-          setUser(null);
-          setProfile(null);
-          setLoading(false);
         }
       } catch (error) {
         console.error("Error initializing auth:", error);
+      } finally {
         setLoading(false);
       }
     };
@@ -134,12 +135,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       
       if (session?.user) {
         setUser(session.user);
-        await getProfile(session.user.id);
+        try {
+          await getProfile(session.user.id);
+        } catch (error) {
+          console.error("Error getting profile after auth state change:", error);
+        }
       } else {
         setUser(null);
         setProfile(null);
-        setLoading(false);
       }
+      setLoading(false);
     });
 
     return () => {
