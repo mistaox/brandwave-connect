@@ -15,19 +15,19 @@ const AppContent = () => {
   const { user, profile, loading } = useAuth();
 
   const handleAuthChange = useCallback(async (event: string, session: any) => {
-    console.log("Auth state changed:", event, session);
+    console.log("Auth state changed:", event, session?.user?.id);
 
     if (event === 'SIGNED_OUT') {
       console.log("User signed out, redirecting to login");
-      return <Navigate to="/login" replace />;
+      window.location.href = '/login';
+      return;
     }
   }, []);
 
   if (loading) {
     return (
       <div className="min-h-screen bg-white">
-        <Navbar />
-        <div className="flex items-center justify-center h-[calc(100vh-4rem)]">
+        <div className="flex items-center justify-center h-screen">
           <LoadingSpinner />
         </div>
       </div>

@@ -1,7 +1,7 @@
-import { createContext, useContext, useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { createContext, useContext } from "react";
 import type { User } from "@supabase/supabase-js";
-import { useToast } from "@/components/ui/use-toast";
+import { useAuthState } from "@/hooks/useAuthState";
+import { signOut, impersonateRole } from "./auth/authActions";
 
 interface AuthContextType {
   user: User | null;
@@ -19,195 +19,17 @@ const AuthContext = createContext<AuthContextType>({
   impersonateRole: () => {},
 });
 
-const isDevelopment = import.meta.env.DEV;
-
-// Development user data
-const DEV_USERS = {
-  brand: {
-    id: "d63a9067-6971-4b56-9eaf-1bfb972167a6",
-    email: "brand@example.com",
-    aud: "authenticated",
-    app_metadata: {},
-    user_metadata: {
-      account_type: "brand"
-    },
-    created_at: new Date().toISOString(),
-    role: "authenticated",
-    updated_at: new Date().toISOString()
-  } as User,
-  influencer: {
-    id: "e6f1a5df-6a23-4234-b0b3-0cf257accf92",
-    email: "influencer@example.com",
-    aud: "authenticated",
-    app_metadata: {},
-    user_metadata: {
-      account_type: "influencer"
-    },
-    created_at: new Date().toISOString(),
-    role: "authenticated",
-    updated_at: new Date().toISOString()
-  } as User
-};
-
-async function getProfile(userId: string) {
-  try {
-    console.log("Fetching profile for user:", userId);
-    
-    const { data: profile, error } = await supabase
-      .from("profiles")
-      .select("*")
-      .eq("id", userId)
-      .maybeSingle();
-
-    if (error) {
-      console.error("Error fetching profile:", error);
-      return null;
-    }
-
-    if (!profile && isDevelopment) {
-      console.log("Creating demo profile for development...");
-      const devUser = DEV_USERS.brand;
-      
-      const { data: newProfile, error: insertError } = await supabase
-        .from("profiles")
-        .insert({
-          id: userId,
-          account_type: devUser.user_metadata.account_type,
-          full_name: devUser.user_metadata.account_type === 'brand' ? 'Demo Brand' : 'Demo Influencer',
-          username: devUser.user_metadata.account_type === 'brand' ? 'demobrand' : 'demoinfluencer',
-        })
-        .select()
-        .maybeSingle();
-
-      if (insertError) {
-        console.error("Error creating demo profile:", insertError);
-        return null;
-      }
-
-      console.log("Created new profile:", newProfile);
-      return newProfile;
-    }
-
-    console.log("Found existing profile:", profile);
-    return profile;
-  } catch (error) {
-    console.error("Error in getProfile:", error);
-    return null;
-  }
-}
-
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<User | null>(isDevelopment ? DEV_USERS.brand : null);
-  const [profile, setProfile] = useState<any>(null);
-  const [loading, setLoading] = useState(!isDevelopment);
-  const { toast } = useToast();
-
-  const impersonateRole = (role: 'brand' | 'influencer') => {
-    if (!isDevelopment) return;
-    const devUser = DEV_USERS[role];
-    setUser(devUser);
-    getProfile(devUser.id).then(profile => {
-      if (profile) setProfile(profile);
-    }).catch(console.error);
-  };
-
-  useEffect(() => {
-    if (isDevelopment) {
-      const devUser = DEV_USERS.brand;
-      getProfile(devUser.id).then(profile => {
-        if (profile) setProfile(profile);
-        setLoading(false);
-      }).catch(error => {
-        console.error("Error loading dev profile:", error);
-        toast({
-          title: "Error loading profile",
-          description: "There was an error loading the development profile",
-          variant: "destructive",
-        });
-        setLoading(false);
-      });
-      return;
-    }
-
-    const initializeAuth = async () => {
-      try {
-        setLoading(true);
-        console.log("Initializing auth...");
-        const { data: { session } } = await supabase.auth.getSession();
-        console.log("Initial session:", session);
-        
-        if (session?.user) {
-          setUser(session.user);
-          const profile = await getProfile(session.user.id);
-          if (profile) {
-            setProfile(profile);
-          } else {
-            toast({
-              title: "Error loading profile",
-              description: "Could not load user profile",
-              variant: "destructive",
-            });
-          }
-        } else {
-          setUser(null);
-          setProfile(null);
-        }
-      } catch (error) {
-        console.error("Error initializing auth:", error);
-        toast({
-          title: "Authentication Error",
-          description: "There was an error initializing authentication",
-          variant: "destructive",
-        });
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    initializeAuth();
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log("Auth state changed:", event, session);
-      
-      if (session?.user) {
-        setUser(session.user);
-        const profile = await getProfile(session.user.id);
-        if (profile) setProfile(profile);
-      } else {
-        setUser(null);
-        setProfile(null);
-      }
-    });
-
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [toast]);
-
-  const signOut = async () => {
-    try {
-      if (isDevelopment) {
-        return;
-      }
-      
-      const { error } = await supabase.auth.signOut();
-      if (error) throw error;
-      
-      setUser(null);
-      setProfile(null);
-      
-    } catch (error) {
-      console.error("Error signing out:", error);
-      toast({
-        title: "Error signing out",
-        description: "There was an error signing out",
-        variant: "destructive",
-      });
-    }
-  };
+  const { user, profile, loading } = useAuthState();
 
   return (
-    <AuthContext.Provider value={{ user, profile, loading, signOut, impersonateRole }}>
+    <AuthContext.Provider value={{ 
+      user, 
+      profile, 
+      loading, 
+      signOut, 
+      impersonateRole 
+    }}>
       {children}
     </AuthContext.Provider>
   );
