@@ -2,7 +2,7 @@ import { NavItems } from "./NavItems";
 import { AuthButtons } from "./AuthButtons";
 import { RoleSelector } from "./RoleSelector";
 import { UserCircle2 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 interface MobileNavProps {
   isOpen: boolean;
@@ -29,7 +29,14 @@ export const MobileNav = ({
   profile,
   isAdmin,
 }: MobileNavProps) => {
+  const navigate = useNavigate();
+
   if (!isOpen) return null;
+
+  const handleProfileClick = () => {
+    navigate('/profile');
+    onClose();
+  };
 
   return (
     <div className="md:hidden">
@@ -39,13 +46,12 @@ export const MobileNav = ({
             <UserCircle2 className="h-8 w-8" />
             <div>
               <div className="font-medium">{profile?.full_name || "User"}</div>
-              <Link
-                to="/profile"
-                className="text-sm text-gray-500"
-                onClick={onClose}
+              <button
+                onClick={handleProfileClick}
+                className="text-sm text-gray-500 hover:text-gray-700"
               >
                 View Profile
-              </Link>
+              </button>
             </div>
           </div>
         )}

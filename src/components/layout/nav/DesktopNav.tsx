@@ -11,7 +11,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 interface DesktopNavProps {
   navItems: Array<{ name: string; path: string }>;
@@ -34,6 +34,12 @@ export const DesktopNav = ({
   impersonateRole,
   signOut,
 }: DesktopNavProps) => {
+  const navigate = useNavigate();
+
+  const handleProfileClick = () => {
+    navigate('/profile');
+  };
+
   return (
     <div className="hidden md:flex items-center space-x-6">
       <NavItems items={navItems} isActive={isActive} />
@@ -60,10 +66,8 @@ export const DesktopNav = ({
               {profile?.full_name || "My Account"}
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem asChild>
-              <Link to="/profile" className="w-full cursor-pointer">
-                Profile Settings
-              </Link>
+            <DropdownMenuItem onClick={handleProfileClick}>
+              Profile Settings
             </DropdownMenuItem>
             <DropdownMenuItem onClick={signOut}>
               Sign Out
