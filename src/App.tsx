@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { publicRoutes } from "./routes/routes";
 import { useState, useCallback } from "react";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
@@ -12,7 +12,6 @@ import { AuthStateHandler } from "@/components/auth/AuthStateHandler";
 import Navbar from "@/components/layout/Navbar";
 
 const AppContent = () => {
-  const navigate = useNavigate();
   const { user, profile, loading } = useAuth();
 
   const handleAuthChange = useCallback(async (event: string, session: any) => {
@@ -20,13 +19,9 @@ const AppContent = () => {
 
     if (event === 'SIGNED_OUT') {
       console.log("User signed out, redirecting to login");
-      navigate('/login');
-      return;
+      return <Navigate to="/login" replace />;
     }
-  }, [navigate]);
-
-  // Log the current auth state for debugging
-  console.log("Current auth state:", { user, profile, loading });
+  }, []);
 
   if (loading) {
     return (
@@ -52,6 +47,7 @@ const AppContent = () => {
             element={route.element}
           />
         ))}
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </div>
   );
