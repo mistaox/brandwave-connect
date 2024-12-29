@@ -10,17 +10,27 @@ import { supabase } from "./integrations/supabase/client";
 
 const AppContent = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
 
   useEffect(() => {
     supabase.auth.onAuthStateChange((event, session) => {
+      console.log("Auth state changed:", event, session);
       if (event === 'SIGNED_OUT') {
         navigate('/login');
       } else if (event === 'SIGNED_IN' && session) {
-        navigate('/dashboard');
+        // Wait for profile to be loaded before redirecting
+        if (profile) {
+          if (profile.account_type === 'influencer') {
+            navigate('/dashboard/influencer');
+          } else if (profile.account_type === 'brand') {
+            navigate('/dashboard/brand');
+          } else {
+            navigate('/dashboard');
+          }
+        }
       }
     });
-  }, [navigate]);
+  }, [navigate, profile]);
 
   return (
     <Routes>
