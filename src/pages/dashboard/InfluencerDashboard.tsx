@@ -18,39 +18,16 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
 
 const InfluencerDashboard = () => {
-  const { user } = useAuth();
-  const [profile, setProfile] = useState<any>(null);
+  const { user, profile } = useAuth();
   const [loading, setLoading] = useState(true);
   const [selectedConversation, setSelectedConversation] = useState<string | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
-    const getProfile = async () => {
-      try {
-        if (!user?.id) return;
-        
-        const { data, error } = await supabase
-          .from("profiles")
-          .select("*")
-          .eq("id", user.id)
-          .single();
-
-        if (error) throw error;
-        setProfile(data);
-      } catch (error) {
-        console.error("Error loading profile:", error);
-        toast({
-          title: "Error loading profile",
-          description: "Please try again later",
-          variant: "destructive",
-        });
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    getProfile();
-  }, [user, toast]);
+    if (profile) {
+      setLoading(false);
+    }
+  }, [profile]);
 
   if (loading) {
     return (
@@ -58,6 +35,17 @@ const InfluencerDashboard = () => {
         <Navbar />
         <div className="flex items-center justify-center h-[calc(100vh-4rem)]">
           <Loader2 className="h-8 w-8 animate-spin" />
+        </div>
+      </div>
+    );
+  }
+
+  if (!profile) {
+    return (
+      <div className="min-h-screen">
+        <Navbar />
+        <div className="flex items-center justify-center h-[calc(100vh-4rem)]">
+          <p className="text-gray-500">Profile not found.</p>
         </div>
       </div>
     );
