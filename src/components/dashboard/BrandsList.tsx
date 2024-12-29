@@ -3,7 +3,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Plus, Building2, Loader2, Pencil } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 import {
   Dialog,
   DialogContent,
@@ -63,6 +62,13 @@ export const BrandsList = ({ onBrandSelect }: BrandsListProps) => {
 
   const handleAddSuccess = () => {
     refetch();
+  };
+
+  const handleViewCampaigns = (e: React.MouseEvent, brandId: string) => {
+    e.stopPropagation(); // Prevent triggering the card's onClick
+    if (onBrandSelect) {
+      onBrandSelect(brandId);
+    }
   };
 
   if (isLoading) {
@@ -164,10 +170,7 @@ export const BrandsList = ({ onBrandSelect }: BrandsListProps) => {
                     </Dialog>
                     <Button
                       variant="outline"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        navigate(`/brands/${brand.id}/campaigns`);
-                      }}
+                      onClick={(e) => handleViewCampaigns(e, brand.id)}
                     >
                       View Campaigns
                     </Button>
