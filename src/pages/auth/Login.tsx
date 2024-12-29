@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Loader2 } from "lucide-react";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -16,20 +17,32 @@ const Login = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    console.log("Attempting to sign in with:", email);
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error("Sign in error:", error);
+        throw error;
+      }
 
+      console.log("Sign in successful:", data);
+      toast({
+        title: "Success",
+        description: "Successfully signed in!",
+      });
+
+      // Redirect to dashboard after successful login
       navigate("/dashboard");
     } catch (error: any) {
+      console.error("Login error:", error);
       toast({
         title: "Error",
-        description: error.message,
+        description: error.message || "Failed to sign in",
         variant: "destructive",
       });
     } finally {
@@ -56,6 +69,7 @@ const Login = () => {
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 className="w-full"
+                disabled={loading}
               />
             </div>
             <div>
@@ -66,6 +80,7 @@ const Login = () => {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 className="w-full"
+                disabled={loading}
               />
             </div>
             <div className="flex items-center justify-between">
@@ -82,8 +97,19 @@ const Login = () => {
                 Don't have an account?
               </Link>
             </div>
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? "Signing in..." : "Sign in"}
+            <Button 
+              type="submit" 
+              className="w-full" 
+              disabled={loading}
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Signing in...
+                </>
+              ) : (
+                "Sign in"
+              )}
             </Button>
           </form>
         </CardContent>
