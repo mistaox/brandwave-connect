@@ -15,9 +15,15 @@ interface BrandDashboardTabsProps {
 
 export const BrandDashboardTabs = ({ selectedBrandId, onBrandSelect }: BrandDashboardTabsProps) => {
   const [selectedConversation, setSelectedConversation] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState("overview");
+
+  const handleBrandSelect = (brandId: string) => {
+    onBrandSelect(brandId);
+    setActiveTab("campaigns"); // Switch to campaigns tab when a brand is selected
+  };
 
   return (
-    <Tabs defaultValue="overview" className="mt-8">
+    <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-8">
       <TabsList className="grid w-full grid-cols-5 lg:w-[750px]">
         <TabsTrigger value="overview">Overview</TabsTrigger>
         <TabsTrigger value="brands">Brands</TabsTrigger>
@@ -32,7 +38,7 @@ export const BrandDashboardTabs = ({ selectedBrandId, onBrandSelect }: BrandDash
       </TabsContent>
       
       <TabsContent value="brands" className="mt-6">
-        <BrandsList onBrandSelect={onBrandSelect} />
+        <BrandsList onBrandSelect={handleBrandSelect} />
       </TabsContent>
       
       <TabsContent value="campaigns" className="mt-6">
