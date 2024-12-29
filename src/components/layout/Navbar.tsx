@@ -42,7 +42,6 @@ const Navbar = () => {
       return [
         ...commonItems,
         { name: "Marketplace", path: "/marketplace/influencers" },
-        { name: "Campaigns", path: "/campaigns" },
       ];
     }
 
