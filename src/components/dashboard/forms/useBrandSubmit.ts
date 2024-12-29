@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
 
-export const useBrandSubmit = () => {
+export const useBrandSubmit = (onSuccess?: () => void) => {
   const { user } = useAuth();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
@@ -38,6 +38,9 @@ export const useBrandSubmit = () => {
       });
 
       queryClient.invalidateQueries({ queryKey: ["brands"] });
+      
+      // Call the onSuccess callback if provided
+      onSuccess?.();
       
       // Close the dialog by clicking the close button
       const closeButton = document.querySelector('[data-dialog-close]');
