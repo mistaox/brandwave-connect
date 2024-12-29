@@ -1,26 +1,12 @@
 import { useState, useEffect } from "react";
 import { useToast } from "@/components/ui/use-toast";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2, Save } from "lucide-react";
-import { DeliverablesList } from "./DeliverablesList";
 import { submitProposal } from "./utils/proposalFormUtils";
-import { ProposalTextInput } from "./form/ProposalTextInput";
-import { ProposalBudgetInput } from "./form/ProposalBudgetInput";
-import { ProposalTimelineInput } from "./form/ProposalTimelineInput";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
 import { supabase } from "@/integrations/supabase/client";
 import type { ProposalFormData } from "./utils/proposalFormUtils";
+import { ProposalDetailsStep } from "./form/steps/ProposalDetailsStep";
+import { DeliverablesStep } from "./form/steps/DeliverablesStep";
+import { ProposalFormActions } from "./form/ProposalFormActions";
 
 interface ProposalFormProps {
   collaborationId: string;
@@ -28,12 +14,24 @@ interface ProposalFormProps {
   initialData?: Partial<ProposalFormData>;
 }
 
+const STEPS = [
+  {
+    title: "Proposal Details",
+    description: "Provide the basic details of your proposal",
+  },
+  {
+    title: "Deliverables",
+    description: "Define what you'll deliver for this campaign",
+  },
+];
+
 export const ProposalForm = ({
   collaborationId,
   onSubmit,
   initialData,
 }: ProposalFormProps) => {
   const { toast } = useToast();
+  const [currentStep, setCurrentStep] = useState(0);
   const [loading, setLoading] = useState(false);
   const [savingDraft, setSavingDraft] = useState(false);
   const [formData, setFormData] = useState<Partial<ProposalFormData>>({
@@ -42,11 +40,7 @@ export const ProposalForm = ({
     proposal_timeline: initialData?.proposal_timeline || "",
     proposal_deliverables: initialData?.proposal_deliverables || [],
   });
-  const [deliverables, setDeliverables] = useState<string[]>(
-    initialData?.proposal_deliverables || []
-  );
 
-  // Auto-save draft every 30 seconds
   useEffect(() => {
     const timer = setInterval(() => {
       saveDraft();
@@ -89,22 +83,7 @@ export const ProposalForm = ({
     setLoading(true);
 
     try {
-      const formData = new FormData(e.currentTarget);
-      const proposalData: ProposalFormData = {
-        proposal_text: formData.get("proposal_text")?.toString() || "",
-        proposal_budget: Number(formData.get("proposal_budget")),
-        proposal_timeline: formData.get("proposal_timeline")?.toString() || "",
-        proposal_deliverables: deliverables,
-      };
-
-      // Save revision history
-      await supabase.from("proposal_revisions").insert({
-        collaboration_id: collaborationId,
-        ...proposalData,
-        revision_number: 1, // You might want to fetch the latest revision number and increment it
-      });
-
-      await submitProposal(collaborationId, proposalData);
+      await submitProposal(collaborationId, formData as ProposalFormData);
 
       toast({
         title: "Proposal submitted successfully",
@@ -124,93 +103,64 @@ export const ProposalForm = ({
     }
   };
 
+  const handleFieldChange = (field: string, value: any) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleNext = () => {
+    if (currentStep < STEPS.length - 1) {
+      setCurrentStep((prev) => prev + 1);
+    }
+  };
+
+  const handlePrevious = () => {
+    if (currentStep > 0) {
+      setCurrentStep((prev) => prev - 1);
+    }
+  };
+
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Submit Proposal</CardTitle>
+        <CardTitle>{STEPS[currentStep].title}</CardTitle>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-6">
-          <ProposalTextInput 
-            defaultValue={initialData?.proposal_text}
-            onChange={(value) => setFormData(prev => ({ ...prev, proposal_text: value }))}
-          />
-          <ProposalBudgetInput 
-            defaultValue={initialData?.proposal_budget}
-            onChange={(value) => setFormData(prev => ({ ...prev, proposal_budget: value }))}
-          />
-          <ProposalTimelineInput 
-            defaultValue={initialData?.proposal_timeline}
-            onChange={(value) => setFormData(prev => ({ ...prev, proposal_timeline: value }))}
-          />
+          {currentStep === 0 && (
+            <ProposalDetailsStep
+              defaultValues={formData}
+              onChange={handleFieldChange}
+            />
+          )}
 
-          <div className="space-y-2">
-            <DeliverablesList
-              deliverables={deliverables}
+          {currentStep === 1 && (
+            <DeliverablesStep
+              deliverables={formData.proposal_deliverables || []}
               onAdd={(deliverable) => {
-                setDeliverables([...deliverables, deliverable]);
-                setFormData(prev => ({ ...prev, proposal_deliverables: [...deliverables, deliverable] }));
+                const newDeliverables = [
+                  ...(formData.proposal_deliverables || []),
+                  deliverable,
+                ];
+                handleFieldChange("proposal_deliverables", newDeliverables);
               }}
               onRemove={(index) => {
-                const newDeliverables = deliverables.filter((_, i) => i !== index);
-                setDeliverables(newDeliverables);
-                setFormData(prev => ({ ...prev, proposal_deliverables: newDeliverables }));
+                const newDeliverables = (formData.proposal_deliverables || []).filter(
+                  (_, i) => i !== index
+                );
+                handleFieldChange("proposal_deliverables", newDeliverables);
               }}
             />
-          </div>
+          )}
 
-          <div className="flex justify-between">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={saveDraft}
-              disabled={savingDraft}
-            >
-              {savingDraft ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Saving...
-                </>
-              ) : (
-                <>
-                  <Save className="mr-2 h-4 w-4" />
-                  Save Draft
-                </>
-              )}
-            </Button>
-
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button type="button" disabled={loading}>
-                  {loading ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Submitting...
-                    </>
-                  ) : (
-                    "Submit Proposal"
-                  )}
-                </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Submit Proposal</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    Are you sure you want to submit this proposal? This action cannot be undone.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction onClick={() => {
-                    const form = document.querySelector('form');
-                    if (form) form.requestSubmit();
-                  }}>
-                    Submit
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
-          </div>
+          <ProposalFormActions
+            onSaveDraft={saveDraft}
+            loading={loading}
+            savingDraft={savingDraft}
+            currentStep={currentStep}
+            totalSteps={STEPS.length}
+            onNext={handleNext}
+            onPrevious={handlePrevious}
+          />
         </form>
       </CardContent>
     </Card>
