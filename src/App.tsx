@@ -66,14 +66,6 @@ const AppContent = () => {
         default:
           navigate('/dashboard');
       }
-    } else if (!user) {
-      console.log("No user present, checking if on protected route");
-      const isProtectedRoute = window.location.pathname.includes('/dashboard') || 
-                              window.location.pathname.includes('/admin');
-      if (isProtectedRoute) {
-        console.log("On protected route without auth, redirecting to login");
-        navigate('/login');
-      }
     }
 
     // Cleanup subscription

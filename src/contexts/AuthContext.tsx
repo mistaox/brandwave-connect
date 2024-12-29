@@ -106,38 +106,51 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   useEffect(() => {
-    if (isDevelopment) {
-      impersonateRole('influencer');
-    } else {
-      supabase.auth.getSession().then(({ data: { session } }) => {
-        setUser(session?.user ?? null);
+    // Initialize auth state
+    const initializeAuth = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        console.log("Initial session:", session);
+        
         if (session?.user) {
-          getProfile(session.user.id);
-        }
-      });
-
-      const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-        console.log("Auth state changed:", _event, session);
-        setUser(session?.user ?? null);
-        if (session?.user) {
-          getProfile(session.user.id);
+          setUser(session.user);
+          await getProfile(session.user.id);
         } else {
+          setUser(null);
           setProfile(null);
         }
-      });
+      } catch (error) {
+        console.error("Error initializing auth:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-      return () => subscription.unsubscribe();
-    }
+    initializeAuth();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log("Auth state changed:", event, session);
+      
+      if (session?.user) {
+        setUser(session.user);
+        await getProfile(session.user.id);
+      } else {
+        setUser(null);
+        setProfile(null);
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
   const signOut = async () => {
     try {
       if (isDevelopment) {
-        // In development, just clear the state
         setUser(null);
         setProfile(null);
       } else {
-        // In production, sign out from Supabase and clear local storage
         const { error } = await supabase.auth.signOut();
         if (error) throw error;
         
