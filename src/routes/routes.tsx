@@ -10,9 +10,6 @@ import InfluencerDashboard from "@/pages/dashboard/InfluencerDashboard";
 import { MarketplaceRedirect } from "@/components/marketplace/MarketplaceRedirect";
 import BrandListing from "@/pages/marketplace/BrandListing";
 import InfluencerListing from "@/pages/marketplace/InfluencerListing";
-import Campaigns from "@/pages/Campaigns";
-import CreateCampaign from "@/pages/campaigns/CreateCampaign";
-import EditCampaign from "@/pages/campaigns/EditCampaign";
 import Messages from "@/pages/Messages";
 import Profile from "@/pages/Profile";
 import Login from "@/pages/auth/Login";
@@ -78,26 +75,6 @@ const protectedPaths = [
     element: (
       <ProtectedRoute requiredAccountType="brand">
         <InfluencerListing />
-      </ProtectedRoute>
-    )
-  },
-  { 
-    path: "/campaigns", 
-    element: <ProtectedRoute><Campaigns /></ProtectedRoute> 
-  },
-  { 
-    path: "/campaigns/create", 
-    element: (
-      <ProtectedRoute requiredAccountType="brand">
-        <CreateCampaign />
-      </ProtectedRoute>
-    )
-  },
-  { 
-    path: "/campaigns/:campaignId/edit", 
-    element: (
-      <ProtectedRoute requiredAccountType="brand">
-        <EditCampaign />
       </ProtectedRoute>
     )
   },
