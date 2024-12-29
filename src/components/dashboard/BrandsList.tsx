@@ -10,6 +10,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import { AddBrandForm } from "./AddBrandForm";
 import { EditBrandForm } from "./EditBrandForm";
@@ -31,15 +32,16 @@ export const BrandsList = ({ onBrandSelect }: BrandsListProps) => {
   const { data: brands, isLoading, refetch } = useQuery({
     queryKey: ["brands", user?.id],
     queryFn: async () => {
+      console.log("Fetching brands for user:", user?.id);
       if (!user) throw new Error("No authenticated user");
 
       const { data, error } = await supabase
         .from("brands")
         .select("*")
-        .eq("owner_id", user.id)
-        .order("created_at", { ascending: false });
+        .eq("owner_id", user.id);
 
       if (error) {
+        console.error("Error fetching brands:", error);
         toast({
           title: "Error loading brands",
           description: error.message,
@@ -48,9 +50,10 @@ export const BrandsList = ({ onBrandSelect }: BrandsListProps) => {
         throw error;
       }
       
+      console.log("Fetched brands:", data);
       return data as Brand[];
     },
-    enabled: !!user,
+    enabled: !!user?.id,
   });
 
   const handleEditSuccess = () => {
@@ -80,13 +83,16 @@ export const BrandsList = ({ onBrandSelect }: BrandsListProps) => {
           <DialogContent>
             <DialogHeader>
               <DialogTitle>Add New Brand</DialogTitle>
+              <DialogDescription>
+                Create a new brand to manage your campaigns
+              </DialogDescription>
             </DialogHeader>
-            <AddBrandForm />
+            <AddBrandForm onSuccess={refetch} />
           </DialogContent>
         </Dialog>
       </div>
 
-      {brands?.length === 0 ? (
+      {!brands?.length ? (
         <Card>
           <CardContent className="flex flex-col items-center justify-center p-6">
             <Building2 className="h-12 w-12 text-muted-foreground mb-4" />
@@ -98,8 +104,11 @@ export const BrandsList = ({ onBrandSelect }: BrandsListProps) => {
               <DialogContent>
                 <DialogHeader>
                   <DialogTitle>Add New Brand</DialogTitle>
+                  <DialogDescription>
+                    Create a new brand to manage your campaigns
+                  </DialogDescription>
                 </DialogHeader>
-                <AddBrandForm />
+                <AddBrandForm onSuccess={refetch} />
               </DialogContent>
             </Dialog>
           </CardContent>
@@ -137,6 +146,9 @@ export const BrandsList = ({ onBrandSelect }: BrandsListProps) => {
                       <DialogContent>
                         <DialogHeader>
                           <DialogTitle>Edit Brand</DialogTitle>
+                          <DialogDescription>
+                            Update your brand information
+                          </DialogDescription>
                         </DialogHeader>
                         {editingBrand && (
                           <EditBrandForm
