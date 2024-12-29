@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
-import Navbar from "@/components/layout/Navbar";
 import { InfluencerMetrics } from "@/components/dashboard/influencer/InfluencerMetrics";
 import { InfluencerHeader } from "@/components/dashboard/influencer/InfluencerHeader";
 import { InfluencerActivity } from "@/components/dashboard/influencer/InfluencerActivity";
@@ -32,7 +31,6 @@ const InfluencerDashboard = () => {
   if (loading) {
     return (
       <div className="min-h-screen">
-        <Navbar />
         <div className="flex items-center justify-center h-[calc(100vh-4rem)]">
           <Loader2 className="h-8 w-8 animate-spin" />
         </div>
@@ -43,7 +41,6 @@ const InfluencerDashboard = () => {
   if (!profile) {
     return (
       <div className="min-h-screen">
-        <Navbar />
         <div className="flex items-center justify-center h-[calc(100vh-4rem)]">
           <p className="text-gray-500">Profile not found.</p>
         </div>
@@ -53,7 +50,6 @@ const InfluencerDashboard = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navbar />
       <main className="container mx-auto px-4 py-8">
         <InfluencerHeader profile={profile} />
         

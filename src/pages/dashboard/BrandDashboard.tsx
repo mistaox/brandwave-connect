@@ -1,4 +1,3 @@
-import Navbar from "@/components/layout/Navbar";
 import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 import { BrandDashboardTabs } from "@/components/dashboard/brand/BrandDashboardTabs";
 import { LoadingSpinner } from "@/components/dashboard/brand/LoadingSpinner";
@@ -13,7 +12,6 @@ const BrandDashboard = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navbar />
       <main className="container mx-auto px-4 py-8">
         <DashboardHeader profile={profile} />
         <BrandDashboardTabs 
