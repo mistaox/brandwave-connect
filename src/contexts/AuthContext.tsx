@@ -20,7 +20,7 @@ const AuthContext = createContext<AuthContextType>({
 
 const isDevelopment = import.meta.env.DEV;
 
-// Development user data with real UUIDs from the database
+// Development user data
 const DEV_USERS = {
   brand: {
     id: "d63a9067-6971-4b56-9eaf-1bfb972167a6",
@@ -48,59 +48,57 @@ const DEV_USERS = {
   } as User
 };
 
+async function getProfile(userId: string) {
+  try {
+    console.log("Fetching profile for user:", userId);
+    
+    const { data: profile, error } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("id", userId)
+      .maybeSingle();
+
+    if (error) {
+      console.error("Error fetching profile:", error);
+      return null;
+    }
+
+    if (!profile && isDevelopment) {
+      console.log("Creating demo profile for development...");
+      const devUser = DEV_USERS.brand;
+      
+      const { data: newProfile, error: insertError } = await supabase
+        .from("profiles")
+        .insert({
+          id: userId,
+          account_type: devUser.user_metadata.account_type,
+          full_name: devUser.user_metadata.account_type === 'brand' ? 'Demo Brand' : 'Demo Influencer',
+          username: devUser.user_metadata.account_type === 'brand' ? 'demobrand' : 'demoinfluencer',
+        })
+        .select()
+        .maybeSingle();
+
+      if (insertError) {
+        console.error("Error creating demo profile:", insertError);
+        return null;
+      }
+
+      console.log("Created new profile:", newProfile);
+      return newProfile;
+    }
+
+    console.log("Found existing profile:", profile);
+    return profile;
+  } catch (error) {
+    console.error("Error in getProfile:", error);
+    return null;
+  }
+}
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(isDevelopment ? DEV_USERS.brand : null);
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(!isDevelopment);
-
-  async function getProfile(userId: string) {
-    try {
-      console.log("Fetching profile for user:", userId);
-      
-      const { data: existingProfile, error } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("id", userId)
-        .maybeSingle();
-
-      if (error) {
-        console.error("Error fetching profile:", error);
-        return null;
-      }
-
-      if (!existingProfile && isDevelopment) {
-        console.log("Creating demo profile for development...");
-        const devUser = user?.user_metadata?.account_type === 'influencer' 
-          ? DEV_USERS.influencer 
-          : DEV_USERS.brand;
-
-        const { data: newProfile, error: insertError } = await supabase
-          .from("profiles")
-          .insert([{
-            id: userId,
-            account_type: devUser.user_metadata.account_type,
-            full_name: devUser.user_metadata.account_type === 'brand' ? 'Demo Brand' : 'Demo Influencer',
-            username: devUser.user_metadata.account_type === 'brand' ? 'demobrand' : 'demoinfluencer',
-          }])
-          .select()
-          .single();
-
-        if (insertError) {
-          console.error("Error creating demo profile:", insertError);
-          return null;
-        }
-
-        console.log("Created new profile:", newProfile);
-        return newProfile;
-      }
-
-      console.log("Found existing profile:", existingProfile);
-      return existingProfile;
-    } catch (error) {
-      console.error("Error in getProfile:", error);
-      return null;
-    }
-  }
 
   const impersonateRole = (role: 'brand' | 'influencer') => {
     if (!isDevelopment) return;
@@ -150,22 +148,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log("Auth state changed:", event, session);
       
-      setLoading(true);
-      try {
-        if (session?.user) {
-          setUser(session.user);
-          const profile = await getProfile(session.user.id);
-          if (profile) setProfile(profile);
-        } else {
-          setUser(null);
-          setProfile(null);
-        }
-      } catch (error) {
-        console.error("Error in auth state change:", error);
+      if (session?.user) {
+        setUser(session.user);
+        const profile = await getProfile(session.user.id);
+        if (profile) setProfile(profile);
+      } else {
         setUser(null);
         setProfile(null);
-      } finally {
-        setLoading(false);
       }
     });
 
@@ -176,30 +165,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signOut = async () => {
     try {
-      setLoading(true);
       if (isDevelopment) {
-        // In development, just keep the dev user logged in
         return;
       }
       
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
       
-      localStorage.clear();
       setUser(null);
       setProfile(null);
       
-      document.cookie.split(";").forEach((c) => {
-        document.cookie = c
-          .replace(/^ +/, "")
-          .replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
-      });
-      
-      console.log("Successfully signed out and cleared all session data");
     } catch (error) {
       console.error("Error signing out:", error);
-    } finally {
-      setLoading(false);
     }
   };
 
