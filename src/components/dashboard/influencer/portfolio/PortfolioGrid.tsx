@@ -3,7 +3,24 @@ import { supabase } from "@/integrations/supabase/client";
 import { Loader2, Image as ImageIcon, Video, Link, ChartBar } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-export const PortfolioGrid = () => {
+interface PortfolioItem {
+  id: string;
+  title: string;
+  description: string;
+  media_url: string;
+  media_type: string;
+  platform: string;
+  engagement_metrics: any;
+  created_at: string;
+  influencer_id: string;
+  updated_at: string;
+}
+
+interface PortfolioGridProps {
+  items?: PortfolioItem[];
+}
+
+export const PortfolioGrid = ({ items }: PortfolioGridProps) => {
   const { data: portfolioItems, isLoading } = useQuery({
     queryKey: ['portfolio-items'],
     queryFn: async () => {
@@ -15,9 +32,12 @@ export const PortfolioGrid = () => {
       if (error) throw error;
       return data;
     },
+    enabled: !items, // Only fetch if items prop is not provided
   });
 
-  if (isLoading) {
+  const displayItems = items || portfolioItems;
+
+  if (isLoading && !items) {
     return (
       <div className="flex items-center justify-center py-8">
         <Loader2 className="h-8 w-8 animate-spin" />
@@ -25,7 +45,7 @@ export const PortfolioGrid = () => {
     );
   }
 
-  if (!portfolioItems?.length) {
+  if (!displayItems?.length) {
     return (
       <div className="text-center text-muted-foreground py-8">
         No portfolio items yet. Add your first work showcase!
@@ -48,7 +68,7 @@ export const PortfolioGrid = () => {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-      {portfolioItems.map((item) => (
+      {displayItems.map((item) => (
         <Card key={item.id}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">{item.title}</CardTitle>
