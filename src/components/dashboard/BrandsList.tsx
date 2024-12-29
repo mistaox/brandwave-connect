@@ -61,6 +61,10 @@ export const BrandsList = ({ onBrandSelect }: BrandsListProps) => {
     setEditingBrand(null);
   };
 
+  const handleAddSuccess = () => {
+    refetch();
+  };
+
   if (isLoading) {
     return (
       <div className="flex justify-center p-8">
@@ -87,7 +91,7 @@ export const BrandsList = ({ onBrandSelect }: BrandsListProps) => {
                 Create a new brand to manage your campaigns
               </DialogDescription>
             </DialogHeader>
-            <AddBrandForm onSuccess={refetch} />
+            <AddBrandForm onSuccess={handleAddSuccess} />
           </DialogContent>
         </Dialog>
       </div>
@@ -108,7 +112,7 @@ export const BrandsList = ({ onBrandSelect }: BrandsListProps) => {
                     Create a new brand to manage your campaigns
                   </DialogDescription>
                 </DialogHeader>
-                <AddBrandForm onSuccess={refetch} />
+                <AddBrandForm onSuccess={handleAddSuccess} />
               </DialogContent>
             </Dialog>
           </CardContent>
