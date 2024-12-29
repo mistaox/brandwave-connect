@@ -16,6 +16,8 @@ import Messages from "@/pages/Messages";
 import Profile from "@/pages/Profile";
 import Login from "@/pages/auth/Login";
 import Register from "@/pages/auth/Register";
+import ForgotPassword from "@/pages/auth/ForgotPassword";
+import ResetPassword from "@/pages/auth/ResetPassword";
 import { DashboardRedirect } from "@/components/dashboard/DashboardRedirect";
 import AdminSettings from "@/pages/admin/Settings";
 
@@ -27,6 +29,8 @@ export const publicRoutes: RouteProps[] = [
   { path: "/contact", element: <Contact /> },
   { path: "/login", element: <Login /> },
   { path: "/register", element: <Register /> },
+  { path: "/forgot-password", element: <ForgotPassword /> },
+  { path: "/reset-password", element: <ResetPassword /> },
   { path: "/dashboard", element: <DashboardRedirect /> },
   { path: "/dashboard/brand", element: <BrandDashboard /> },
   { path: "/dashboard/influencer", element: <InfluencerDashboard /> },
