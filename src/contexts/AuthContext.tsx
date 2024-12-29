@@ -49,9 +49,9 @@ const DEV_USERS = {
 };
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<User | null>(isDevelopment ? DEV_USERS.brand : null);
   const [profile, setProfile] = useState<any>(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(!isDevelopment);
 
   async function getProfile(userId: string) {
     try {
@@ -112,6 +112,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   useEffect(() => {
+    if (isDevelopment) {
+      const devUser = DEV_USERS.brand;
+      getProfile(devUser.id).then(profile => {
+        if (profile) setProfile(profile);
+        setLoading(false);
+      }).catch(console.error);
+      return;
+    }
+
     const initializeAuth = async () => {
       try {
         setLoading(true);
@@ -124,13 +133,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           const profile = await getProfile(session.user.id);
           if (profile) setProfile(profile);
         } else {
-          // Explicitly set user and profile to null when no session exists
           setUser(null);
           setProfile(null);
         }
       } catch (error) {
         console.error("Error initializing auth:", error);
-        // On error, ensure user is logged out
         setUser(null);
         setProfile(null);
       } finally {
@@ -150,13 +157,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           const profile = await getProfile(session.user.id);
           if (profile) setProfile(profile);
         } else {
-          // Explicitly set user and profile to null when session ends
           setUser(null);
           setProfile(null);
         }
       } catch (error) {
         console.error("Error in auth state change:", error);
-        // On error, ensure user is logged out
         setUser(null);
         setProfile(null);
       } finally {
@@ -173,24 +178,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       setLoading(true);
       if (isDevelopment) {
-        setUser(null);
-        setProfile(null);
-      } else {
-        const { error } = await supabase.auth.signOut();
-        if (error) throw error;
-        
-        localStorage.clear();
-        setUser(null);
-        setProfile(null);
-        
-        document.cookie.split(";").forEach((c) => {
-          document.cookie = c
-            .replace(/^ +/, "")
-            .replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
-        });
-        
-        console.log("Successfully signed out and cleared all session data");
+        // In development, just keep the dev user logged in
+        return;
       }
+      
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      
+      localStorage.clear();
+      setUser(null);
+      setProfile(null);
+      
+      document.cookie.split(";").forEach((c) => {
+        document.cookie = c
+          .replace(/^ +/, "")
+          .replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+      });
+      
+      console.log("Successfully signed out and cleared all session data");
     } catch (error) {
       console.error("Error signing out:", error);
     } finally {
