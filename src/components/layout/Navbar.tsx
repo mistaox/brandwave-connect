@@ -38,10 +38,10 @@ const Navbar = () => {
       { name: "Dashboard", path: "/dashboard" },
     ];
 
-    if (isAdmin) {
+    if (profile?.account_type === "admin") {
       return [
         ...commonItems,
-        { name: "Settings", path: "/admin/settings" },
+        { name: "Admin Settings", path: "/admin/settings" },
       ];
     }
 
