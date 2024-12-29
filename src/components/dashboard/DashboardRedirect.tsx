@@ -9,7 +9,9 @@ export const DashboardRedirect = () => {
 
   useEffect(() => {
     if (profile) {
-      if (profile.account_type === "brand") {
+      if (profile.account_type === "admin") {
+        navigate("/admin/settings");
+      } else if (profile.account_type === "brand") {
         navigate("/dashboard/brand");
       } else if (profile.account_type === "influencer") {
         navigate("/dashboard/influencer");
