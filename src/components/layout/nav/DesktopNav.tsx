@@ -70,10 +70,10 @@ export const DesktopNav = ({
                 </div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={handleProfileClick}>
+              <DropdownMenuItem onClick={handleProfileClick} className="cursor-pointer">
                 Profile Settings
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={signOut}>
+              <DropdownMenuItem onClick={signOut} className="cursor-pointer">
                 Sign Out
               </DropdownMenuItem>
             </DropdownMenuContent>

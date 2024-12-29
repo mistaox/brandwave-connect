@@ -54,9 +54,9 @@ export const MobileNav = ({
               )}
               <button
                 onClick={handleProfileClick}
-                className="text-sm text-gray-500 hover:text-gray-700 block mt-1"
+                className="text-sm text-gray-500 hover:text-gray-700 block mt-1 cursor-pointer"
               >
-                View Profile
+                Profile Settings
               </button>
             </div>
           </div>
