@@ -30,7 +30,7 @@ const AppContent = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen">
+      <div className="min-h-screen bg-white">
         <Navbar />
         <div className="flex items-center justify-center h-[calc(100vh-4rem)]">
           <LoadingSpinner />
@@ -40,7 +40,7 @@ const AppContent = () => {
   }
 
   return (
-    <>
+    <div className="min-h-screen bg-white">
       <AuthStateHandler onAuthStateChange={handleAuthChange} />
       <RouteHandler />
       <Navbar />
@@ -53,7 +53,7 @@ const AppContent = () => {
           />
         ))}
       </Routes>
-    </>
+    </div>
   );
 };
 

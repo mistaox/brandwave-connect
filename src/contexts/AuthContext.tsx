@@ -65,7 +65,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       if (error) {
         console.error("Error fetching profile:", error);
-        throw error;
+        return null;
       }
 
       if (!existingProfile && isDevelopment) {
@@ -87,19 +87,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
         if (insertError) {
           console.error("Error creating demo profile:", insertError);
-          throw insertError;
+          return null;
         }
 
         console.log("Created new profile:", newProfile);
-        setProfile(newProfile);
-      } else {
-        console.log("Found existing profile:", existingProfile);
-        setProfile(existingProfile);
+        return newProfile;
       }
+
+      console.log("Found existing profile:", existingProfile);
+      return existingProfile;
     } catch (error) {
       console.error("Error in getProfile:", error);
-      // Don't set loading to false here, let the caller handle it
-      throw error;
+      return null;
     }
   }
 
@@ -107,7 +106,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (!isDevelopment) return;
     const devUser = DEV_USERS[role];
     setUser(devUser);
-    getProfile(devUser.id).catch(console.error);
+    getProfile(devUser.id).then(profile => {
+      if (profile) setProfile(profile);
+    }).catch(console.error);
   };
 
   useEffect(() => {
@@ -119,7 +120,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         
         if (session?.user) {
           setUser(session.user);
-          await getProfile(session.user.id);
+          const profile = await getProfile(session.user.id);
+          if (profile) setProfile(profile);
         }
       } catch (error) {
         console.error("Error initializing auth:", error);
@@ -135,11 +137,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       
       if (session?.user) {
         setUser(session.user);
-        try {
-          await getProfile(session.user.id);
-        } catch (error) {
-          console.error("Error getting profile after auth state change:", error);
-        }
+        const profile = await getProfile(session.user.id);
+        if (profile) setProfile(profile);
       } else {
         setUser(null);
         setProfile(null);
