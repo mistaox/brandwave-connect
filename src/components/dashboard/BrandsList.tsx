@@ -63,8 +63,7 @@ export const BrandsList = ({ onBrandSelect }: BrandsListProps) => {
     refetch();
   };
 
-  const handleViewCampaigns = (e: React.MouseEvent, brandId: string) => {
-    e.stopPropagation(); // Prevent triggering the card's onClick
+  const handleViewCampaigns = (brandId: string) => {
     if (onBrandSelect) {
       onBrandSelect(brandId);
     }
@@ -127,8 +126,7 @@ export const BrandsList = ({ onBrandSelect }: BrandsListProps) => {
           {brands?.map((brand) => (
             <Card 
               key={brand.id} 
-              className="hover:shadow-md transition-shadow cursor-pointer"
-              onClick={() => onBrandSelect?.(brand.id)}
+              className="hover:shadow-md transition-shadow"
             >
               <CardContent className="p-6">
                 <div className="flex justify-between items-start">
@@ -169,7 +167,7 @@ export const BrandsList = ({ onBrandSelect }: BrandsListProps) => {
                     </Dialog>
                     <Button
                       variant="outline"
-                      onClick={(e) => handleViewCampaigns(e, brand.id)}
+                      onClick={() => handleViewCampaigns(brand.id)}
                     >
                       View Campaigns
                     </Button>
