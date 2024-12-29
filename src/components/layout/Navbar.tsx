@@ -1,4 +1,4 @@
-import { Menu, X, UserCircle2 } from "lucide-react";
+import { Menu, X, UserCircle2, Settings } from "lucide-react";
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -37,6 +37,13 @@ const Navbar = () => {
       { name: "Contact", path: "/contact" },
       { name: "Dashboard", path: "/dashboard" },
     ];
+
+    if (isAdmin) {
+      return [
+        ...commonItems,
+        { name: "Settings", path: "/admin/settings" },
+      ];
+    }
 
     if (profile?.account_type === "brand") {
       return [

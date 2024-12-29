@@ -17,6 +17,7 @@ import Profile from "@/pages/Profile";
 import Login from "@/pages/auth/Login";
 import Register from "@/pages/auth/Register";
 import { DashboardRedirect } from "@/components/dashboard/DashboardRedirect";
+import AdminSettings from "@/pages/admin/Settings";
 
 export const publicRoutes: RouteProps[] = [
   { path: "/", element: <Index /> },
@@ -37,4 +38,5 @@ export const publicRoutes: RouteProps[] = [
   { path: "/campaigns/create", element: <CreateCampaign /> },
   { path: "/campaigns/:campaignId/edit", element: <EditCampaign /> },
   { path: "/messages", element: <Messages /> },
+  { path: "/admin/settings", element: <AdminSettings /> },
 ];
