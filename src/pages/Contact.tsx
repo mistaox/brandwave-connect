@@ -1,4 +1,3 @@
-import Navbar from "@/components/layout/Navbar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -17,7 +16,6 @@ const Contact = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navbar />
       <main className="container mx-auto px-4 py-24">
         <h1 className="text-4xl font-bold text-center mb-8">Contact Us</h1>
         <div className="max-w-xl mx-auto">
