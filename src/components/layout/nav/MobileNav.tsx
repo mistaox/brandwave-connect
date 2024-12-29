@@ -1,13 +1,6 @@
 import { NavItems } from "./NavItems";
 import { AuthButtons } from "./AuthButtons";
-import { Button } from "@/components/ui/button";
-import { UserCircle2 } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { RoleSelector } from "./RoleSelector";
 
 interface MobileNavProps {
   isOpen: boolean;
@@ -42,28 +35,11 @@ export const MobileNav = ({
         <NavItems items={navItems} isActive={isActive} onClose={onClose} />
         {isDevelopment && isAdmin && isAuthenticated && (
           <div className="py-2">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" className="w-full">
-                  <UserCircle2 className="mr-2 h-4 w-4" />
-                  {profile?.account_type || 'Select Role'}
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuItem onClick={() => {
-                  impersonateRole('brand');
-                  onClose();
-                }}>
-                  Brand
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => {
-                  impersonateRole('influencer');
-                  onClose();
-                }}>
-                  Influencer
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <RoleSelector 
+              profile={profile} 
+              impersonateRole={impersonateRole}
+              onClose={onClose}
+            />
           </div>
         )}
         <AuthButtons

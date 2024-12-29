@@ -1,17 +1,10 @@
-import { Menu, X, UserCircle2, Settings } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { NavItems } from "./nav/NavItems";
-import { AuthButtons } from "./nav/AuthButtons";
+import { NavLogo } from "./nav/NavLogo";
+import { DesktopNav } from "./nav/DesktopNav";
 import { MobileNav } from "./nav/MobileNav";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -71,34 +64,19 @@ const Navbar = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
             <div className="flex items-center">
-              <Link to="/" className="text-2xl font-bold text-brandgray">
-                Brand<span className="text-brandpink">Collab</span>
-              </Link>
+              <NavLogo />
             </div>
 
-            {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center space-x-6">
-              <NavItems items={navItems} isActive={isActive} />
-              {isDevelopment && isAdmin && user && (
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="outline" size="sm">
-                      <UserCircle2 className="mr-2 h-4 w-4" />
-                      {profile?.account_type || 'Select Role'}
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem onClick={() => impersonateRole('brand')}>
-                      Brand
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => impersonateRole('influencer')}>
-                      Influencer
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              )}
-              <AuthButtons onSignOut={signOut} isAuthenticated={!!user} />
-            </div>
+            <DesktopNav
+              navItems={navItems}
+              isActive={isActive}
+              isDevelopment={isDevelopment}
+              isAdmin={isAdmin}
+              user={user}
+              profile={profile}
+              impersonateRole={impersonateRole}
+              signOut={signOut}
+            />
 
             {/* Mobile menu button */}
             <div className="md:hidden flex items-center">
@@ -111,7 +89,6 @@ const Navbar = () => {
             </div>
           </div>
 
-          {/* Mobile Navigation */}
           <MobileNav
             isOpen={isOpen}
             navItems={navItems}
