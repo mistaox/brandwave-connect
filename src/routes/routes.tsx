@@ -1,4 +1,5 @@
 import { RouteProps } from "react-router-dom";
+import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import Index from "@/pages/Index";
 import About from "@/pages/About";
 import FAQ from "@/pages/FAQ";
@@ -21,7 +22,8 @@ import ResetPassword from "@/pages/auth/ResetPassword";
 import { DashboardRedirect } from "@/components/dashboard/DashboardRedirect";
 import AdminSettings from "@/pages/admin/Settings";
 
-export const publicRoutes: RouteProps[] = [
+// Public routes that don't require authentication
+const publicPaths = [
   { path: "/", element: <Index /> },
   { path: "/about", element: <About /> },
   { path: "/faq", element: <FAQ /> },
@@ -31,16 +33,86 @@ export const publicRoutes: RouteProps[] = [
   { path: "/register", element: <Register /> },
   { path: "/forgot-password", element: <ForgotPassword /> },
   { path: "/reset-password", element: <ResetPassword /> },
-  { path: "/dashboard", element: <DashboardRedirect /> },
-  { path: "/dashboard/brand", element: <BrandDashboard /> },
-  { path: "/dashboard/influencer", element: <InfluencerDashboard /> },
-  { path: "/profile", element: <Profile /> },
-  { path: "/marketplace", element: <MarketplaceRedirect /> },
-  { path: "/marketplace/brands", element: <BrandListing /> },
-  { path: "/marketplace/influencers", element: <InfluencerListing /> },
-  { path: "/campaigns", element: <Campaigns /> },
-  { path: "/campaigns/create", element: <CreateCampaign /> },
-  { path: "/campaigns/:campaignId/edit", element: <EditCampaign /> },
-  { path: "/messages", element: <Messages /> },
-  { path: "/admin/settings", element: <AdminSettings /> },
 ];
+
+// Protected routes that require authentication
+const protectedPaths = [
+  { 
+    path: "/dashboard", 
+    element: <ProtectedRoute><DashboardRedirect /></ProtectedRoute> 
+  },
+  { 
+    path: "/dashboard/brand", 
+    element: (
+      <ProtectedRoute requiredAccountType="brand">
+        <BrandDashboard />
+      </ProtectedRoute>
+    )
+  },
+  { 
+    path: "/dashboard/influencer", 
+    element: (
+      <ProtectedRoute requiredAccountType="influencer">
+        <InfluencerDashboard />
+      </ProtectedRoute>
+    )
+  },
+  { 
+    path: "/profile", 
+    element: <ProtectedRoute><Profile /></ProtectedRoute> 
+  },
+  { 
+    path: "/marketplace", 
+    element: <ProtectedRoute><MarketplaceRedirect /></ProtectedRoute> 
+  },
+  { 
+    path: "/marketplace/brands", 
+    element: (
+      <ProtectedRoute requiredAccountType="influencer">
+        <BrandListing />
+      </ProtectedRoute>
+    )
+  },
+  { 
+    path: "/marketplace/influencers", 
+    element: (
+      <ProtectedRoute requiredAccountType="brand">
+        <InfluencerListing />
+      </ProtectedRoute>
+    )
+  },
+  { 
+    path: "/campaigns", 
+    element: <ProtectedRoute><Campaigns /></ProtectedRoute> 
+  },
+  { 
+    path: "/campaigns/create", 
+    element: (
+      <ProtectedRoute requiredAccountType="brand">
+        <CreateCampaign />
+      </ProtectedRoute>
+    )
+  },
+  { 
+    path: "/campaigns/:campaignId/edit", 
+    element: (
+      <ProtectedRoute requiredAccountType="brand">
+        <EditCampaign />
+      </ProtectedRoute>
+    )
+  },
+  { 
+    path: "/messages", 
+    element: <ProtectedRoute><Messages /></ProtectedRoute> 
+  },
+  { 
+    path: "/admin/settings", 
+    element: (
+      <ProtectedRoute requiredAccountType="admin">
+        <AdminSettings />
+      </ProtectedRoute>
+    )
+  },
+];
+
+export const publicRoutes: RouteProps[] = [...publicPaths, ...protectedPaths];

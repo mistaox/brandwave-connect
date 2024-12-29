@@ -2,10 +2,38 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
 import { publicRoutes } from "./routes/routes";
-import { useState } from "react";
-import { AuthProvider } from "./contexts/AuthContext";
+import { useState, useEffect } from "react";
+import { AuthProvider, useAuth } from "./contexts/AuthContext";
+import { supabase } from "./integrations/supabase/client";
+
+const AppContent = () => {
+  const navigate = useNavigate();
+  const { user } = useAuth();
+
+  useEffect(() => {
+    supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_OUT') {
+        navigate('/login');
+      } else if (event === 'SIGNED_IN' && session) {
+        navigate('/dashboard');
+      }
+    });
+  }, [navigate]);
+
+  return (
+    <Routes>
+      {publicRoutes.map((route) => (
+        <Route
+          key={route.path}
+          path={route.path}
+          element={route.element}
+        />
+      ))}
+    </Routes>
+  );
+};
 
 const App = () => {
   const [queryClient] = useState(
@@ -26,15 +54,7 @@ const App = () => {
       <AuthProvider>
         <BrowserRouter>
           <TooltipProvider>
-            <Routes>
-              {publicRoutes.map((route) => (
-                <Route
-                  key={route.path}
-                  path={route.path}
-                  element={route.element}
-                />
-              ))}
-            </Routes>
+            <AppContent />
             <Toaster />
             <Sonner />
           </TooltipProvider>
