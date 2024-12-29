@@ -4,19 +4,21 @@ import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { Card } from "@/components/ui/card";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Login = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === "SIGNED_IN") {
-        navigate("/dashboard");
-      }
-    });
+    // If user is already authenticated, redirect to dashboard
+    if (user) {
+      navigate("/dashboard");
+    }
+  }, [user, navigate]);
 
-    return () => subscription.unsubscribe();
-  }, [navigate]);
+  // Add console log to track authentication state
+  console.log("Current auth state:", { user });
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
@@ -41,7 +43,7 @@ const Login = () => {
             },
           }}
           providers={[]}
-          redirectTo={`${window.location.origin}/auth/callback`}
+          redirectTo={`${window.location.origin}/dashboard`}
         />
       </Card>
     </div>
