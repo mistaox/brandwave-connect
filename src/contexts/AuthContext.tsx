@@ -13,7 +13,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType>({
   user: null,
   profile: null,
-  loading: true,
+  loading: false,
   signOut: async () => {},
   impersonateRole: () => {},
 });
@@ -51,7 +51,7 @@ const DEV_USERS = {
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   async function getProfile(userId: string) {
     try {
@@ -114,6 +114,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const initializeAuth = async () => {
       try {
+        setLoading(true);
         console.log("Initializing auth...");
         const { data: { session } } = await supabase.auth.getSession();
         console.log("Initial session:", session);
@@ -122,9 +123,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           setUser(session.user);
           const profile = await getProfile(session.user.id);
           if (profile) setProfile(profile);
+        } else {
+          // Explicitly set user and profile to null when no session exists
+          setUser(null);
+          setProfile(null);
         }
       } catch (error) {
         console.error("Error initializing auth:", error);
+        // On error, ensure user is logged out
+        setUser(null);
+        setProfile(null);
       } finally {
         setLoading(false);
       }
@@ -135,15 +143,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log("Auth state changed:", event, session);
       
-      if (session?.user) {
-        setUser(session.user);
-        const profile = await getProfile(session.user.id);
-        if (profile) setProfile(profile);
-      } else {
+      setLoading(true);
+      try {
+        if (session?.user) {
+          setUser(session.user);
+          const profile = await getProfile(session.user.id);
+          if (profile) setProfile(profile);
+        } else {
+          // Explicitly set user and profile to null when session ends
+          setUser(null);
+          setProfile(null);
+        }
+      } catch (error) {
+        console.error("Error in auth state change:", error);
+        // On error, ensure user is logged out
         setUser(null);
         setProfile(null);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     });
 
     return () => {
