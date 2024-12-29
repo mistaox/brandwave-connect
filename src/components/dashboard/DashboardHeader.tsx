@@ -2,7 +2,7 @@ import { Building2, Users, Globe, Edit2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 interface DashboardHeaderProps {
   profile: {
@@ -14,8 +14,6 @@ interface DashboardHeaderProps {
 }
 
 export const DashboardHeader = ({ profile }: DashboardHeaderProps) => {
-  const navigate = useNavigate();
-
   if (!profile) {
     return (
       <Card className="mb-8">
@@ -30,10 +28,6 @@ export const DashboardHeader = ({ profile }: DashboardHeaderProps) => {
     );
   }
 
-  const handleEditProfile = () => {
-    navigate('/profile');
-  };
-
   return (
     <Card className="mb-8">
       <CardContent className="pt-6">
@@ -41,15 +35,16 @@ export const DashboardHeader = ({ profile }: DashboardHeaderProps) => {
           <div>
             <div className="flex items-center gap-4">
               <h1 className="text-2xl font-bold text-gray-900">{profile.full_name || 'Demo User'}</h1>
-              <Button
-                variant="outline"
-                size="sm"
-                className="flex items-center gap-2"
-                onClick={handleEditProfile}
-              >
-                <Edit2 className="h-4 w-4" />
-                Edit Profile
-              </Button>
+              <Link to="/profile">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="flex items-center gap-2"
+                >
+                  <Edit2 className="h-4 w-4" />
+                  Edit Profile
+                </Button>
+              </Link>
             </div>
             <div className="flex items-center gap-2 mt-2">
               <Badge variant="secondary" className="capitalize">
