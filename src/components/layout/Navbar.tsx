@@ -18,6 +18,7 @@ const Navbar = () => {
   const location = useLocation();
   const { user, profile, signOut, impersonateRole } = useAuth();
   const isDevelopment = import.meta.env.DEV;
+  const isAdmin = profile?.account_type === 'admin';
 
   const getNavItems = () => {
     if (!user) {
@@ -71,7 +72,7 @@ const Navbar = () => {
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center space-x-6">
               <NavItems items={navItems} isActive={isActive} />
-              {isDevelopment && user && (
+              {isDevelopment && isAdmin && user && (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="outline" size="sm">
@@ -114,6 +115,7 @@ const Navbar = () => {
             isDevelopment={isDevelopment}
             impersonateRole={impersonateRole}
             profile={profile}
+            isAdmin={isAdmin}
           />
         </div>
       </nav>

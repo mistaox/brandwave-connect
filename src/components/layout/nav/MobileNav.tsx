@@ -19,6 +19,7 @@ interface MobileNavProps {
   isDevelopment: boolean;
   impersonateRole: (role: 'brand' | 'influencer') => void;
   profile: any;
+  isAdmin: boolean;
 }
 
 export const MobileNav = ({
@@ -31,6 +32,7 @@ export const MobileNav = ({
   isDevelopment,
   impersonateRole,
   profile,
+  isAdmin,
 }: MobileNavProps) => {
   if (!isOpen) return null;
 
@@ -38,7 +40,7 @@ export const MobileNav = ({
     <div className="md:hidden">
       <div className="px-2 pt-2 pb-3 space-y-1">
         <NavItems items={navItems} isActive={isActive} onClose={onClose} />
-        {isDevelopment && isAuthenticated && (
+        {isDevelopment && isAdmin && isAuthenticated && (
           <div className="py-2">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
