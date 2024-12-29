@@ -95,6 +95,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     } catch (error) {
       console.error("Error loading profile:", error);
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -106,7 +108,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   useEffect(() => {
-    // Initialize auth state
     const initializeAuth = async () => {
       try {
         const { data: { session } } = await supabase.auth.getSession();
@@ -118,10 +119,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         } else {
           setUser(null);
           setProfile(null);
+          setLoading(false);
         }
       } catch (error) {
         console.error("Error initializing auth:", error);
-      } finally {
         setLoading(false);
       }
     };
@@ -137,6 +138,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       } else {
         setUser(null);
         setProfile(null);
+        setLoading(false);
       }
     });
 
@@ -147,6 +149,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signOut = async () => {
     try {
+      setLoading(true);
       if (isDevelopment) {
         setUser(null);
         setProfile(null);
@@ -154,14 +157,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const { error } = await supabase.auth.signOut();
         if (error) throw error;
         
-        // Clear all local storage data
         localStorage.clear();
-        
-        // Reset state
         setUser(null);
         setProfile(null);
         
-        // Clear any session cookies
         document.cookie.split(";").forEach((c) => {
           document.cookie = c
             .replace(/^ +/, "")
@@ -172,6 +171,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     } catch (error) {
       console.error("Error signing out:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
