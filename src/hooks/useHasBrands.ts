@@ -1,20 +1,27 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Brand } from "@/types/brand";
+import { useAuth } from "@/contexts/AuthContext";
 
 export const useHasBrands = () => {
-  const { data: brands, isLoading: loading, error } = useQuery({
-    queryKey: ["user-brands"],
+  const { user } = useAuth();
+
+  return useQuery({
+    queryKey: ["hasBrands", user?.id],
     queryFn: async () => {
-      const { data: userBrands, error } = await supabase
+      if (!user) return false;
+
+      const { count, error } = await supabase
         .from("brands")
-        .select("*")
-        .eq("owner_id", (await supabase.auth.getUser()).data.user?.id);
+        .select("*", { count: 'exact', head: true })
+        .eq("owner_id", user.id);
 
-      if (error) throw error;
-      return userBrands as Brand[];
-    }
+      if (error) {
+        console.error("Error checking brands:", error);
+        throw error;
+      }
+
+      return count ? count > 0 : false;
+    },
+    enabled: !!user?.id,
   });
-
-  return { brands, loading, error };
 };
