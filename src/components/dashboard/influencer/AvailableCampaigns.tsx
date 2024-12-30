@@ -3,8 +3,15 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
-import { Loader2 } from "lucide-react";
+import { Loader2, Users } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { 
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export const AvailableCampaigns = () => {
   const { user } = useAuth();
@@ -37,6 +44,13 @@ export const AvailableCampaigns = () => {
             name,
             industry,
             location
+          ),
+          collaborations:collaborations(
+            influencer:profiles(
+              id,
+              full_name,
+              avatar_url
+            )
           )
         `)
         .eq("status", "active");
@@ -120,6 +134,7 @@ export const AvailableCampaigns = () => {
                   Apply Now
                 </Button>
               </div>
+              
               <div className="flex gap-4 mt-4">
                 <div className="text-sm">
                   <span className="text-muted-foreground">Budget:</span>{" "}
@@ -132,6 +147,34 @@ export const AvailableCampaigns = () => {
                   </div>
                 )}
               </div>
+
+              {campaign.collaborations && campaign.collaborations.length > 0 && (
+                <div className="mt-4 flex items-center gap-2">
+                  <Users className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-sm text-muted-foreground mr-2">
+                    Collaborating influencers:
+                  </span>
+                  <div className="flex -space-x-2">
+                    <TooltipProvider>
+                      {campaign.collaborations.map(({ influencer }) => (
+                        <Tooltip key={influencer.id}>
+                          <TooltipTrigger>
+                            <Avatar className="h-8 w-8 border-2 border-background">
+                              <AvatarImage src={influencer.avatar_url || ''} alt={influencer.full_name} />
+                              <AvatarFallback>
+                                {influencer.full_name?.charAt(0)}
+                              </AvatarFallback>
+                            </Avatar>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>{influencer.full_name}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      ))}
+                    </TooltipProvider>
+                  </div>
+                </div>
+              )}
             </CardContent>
           </Card>
         ))
