@@ -30,7 +30,7 @@ export const ConversationsList = ({
             *,
             participant1:participant1_id(id, full_name, avatar_url),
             participant2:participant2_id(id, full_name, avatar_url),
-            messages!messages_conversation_id_fkey(
+            messages(
               id,
               content,
               created_at,
