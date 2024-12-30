@@ -35,19 +35,19 @@ const CreateCampaign = () => {
       }
 
       const campaign = {
-        title: formData.get("title"),
-        description: formData.get("description"),
-        budget: parseFloat(formData.get("budget") as string),
-        requirements: formData.get("requirements"),
-        start_date: formData.get("start_date"),
-        end_date: formData.get("end_date"),
+        title: String(formData.get("title")),
+        description: String(formData.get("description")),
+        budget: formData.get("budget") ? parseFloat(String(formData.get("budget"))) : null,
+        requirements: String(formData.get("requirements")),
+        start_date: String(formData.get("start_date")),
+        end_date: String(formData.get("end_date")),
         brand_id: brands.id,
-        status: "active",
+        status: "active" as const,
       };
 
       const { error } = await supabase
         .from("campaigns")
-        .insert([campaign]);
+        .insert(campaign);
 
       if (error) throw error;
 
