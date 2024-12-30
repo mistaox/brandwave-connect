@@ -19,6 +19,7 @@ import ForgotPassword from "@/pages/auth/ForgotPassword";
 import ResetPassword from "@/pages/auth/ResetPassword";
 import { DashboardRedirect } from "@/components/dashboard/DashboardRedirect";
 import AdminSettings from "@/pages/admin/Settings";
+import CreateCampaign from "@/pages/campaigns/CreateCampaign";
 
 // Public routes that don't require authentication
 const publicPaths = [
@@ -91,6 +92,14 @@ const protectedPaths = [
       </ProtectedRoute>
     )
   },
+  {
+    path: "/campaigns/create",
+    element: (
+      <ProtectedRoute requiredAccountType="brand">
+        <CreateCampaign />
+      </ProtectedRoute>
+    )
+  }
 ];
 
 // Add error page route at the end to catch all unmatched routes
