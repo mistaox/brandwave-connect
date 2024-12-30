@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Loader2 } from "lucide-react";
+import { ErrorPage } from "@/components/error/ErrorPage";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -12,27 +13,33 @@ export const ProtectedRoute = ({
   children, 
   requiredAccountType 
 }: ProtectedRouteProps) => {
-  const { user, profile } = useAuth();
+  const { user, profile, loading } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!user) {
+    if (!loading && !user) {
       navigate("/login");
       return;
     }
 
-    if (requiredAccountType && profile?.account_type !== requiredAccountType) {
-      navigate("/dashboard");
-      return;
+    if (!loading && requiredAccountType && profile?.account_type !== requiredAccountType) {
+      console.log("Unauthorized access attempt:", {
+        required: requiredAccountType,
+        current: profile?.account_type
+      });
     }
-  }, [user, profile, requiredAccountType, navigate]);
+  }, [user, profile, requiredAccountType, navigate, loading]);
 
-  if (!user || (requiredAccountType && profile?.account_type !== requiredAccountType)) {
+  if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin" />
       </div>
     );
+  }
+
+  if (!user || (requiredAccountType && profile?.account_type !== requiredAccountType)) {
+    return <ErrorPage />;
   }
 
   return <>{children}</>;

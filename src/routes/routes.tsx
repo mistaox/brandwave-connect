@@ -1,5 +1,6 @@
 import { RouteProps } from "react-router-dom";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
+import { ErrorPage } from "@/components/error/ErrorPage";
 import Index from "@/pages/Index";
 import About from "@/pages/About";
 import FAQ from "@/pages/FAQ";
@@ -92,4 +93,10 @@ const protectedPaths = [
   },
 ];
 
-export const publicRoutes: RouteProps[] = [...publicPaths, ...protectedPaths];
+// Add error page route at the end to catch all unmatched routes
+const errorRoute = { 
+  path: "*", 
+  element: <ErrorPage /> 
+};
+
+export const publicRoutes: RouteProps[] = [...publicPaths, ...protectedPaths, errorRoute];
