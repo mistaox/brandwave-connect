@@ -13,15 +13,23 @@ export const AvailableCampaigns = () => {
   const { data: campaigns, isLoading } = useQuery({
     queryKey: ["available-campaigns"],
     queryFn: async () => {
-      // Get campaigns that the influencer hasn't collaborated on yet
-      const { data: existingCollaborations } = await supabase
+      console.log("Fetching available campaigns for user:", user?.id);
+      
+      // First, get campaigns the user has already collaborated on
+      const { data: existingCollaborations, error: collabError } = await supabase
         .from("collaborations")
         .select("campaign_id")
         .eq("influencer_id", user?.id);
 
-      const excludedCampaignIds = existingCollaborations?.map(c => c.campaign_id) || [];
+      if (collabError) {
+        console.error("Error fetching collaborations:", collabError);
+        throw collabError;
+      }
 
-      const { data, error } = await supabase
+      console.log("Existing collaborations:", existingCollaborations);
+      
+      // Build the query for available campaigns
+      let query = supabase
         .from("campaigns")
         .select(`
           *,
@@ -31,11 +39,24 @@ export const AvailableCampaigns = () => {
             location
           )
         `)
-        .eq("status", "active")
-        .not("id", "in", `(${excludedCampaignIds.join(",")})`)
-        .order("created_at", { ascending: false });
+        .eq("status", "active");
 
-      if (error) throw error;
+      // Only apply the exclusion if there are existing collaborations
+      if (existingCollaborations && existingCollaborations.length > 0) {
+        const excludedCampaignIds = existingCollaborations.map(c => c.campaign_id);
+        query = query.not('id', 'in', `(${excludedCampaignIds.join(',')})`);
+      }
+
+      query = query.order("created_at", { ascending: false });
+
+      const { data, error } = await query;
+      
+      if (error) {
+        console.error("Error fetching campaigns:", error);
+        throw error;
+      }
+
+      console.log("Available campaigns:", data);
       return data;
     },
     enabled: !!user?.id,
@@ -77,7 +98,7 @@ export const AvailableCampaigns = () => {
 
   return (
     <div className="space-y-4">
-      {campaigns?.length === 0 ? (
+      {!campaigns?.length ? (
         <Card>
           <CardContent className="flex flex-col items-center justify-center p-6">
             <p className="text-muted-foreground">No available campaigns at the moment</p>
