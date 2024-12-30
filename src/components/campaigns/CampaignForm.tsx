@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Loader2 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 import {
   Select,
   SelectContent,
@@ -17,7 +18,7 @@ interface Brand {
 }
 
 interface CampaignFormProps {
-  onSubmit: (formData: FormData) => void;
+  onSubmit: (formData: FormData) => Promise<void>;
   loading?: boolean;
   brands?: Brand[];
   defaultValues?: {
@@ -32,10 +33,26 @@ interface CampaignFormProps {
 }
 
 export const CampaignForm = ({ onSubmit, loading, brands, defaultValues }: CampaignFormProps) => {
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const { toast } = useToast();
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
-    onSubmit(formData);
+    
+    try {
+      await onSubmit(formData);
+      toast({
+        title: "Success",
+        description: "Campaign created successfully",
+      });
+    } catch (error: any) {
+      console.error("Campaign creation error:", error);
+      toast({
+        title: "Error",
+        description: error.message || "Failed to create campaign",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
