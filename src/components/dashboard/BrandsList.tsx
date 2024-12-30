@@ -1,8 +1,5 @@
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { Card, CardContent } from "@/components/ui/card";
+import { Plus, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Plus, Building2, Loader2, Pencil } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -12,11 +9,11 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { AddBrandForm } from "./AddBrandForm";
-import { EditBrandForm } from "./EditBrandForm";
-import { useState } from "react";
 import { Brand } from "@/types/brand";
-import { useAuth } from "@/contexts/AuthContext";
-import { useToast } from "@/components/ui/use-toast";
+import { useState } from "react";
+import { EmptyBrandState } from "./brands/EmptyBrandState";
+import { BrandCard } from "./brands/BrandCard";
+import { useBrands } from "./brands/useBrands";
 
 interface BrandsListProps {
   onBrandSelect?: (brandId: string) => void;
@@ -24,35 +21,7 @@ interface BrandsListProps {
 
 export const BrandsList = ({ onBrandSelect }: BrandsListProps) => {
   const [editingBrand, setEditingBrand] = useState<Brand | null>(null);
-  const { user } = useAuth();
-  const { toast } = useToast();
-
-  const { data: brands, isLoading, refetch } = useQuery({
-    queryKey: ["brands", user?.id],
-    queryFn: async () => {
-      console.log("Fetching brands for user:", user?.id);
-      if (!user) throw new Error("No authenticated user");
-
-      const { data, error } = await supabase
-        .from("brands")
-        .select("*")
-        .eq("owner_id", user.id);
-
-      if (error) {
-        console.error("Error fetching brands:", error);
-        toast({
-          title: "Error loading brands",
-          description: error.message,
-          variant: "destructive",
-        });
-        throw error;
-      }
-      
-      console.log("Fetched brands:", data);
-      return data as Brand[];
-    },
-    enabled: !!user?.id,
-  });
+  const { data: brands, isLoading, refetch } = useBrands();
 
   const handleEditSuccess = () => {
     refetch();
@@ -101,90 +70,19 @@ export const BrandsList = ({ onBrandSelect }: BrandsListProps) => {
       </div>
 
       {!brands?.length ? (
-        <Card>
-          <CardContent className="flex flex-col items-center justify-center p-6">
-            <Building2 className="h-12 w-12 text-muted-foreground mb-4" />
-            <p className="text-muted-foreground mb-4">No brands yet</p>
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button>Add your first brand</Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Add New Brand</DialogTitle>
-                  <DialogDescription>
-                    Create a new brand to manage your campaigns
-                  </DialogDescription>
-                </DialogHeader>
-                <AddBrandForm onSuccess={handleAddSuccess} />
-              </DialogContent>
-            </Dialog>
-          </CardContent>
-        </Card>
+        <EmptyBrandState onAddSuccess={handleAddSuccess} />
       ) : (
         <div className="grid gap-4">
           {brands?.map((brand) => (
-            <Card 
-              key={brand.id} 
-              className="hover:shadow-md transition-shadow"
-            >
-              <CardContent className="p-6">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <h3 className="font-semibold text-lg">{brand.name}</h3>
-                    <p className="text-muted-foreground text-sm mt-1">
-                      {brand.industry}
-                    </p>
-                  </div>
-                  <div className="flex gap-2">
-                    <Dialog open={editingBrand?.id === brand.id} onOpenChange={(open) => !open && setEditingBrand(null)}>
-                      <DialogTrigger asChild>
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setEditingBrand(brand);
-                          }}
-                        >
-                          <Pencil className="h-4 w-4" />
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent>
-                        <DialogHeader>
-                          <DialogTitle>Edit Brand</DialogTitle>
-                          <DialogDescription>
-                            Update your brand information
-                          </DialogDescription>
-                        </DialogHeader>
-                        {editingBrand && (
-                          <EditBrandForm
-                            brand={editingBrand}
-                            onSuccess={handleEditSuccess}
-                          />
-                        )}
-                      </DialogContent>
-                    </Dialog>
-                    <Button
-                      variant="outline"
-                      onClick={() => handleViewCampaigns(brand.id)}
-                    >
-                      View Campaigns
-                    </Button>
-                  </div>
-                </div>
-                <div className="flex gap-4 mt-4">
-                  <div className="text-sm">
-                    <span className="text-muted-foreground">Size:</span>{" "}
-                    <span className="capitalize">{brand.company_size}</span>
-                  </div>
-                  <div className="text-sm">
-                    <span className="text-muted-foreground">Location:</span>{" "}
-                    {brand.location}
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            <BrandCard
+              key={brand.id}
+              brand={brand}
+              onEdit={setEditingBrand}
+              onEditSuccess={handleEditSuccess}
+              onViewCampaigns={handleViewCampaigns}
+              isEditing={editingBrand?.id === brand.id}
+              onEditingChange={(isEditing) => !isEditing && setEditingBrand(null)}
+            />
           ))}
         </div>
       )}
