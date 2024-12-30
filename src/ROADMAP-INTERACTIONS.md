@@ -7,6 +7,9 @@
 - [x] Message history
 - [x] Unread message indicators
 - [x] User presence indicators
+- [x] Message notifications
+- [x] Secure message isolation
+- [x] Real-time delivery
 
 ## Campaign Management
 - [x] Campaign creation tools
