@@ -19,7 +19,7 @@ const CreateCampaign = () => {
     );
   }
 
-  if (error || !brands) {
+  if (error || !brands || brands.length === 0) {
     toast({
       title: "Error",
       description: "Unable to load brand information. Please try again.",
@@ -42,7 +42,7 @@ const CreateCampaign = () => {
         requirements: String(formData.get("requirements")),
         start_date: String(formData.get("start_date")),
         end_date: String(formData.get("end_date")),
-        brand_id: brands.id,
+        brand_id: brands[0].id,
         status: "active" as const,
       };
 
