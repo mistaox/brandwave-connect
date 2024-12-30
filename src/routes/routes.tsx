@@ -19,6 +19,7 @@ import ForgotPassword from "@/pages/auth/ForgotPassword";
 import ResetPassword from "@/pages/auth/ResetPassword";
 import { DashboardRedirect } from "@/components/dashboard/DashboardRedirect";
 import AdminSettings from "@/pages/admin/Settings";
+import CreateCampaign from "@/pages/campaigns/CreateCampaign"; // Import the CreateCampaign component
 
 // Public routes that don't require authentication
 const publicPaths = [
@@ -88,6 +89,14 @@ const protectedPaths = [
     element: (
       <ProtectedRoute requiredAccountType="admin">
         <AdminSettings />
+      </ProtectedRoute>
+    )
+  },
+  { 
+    path: "/dashboard/brand/campaigns/new", 
+    element: (
+      <ProtectedRoute requiredAccountType="brand">
+        <CreateCampaign />
       </ProtectedRoute>
     )
   },

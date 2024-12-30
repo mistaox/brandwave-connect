@@ -128,7 +128,7 @@ export const CampaignsList = ({ brandId, mode = 'brand' }: CampaignsListProps) =
           {mode === 'brand' ? 'Your Campaigns' : 'Available Campaigns'}
         </h2>
         {mode === 'brand' && (
-          <Button onClick={() => navigate("/campaigns/create")}>
+          <Button onClick={() => navigate(`/dashboard/brand/campaigns/new`)}>
             <Plus className="h-4 w-4 mr-2" />
             New Campaign
           </Button>
@@ -142,7 +142,7 @@ export const CampaignsList = ({ brandId, mode = 'brand' }: CampaignsListProps) =
               {mode === 'brand' ? 'No campaigns yet' : 'No available campaigns at the moment'}
             </p>
             {mode === 'brand' && (
-              <Button onClick={() => navigate("/campaigns/create")}>
+              <Button onClick={() => navigate(`/dashboard/brand/campaigns/new`)}>
                 Create your first campaign
               </Button>
             )}
