@@ -22,20 +22,22 @@ export const CampaignForm = ({ onSubmit, loading, defaultValues }: CampaignFormP
   const { handleSubmit } = useCampaignSubmit(onSubmit);
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-6 py-4">
       <BrandSelector defaultValue={defaultValues?.brand_id} />
       <CampaignFormFields defaultValues={defaultValues} />
       
-      <Button type="submit" className="w-full" disabled={loading}>
-        {loading ? (
-          <>
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            Creating Campaign...
-          </>
-        ) : (
-          "Create Campaign"
-        )}
-      </Button>
+      <div className="flex justify-end">
+        <Button type="submit" disabled={loading}>
+          {loading ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Creating Campaign...
+            </>
+          ) : (
+            "Create Campaign"
+          )}
+        </Button>
+      </div>
     </form>
   );
 };

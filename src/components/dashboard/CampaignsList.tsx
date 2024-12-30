@@ -1,8 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
 import { Loader2, Plus } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { CampaignForm } from "@/components/campaigns/CampaignForm";
+import { useToast } from "@/hooks/use-toast";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 interface CampaignsListProps {
   brandId: string;
@@ -10,8 +14,10 @@ interface CampaignsListProps {
 
 export const CampaignsList = ({ brandId }: CampaignsListProps) => {
   const navigate = useNavigate();
+  const { toast } = useToast();
+  const [isOpen, setIsOpen] = useState(false);
 
-  const { data: campaigns, isLoading } = useQuery({
+  const { data: campaigns, isLoading, refetch } = useQuery({
     queryKey: ['campaigns', brandId],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -26,8 +32,37 @@ export const CampaignsList = ({ brandId }: CampaignsListProps) => {
     enabled: !!brandId,
   });
 
-  const handleNewCampaign = () => {
-    navigate('/campaigns/create');
+  const handleSubmit = async (formData: FormData) => {
+    try {
+      const { error } = await supabase
+        .from("campaigns")
+        .insert([{
+          title: formData.get("title") as string,
+          description: formData.get("description") as string,
+          budget: Number(formData.get("budget")),
+          requirements: formData.get("requirements") as string,
+          start_date: formData.get("start_date") as string,
+          end_date: formData.get("end_date") as string,
+          brand_id: formData.get("brand_id") as string,
+        }]);
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "Campaign created successfully",
+      });
+
+      setIsOpen(false);
+      refetch(); // Refresh the campaigns list
+    } catch (error: any) {
+      console.error("Error creating campaign:", error);
+      toast({
+        title: "Error",
+        description: error.message || "Failed to create campaign",
+        variant: "destructive",
+      });
+    }
   };
 
   if (isLoading) {
@@ -42,10 +77,20 @@ export const CampaignsList = ({ brandId }: CampaignsListProps) => {
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold">Campaigns</h2>
-        <Button onClick={handleNewCampaign}>
-          <Plus className="h-4 w-4 mr-2" />
-          New Campaign
-        </Button>
+        <Dialog open={isOpen} onOpenChange={setIsOpen}>
+          <DialogTrigger asChild>
+            <Button>
+              <Plus className="h-4 w-4 mr-2" />
+              New Campaign
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[600px]">
+            <DialogHeader>
+              <DialogTitle>Create New Campaign</DialogTitle>
+            </DialogHeader>
+            <CampaignForm onSubmit={handleSubmit} />
+          </DialogContent>
+        </Dialog>
       </div>
 
       {campaigns?.length === 0 ? (
