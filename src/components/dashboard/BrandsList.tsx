@@ -43,6 +43,8 @@ export const BrandsList = ({ onBrandSelect }: BrandsListProps) => {
     onBrandSelect?.(brandId);
   };
 
+  const selectedBrand = brands?.find(brand => brand.id === selectedBrandId);
+
   if (isLoading) {
     return <div>Loading brands...</div>;
   }
@@ -101,10 +103,12 @@ export const BrandsList = ({ onBrandSelect }: BrandsListProps) => {
           <DialogHeader>
             <DialogTitle>Edit Brand</DialogTitle>
           </DialogHeader>
-          <EditBrandForm
-            brand={selectedBrandId}
-            onSuccess={() => setIsEditDialogOpen(false)}
-          />
+          {selectedBrand && (
+            <EditBrandForm
+              brand={selectedBrand}
+              onSuccess={() => setIsEditDialogOpen(false)}
+            />
+          )}
         </DialogContent>
       </Dialog>
     </div>
