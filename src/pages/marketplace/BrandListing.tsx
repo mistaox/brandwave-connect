@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import Navbar from "@/components/layout/Navbar";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 import { CampaignCard } from "@/components/marketplace/CampaignCard";
@@ -36,7 +35,6 @@ const BrandListing = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navbar />
       <main className="container mx-auto px-4 py-8">
         <h1 className="text-4xl font-bold text-brandgray mb-8">Available Campaigns</h1>
         
