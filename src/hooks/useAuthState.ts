@@ -13,19 +13,26 @@ export const useAuthState = () => {
     const initializeAuth = async () => {
       try {
         setLoading(true);
-        const { data: { session } } = await supabase.auth.getSession();
+        // Get the current session
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        
+        if (sessionError) {
+          console.error("Session error:", sessionError);
+          throw sessionError;
+        }
         
         if (session?.user) {
-          console.log("Found existing session:", session.user.id);
+          console.log("Found existing session for user:", session.user.id);
           setUser(session.user);
-          const { data: profile, error } = await supabase
+          
+          const { data: profile, error: profileError } = await supabase
             .from("profiles")
             .select("*")
             .eq("id", session.user.id)
             .single();
 
-          if (error) {
-            console.error("Error fetching profile:", error);
+          if (profileError) {
+            console.error("Error fetching profile:", profileError);
             toast({
               title: "Error loading profile",
               description: "There was an error loading your profile",
@@ -37,11 +44,20 @@ export const useAuthState = () => {
           }
         } else {
           console.log("No active session found");
+          // Clear any stale state
           setUser(null);
           setProfile(null);
+          
+          // Clear any stored session data
+          await supabase.auth.signOut();
         }
       } catch (error) {
         console.error("Auth initialization error:", error);
+        // Clear state and session on error
+        setUser(null);
+        setProfile(null);
+        await supabase.auth.signOut();
+        
         toast({
           title: "Authentication Error",
           description: "There was an error initializing authentication",
@@ -52,8 +68,10 @@ export const useAuthState = () => {
       }
     };
 
+    // Initialize auth state
     initializeAuth();
 
+    // Set up auth state change listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log("Auth state changed:", event, session?.user?.id);
       
@@ -71,6 +89,7 @@ export const useAuthState = () => {
       }
     });
 
+    // Cleanup subscription
     return () => {
       subscription.unsubscribe();
     };
