@@ -10,90 +10,53 @@ export const useAuthState = () => {
   const { toast } = useToast();
 
   useEffect(() => {
-    const initializeAuth = async () => {
-      try {
-        setLoading(true);
-        // Get the current session
-        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-        
-        if (sessionError) {
-          console.error("Session error:", sessionError);
-          throw sessionError;
-        }
-        
-        if (session?.user) {
-          console.log("Found existing session for user:", session.user.id);
-          setUser(session.user);
-          
-          const { data: profile, error: profileError } = await supabase
-            .from("profiles")
-            .select("*")
-            .eq("id", session.user.id)
-            .single();
-
-          if (profileError) {
-            console.error("Error fetching profile:", profileError);
-            toast({
-              title: "Error loading profile",
-              description: "There was an error loading your profile",
-              variant: "destructive",
-            });
-          } else {
-            console.log("Loaded profile:", profile);
-            setProfile(profile);
-          }
-        } else {
-          console.log("No active session found");
-          // Clear any stale state
-          setUser(null);
-          setProfile(null);
-          
-          // Clear any stored session data
-          await supabase.auth.signOut();
-        }
-      } catch (error) {
-        console.error("Auth initialization error:", error);
-        // Clear state and session on error
-        setUser(null);
-        setProfile(null);
-        await supabase.auth.signOut();
-        
-        toast({
-          title: "Authentication Error",
-          description: "There was an error initializing authentication",
-          variant: "destructive",
-        });
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    // Initialize auth state
-    initializeAuth();
-
-    // Set up auth state change listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log("Auth state changed:", event, session?.user?.id);
-      
+    // Get initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
       if (session?.user) {
-        setUser(session.user);
-        const { data: profile } = await supabase
-          .from("profiles")
-          .select("*")
-          .eq("id", session.user.id)
-          .single();
-        setProfile(profile);
-      } else {
-        setUser(null);
-        setProfile(null);
+        fetchProfile(session.user.id);
       }
+      setLoading(false);
     });
 
-    // Cleanup subscription
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+      if (session?.user) {
+        fetchProfile(session.user.id);
+      } else {
+        setProfile(null);
+      }
+      setLoading(false);
+    });
+
     return () => {
       subscription.unsubscribe();
     };
-  }, [toast]);
+  }, []);
+
+  const fetchProfile = async (userId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", userId)
+        .single();
+
+      if (error) {
+        console.error("Error fetching profile:", error);
+        toast({
+          title: "Error loading profile",
+          description: "There was an error loading your profile",
+          variant: "destructive",
+        });
+      } else {
+        setProfile(data);
+      }
+    } catch (error) {
+      console.error("Profile fetch error:", error);
+    }
+  };
 
   return { user, profile, loading };
 };

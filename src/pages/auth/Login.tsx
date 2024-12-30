@@ -20,9 +20,6 @@ const Login = () => {
     console.log("Attempting to sign in with:", email);
 
     try {
-      // Clear any existing sessions first
-      await supabase.auth.signOut();
-      
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
