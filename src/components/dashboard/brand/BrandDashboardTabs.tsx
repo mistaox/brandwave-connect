@@ -6,7 +6,8 @@ import { CampaignsList } from "@/components/dashboard/CampaignsList";
 import { CollaborationsList } from "@/components/dashboard/CollaborationsList";
 import { MessagingInterface } from "@/components/messaging/MessagingInterface";
 import { ConversationsList } from "@/components/messaging/ConversationsList";
-import { useState } from "react";
+import { useState, useRef } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface BrandDashboardTabsProps {
   selectedBrandId: string | null;
@@ -16,6 +17,17 @@ interface BrandDashboardTabsProps {
 export const BrandDashboardTabs = ({ selectedBrandId, onBrandSelect }: BrandDashboardTabsProps) => {
   const [selectedConversation, setSelectedConversation] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState("overview");
+  const queryClient = useQueryClient();
+  const previousTab = useRef(activeTab);
+
+  const handleTabChange = (value: string) => {
+    // If switching to campaigns tab, invalidate the campaigns query
+    if (value === "campaigns" && previousTab.current !== value) {
+      queryClient.invalidateQueries({ queryKey: ["campaigns", selectedBrandId] });
+    }
+    previousTab.current = value;
+    setActiveTab(value);
+  };
 
   const handleBrandSelect = (brandId: string) => {
     onBrandSelect(brandId);
@@ -23,7 +35,7 @@ export const BrandDashboardTabs = ({ selectedBrandId, onBrandSelect }: BrandDash
   };
 
   return (
-    <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-8">
+    <Tabs value={activeTab} onValueChange={handleTabChange} className="mt-8">
       <TabsList className="grid w-full grid-cols-5 lg:w-[750px]">
         <TabsTrigger value="overview">Overview</TabsTrigger>
         <TabsTrigger value="brands">Brands</TabsTrigger>
