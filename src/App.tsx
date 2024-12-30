@@ -10,6 +10,29 @@ import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { RouteHandler } from "@/components/auth/RouteHandler";
 import { AuthStateHandler } from "@/components/auth/AuthStateHandler";
 import Navbar from "@/components/layout/Navbar";
+import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
+
+const EmergencySignOut = () => {
+  const handleEmergencySignOut = async () => {
+    try {
+      await supabase.auth.signOut();
+      console.log("Emergency sign out successful");
+      window.location.href = '/login';
+    } catch (error) {
+      console.error("Emergency sign out failed:", error);
+    }
+  };
+
+  return (
+    <Button 
+      onClick={handleEmergencySignOut}
+      className="fixed bottom-4 right-4 z-50 bg-red-500 hover:bg-red-600"
+    >
+      Emergency Sign Out
+    </Button>
+  );
+};
 
 const AppContent = () => {
   const { user, profile, loading } = useAuth();
@@ -49,6 +72,7 @@ const AppContent = () => {
         ))}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
+      <EmergencySignOut />
     </div>
   );
 };
