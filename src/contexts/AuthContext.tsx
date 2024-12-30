@@ -14,13 +14,16 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType>({
   user: null,
   profile: null,
-  loading: false,
+  loading: true, // Changed default loading to true
   signOut: async () => {},
   impersonateRole: () => {},
 });
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const { user, profile, loading } = useAuthState();
+
+  // Log auth state for debugging
+  console.log("AuthContext state:", { user, profile, loading });
 
   return (
     <AuthContext.Provider value={{ 
