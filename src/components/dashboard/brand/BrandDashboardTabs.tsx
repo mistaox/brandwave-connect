@@ -2,12 +2,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DashboardMetrics } from "@/components/dashboard/DashboardMetrics";
 import { RecentActivity } from "@/components/dashboard/RecentActivity";
 import { BrandsList } from "@/components/dashboard/BrandsList";
-import { CampaignsList } from "@/components/dashboard/CampaignsList";
 import { CollaborationsList } from "@/components/dashboard/CollaborationsList";
 import { MessagingInterface } from "@/components/messaging/MessagingInterface";
 import { ConversationsList } from "@/components/messaging/ConversationsList";
-import { useState, useRef } from "react";
-import { useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
 
 interface BrandDashboardTabsProps {
   selectedBrandId: string | null;
@@ -17,29 +15,12 @@ interface BrandDashboardTabsProps {
 export const BrandDashboardTabs = ({ selectedBrandId, onBrandSelect }: BrandDashboardTabsProps) => {
   const [selectedConversation, setSelectedConversation] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState("overview");
-  const queryClient = useQueryClient();
-  const previousTab = useRef(activeTab);
-
-  const handleTabChange = (value: string) => {
-    // If switching to campaigns tab, invalidate the campaigns query
-    if (value === "campaigns" && previousTab.current !== value) {
-      queryClient.invalidateQueries({ queryKey: ["campaigns", selectedBrandId] });
-    }
-    previousTab.current = value;
-    setActiveTab(value);
-  };
-
-  const handleBrandSelect = (brandId: string) => {
-    onBrandSelect(brandId);
-    setActiveTab("campaigns"); // Switch to campaigns tab when a brand is selected
-  };
 
   return (
-    <Tabs value={activeTab} onValueChange={handleTabChange} className="mt-8">
-      <TabsList className="grid w-full grid-cols-5 lg:w-[750px]">
+    <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-8">
+      <TabsList className="grid w-full grid-cols-4 lg:w-[600px]">
         <TabsTrigger value="overview">Overview</TabsTrigger>
         <TabsTrigger value="brands">Brands</TabsTrigger>
-        <TabsTrigger value="campaigns">Campaigns</TabsTrigger>
         <TabsTrigger value="collaborations">Collaborations</TabsTrigger>
         <TabsTrigger value="messages">Messages</TabsTrigger>
       </TabsList>
@@ -50,17 +31,7 @@ export const BrandDashboardTabs = ({ selectedBrandId, onBrandSelect }: BrandDash
       </TabsContent>
       
       <TabsContent value="brands" className="mt-6">
-        <BrandsList onBrandSelect={handleBrandSelect} />
-      </TabsContent>
-      
-      <TabsContent value="campaigns" className="mt-6">
-        {selectedBrandId ? (
-          <CampaignsList brandId={selectedBrandId} />
-        ) : (
-          <div className="text-center text-gray-500 py-8">
-            Please select a brand to view campaigns
-          </div>
-        )}
+        <BrandsList onBrandSelect={onBrandSelect} />
       </TabsContent>
 
       <TabsContent value="collaborations" className="mt-6">
