@@ -102,7 +102,7 @@ export const BrandsList = ({ onBrandSelect }: BrandsListProps) => {
             <DialogTitle>Edit Brand</DialogTitle>
           </DialogHeader>
           <EditBrandForm
-            brandId={selectedBrandId!}
+            brand={selectedBrandId}
             onSuccess={() => setIsEditDialogOpen(false)}
           />
         </DialogContent>
