@@ -4,11 +4,6 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/components/ui/use-toast";
 
 export const RouteHandler = () => {
-  // Temporarily disable route protection
-  return null;
-
-  // Original code commented out for later restoration
-  /*
   const navigate = useNavigate();
   const { user, profile, loading } = useAuth();
   const location = useLocation();
@@ -20,9 +15,10 @@ export const RouteHandler = () => {
     // Public routes that should always be accessible
     const publicRoutes = ['/', '/about', '/faq', '/contact'];
     if (publicRoutes.includes(location.pathname)) {
-      return;
+      return; // Allow access to public routes regardless of auth state
     }
 
+    // Don't redirect if we're already on auth routes
     if (['/login', '/register', '/forgot-password'].includes(location.pathname)) {
       if (user && profile) {
         console.log("User already authenticated, redirecting to dashboard");
@@ -31,12 +27,14 @@ export const RouteHandler = () => {
       return;
     }
 
+    // Handle unauthenticated users trying to access protected routes
     if (!user) {
       console.log("No authenticated user, redirecting to login");
       navigate('/login', { replace: true });
       return;
     }
 
+    // Handle authenticated users without profiles
     if (user && !profile) {
       console.log("No profile found for authenticated user");
       toast({
@@ -47,6 +45,7 @@ export const RouteHandler = () => {
       return;
     }
 
+    // Only redirect on dashboard routes that need account type routing
     if (location.pathname === "/dashboard") {
       console.log("Redirecting based on account type:", profile?.account_type);
       switch (profile?.account_type) {
@@ -69,7 +68,6 @@ export const RouteHandler = () => {
       }
     }
   }, [navigate, user, profile, location.pathname, loading, toast]);
-  */
 
   return null;
 };
