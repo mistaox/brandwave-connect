@@ -2,6 +2,9 @@ import { useNavigate } from "react-router-dom";
 import { CampaignForm } from "@/components/campaigns/CampaignForm";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import type { Database } from "@/integrations/supabase/types";
+
+type Campaign = Database["public"]["Tables"]["campaigns"]["Insert"];
 
 export default function CreateCampaign() {
   const navigate = useNavigate();
@@ -9,15 +12,19 @@ export default function CreateCampaign() {
 
   const handleSubmit = async (formData: FormData) => {
     try {
-      const { error } = await supabase.from("campaigns").insert({
-        title: formData.get("title"),
-        description: formData.get("description"),
+      const campaignData: Campaign = {
+        title: formData.get("title") as string,
+        description: formData.get("description") as string,
         budget: Number(formData.get("budget")),
-        requirements: formData.get("requirements"),
-        start_date: formData.get("start_date"),
-        end_date: formData.get("end_date"),
-        brand_id: formData.get("brand_id"),
-      });
+        requirements: formData.get("requirements") as string,
+        start_date: formData.get("start_date") as string,
+        end_date: formData.get("end_date") as string,
+        brand_id: formData.get("brand_id") as string,
+      };
+
+      const { error } = await supabase
+        .from("campaigns")
+        .insert([campaignData]); // Insert expects an array of records
 
       if (error) throw error;
 
