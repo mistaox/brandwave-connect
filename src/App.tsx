@@ -4,45 +4,14 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { publicRoutes } from "./routes/routes";
-import { useState, useCallback, useEffect } from "react";
+import { useState } from "react";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { RouteHandler } from "@/components/auth/RouteHandler";
-import { AuthStateHandler } from "@/components/auth/AuthStateHandler";
 import Navbar from "@/components/layout/Navbar";
-import { supabase } from "@/integrations/supabase/client";
 
 const AppContent = () => {
-  const { user, profile, loading } = useAuth();
-
-  const handleAuthChange = useCallback(async (event: string, session: any) => {
-    console.log("Auth state changed:", event, session?.user?.id);
-
-    if (event === 'SIGNED_OUT') {
-      console.log("User signed out, redirecting to login");
-      // Clear any stored auth data
-      await supabase.auth.signOut();
-      localStorage.removeItem('supabase.auth.token');
-      window.location.href = '/login';
-      return;
-    }
-  }, []);
-
-  // Initialize auth state
-  useEffect(() => {
-    const initializeAuth = async () => {
-      try {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (!session) {
-          console.log("No session found during initialization");
-        }
-      } catch (error) {
-        console.error("Error initializing auth:", error);
-      }
-    };
-
-    initializeAuth();
-  }, []);
+  const { loading } = useAuth();
 
   if (loading) {
     return (
@@ -56,7 +25,6 @@ const AppContent = () => {
 
   return (
     <div className="min-h-screen bg-white">
-      <AuthStateHandler onAuthStateChange={handleAuthChange} />
       <RouteHandler />
       <Navbar />
       <Routes>
