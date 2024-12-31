@@ -6,14 +6,12 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { CampaignForm } from "@/components/campaigns/CampaignForm";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 
 interface CampaignsListProps {
   brandId: string;
 }
 
 export const CampaignsList = ({ brandId }: CampaignsListProps) => {
-  const navigate = useNavigate();
   const { toast } = useToast();
   const [isOpen, setIsOpen] = useState(false);
 
@@ -54,7 +52,7 @@ export const CampaignsList = ({ brandId }: CampaignsListProps) => {
       });
 
       setIsOpen(false);
-      refetch(); // Refresh the campaigns list
+      refetch();
     } catch (error: any) {
       console.error("Error creating campaign:", error);
       toast({
@@ -88,7 +86,10 @@ export const CampaignsList = ({ brandId }: CampaignsListProps) => {
             <DialogHeader>
               <DialogTitle>Create New Campaign</DialogTitle>
             </DialogHeader>
-            <CampaignForm onSubmit={handleSubmit} />
+            <CampaignForm 
+              onSubmit={handleSubmit} 
+              defaultValues={{ brand_id: brandId }}
+            />
           </DialogContent>
         </Dialog>
       </div>
