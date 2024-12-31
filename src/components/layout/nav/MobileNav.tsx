@@ -1,6 +1,5 @@
 import { NavItems } from "./NavItems";
 import { AuthButtons } from "./AuthButtons";
-import { RoleSelector } from "./RoleSelector";
 import { UserCircle2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useNavigate } from "react-router-dom";
@@ -12,10 +11,7 @@ interface MobileNavProps {
   onSignOut: () => void;
   isAuthenticated: boolean;
   onClose: () => void;
-  isDevelopment: boolean;
-  impersonateRole: (role: 'brand' | 'influencer') => void;
   profile: any;
-  isAdmin: boolean;
 }
 
 export const MobileNav = ({
@@ -25,10 +21,7 @@ export const MobileNav = ({
   onSignOut,
   isAuthenticated,
   onClose,
-  isDevelopment,
-  impersonateRole,
   profile,
-  isAdmin,
 }: MobileNavProps) => {
   const navigate = useNavigate();
 
@@ -62,15 +55,6 @@ export const MobileNav = ({
           </div>
         )}
         <NavItems items={navItems} isActive={isActive} onClose={onClose} />
-        {isDevelopment && isAdmin && isAuthenticated && (
-          <div className="py-2">
-            <RoleSelector 
-              profile={profile} 
-              impersonateRole={impersonateRole}
-              onClose={onClose}
-            />
-          </div>
-        )}
         <div className="pt-2">
           <AuthButtons
             onSignOut={onSignOut}
