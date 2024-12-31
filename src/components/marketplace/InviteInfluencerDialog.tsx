@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
-import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import {
@@ -12,11 +11,11 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
 import { Loader2 } from "lucide-react";
 import { Label } from "@/components/ui/label";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { BrandSelector } from "./invite/BrandSelector";
+import { BrandCampaignsSelector } from "./invite/BrandCampaignsSelector";
 
 interface InviteInfluencerDialogProps {
   influencerId: string;
@@ -30,24 +29,10 @@ export const InviteInfluencerDialog = ({
   const { user } = useAuth();
   const { toast } = useToast();
   const [open, setOpen] = useState(false);
+  const [selectedBrand, setSelectedBrand] = useState<string | null>(null);
   const [selectedCampaigns, setSelectedCampaigns] = useState<string[]>([]);
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
-
-  const { data: campaigns, isLoading } = useQuery({
-    queryKey: ["brand-campaigns", user?.id],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("campaigns")
-        .select("*, brands!inner(*)")
-        .eq("brands.owner_id", user?.id)
-        .eq("status", "active");
-
-      if (error) throw error;
-      return data;
-    },
-    enabled: !!user?.id,
-  });
 
   const handleInvite = async () => {
     if (selectedCampaigns.length === 0 || !message.trim()) return;
@@ -56,7 +41,6 @@ export const InviteInfluencerDialog = ({
     try {
       // Create collaborations for each selected campaign
       for (const campaignId of selectedCampaigns) {
-        // Create a collaboration
         const { error: collaborationError } = await supabase
           .from("collaborations")
           .insert({
@@ -128,6 +112,11 @@ export const InviteInfluencerDialog = ({
     );
   };
 
+  const handleBrandChange = (brandId: string) => {
+    setSelectedBrand(brandId);
+    setSelectedCampaigns([]); // Reset selected campaigns when brand changes
+  };
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
@@ -142,35 +131,18 @@ export const InviteInfluencerDialog = ({
         </DialogHeader>
 
         <div className="space-y-4 mt-4">
+          <BrandSelector 
+            value={selectedBrand} 
+            onValueChange={handleBrandChange} 
+          />
+
           <div className="space-y-2">
             <Label>Select Campaigns</Label>
-            {isLoading ? (
-              <div className="flex items-center justify-center p-4">
-                <Loader2 className="h-6 w-6 animate-spin" />
-              </div>
-            ) : campaigns && campaigns.length > 0 ? (
-              <ScrollArea className="h-[200px] w-full rounded-md border p-4">
-                <div className="space-y-4">
-                  {campaigns.map((campaign) => (
-                    <div key={campaign.id} className="flex items-center space-x-2">
-                      <Checkbox
-                        id={campaign.id}
-                        checked={selectedCampaigns.includes(campaign.id)}
-                        onCheckedChange={() => toggleCampaign(campaign.id)}
-                      />
-                      <Label
-                        htmlFor={campaign.id}
-                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                      >
-                        {campaign.title}
-                      </Label>
-                    </div>
-                  ))}
-                </div>
-              </ScrollArea>
-            ) : (
-              <p className="text-sm text-muted-foreground">No active campaigns available.</p>
-            )}
+            <BrandCampaignsSelector
+              brandId={selectedBrand}
+              selectedCampaigns={selectedCampaigns}
+              onCampaignToggle={toggleCampaign}
+            />
           </div>
 
           <div className="space-y-2">
