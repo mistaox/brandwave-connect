@@ -30,18 +30,15 @@ const AppContent = () => {
 };
 
 const App = () => {
-  const [queryClient] = useState(
-    () =>
-      new QueryClient({
-        defaultOptions: {
-          queries: {
-            retry: 1,
-            refetchOnWindowFocus: false,
-            staleTime: 5000,
-          },
-        },
-      })
-  );
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        retry: 1,
+        refetchOnWindowFocus: false,
+        staleTime: 5000,
+      },
+    },
+  });
 
   return (
     <BrowserRouter>

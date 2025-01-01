@@ -9,6 +9,7 @@ interface AuthContextType {
   profile: any | null;
   loading: boolean;
   signOut: () => Promise<void>;
+  impersonateRole: (role: 'brand' | 'influencer') => void;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -16,6 +17,7 @@ const AuthContext = createContext<AuthContextType>({
   profile: null,
   loading: true,
   signOut: async () => {},
+  impersonateRole: () => {},
 });
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
@@ -86,12 +88,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const impersonateRole = (role: 'brand' | 'influencer') => {
+    setProfile(prev => ({
+      ...prev,
+      account_type: role
+    }));
+    toast({
+      title: "Role Changed",
+      description: `You are now viewing as ${role}`,
+    });
+  };
+
   return (
     <AuthContext.Provider value={{ 
       user, 
       profile, 
       loading,
-      signOut
+      signOut,
+      impersonateRole
     }}>
       {children}
     </AuthContext.Provider>
