@@ -12,7 +12,6 @@ import Navbar from "@/components/layout/Navbar";
 
 const AppContent = () => {
   const { loading } = useAuth();
-  console.log("AppContent rendering, loading:", loading);
 
   if (loading) {
     return (
@@ -26,26 +25,23 @@ const AppContent = () => {
 
   return (
     <div className="min-h-screen bg-white">
-      <Navbar />
       <RouteHandler />
-      <main className="pt-16">
-        <Routes>
-          {publicRoutes.map((route) => (
-            <Route
-              key={route.path}
-              path={route.path}
-              element={route.element}
-            />
-          ))}
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </main>
+      <Navbar />
+      <Routes>
+        {publicRoutes.map((route) => (
+          <Route
+            key={route.path}
+            path={route.path}
+            element={route.element}
+          />
+        ))}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
     </div>
   );
 };
 
 const App = () => {
-  console.log("App component rendering");
   const [queryClient] = useState(
     () =>
       new QueryClient({
@@ -61,15 +57,15 @@ const App = () => {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <AuthProvider>
+      <AuthProvider>
+        <BrowserRouter>
           <TooltipProvider>
             <AppContent />
             <Toaster />
             <Sonner />
           </TooltipProvider>
-        </AuthProvider>
-      </BrowserRouter>
+        </BrowserRouter>
+      </AuthProvider>
     </QueryClientProvider>
   );
 };

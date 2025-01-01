@@ -26,51 +26,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate();
 
   useEffect(() => {
-    console.log("AuthProvider mounted");
-    
-    const initializeAuth = async () => {
-      try {
-        // Get initial session
-        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-        
-        if (sessionError) {
-          console.error("Error getting session:", sessionError);
-          return;
-        }
-
-        console.log("Initial session:", session);
-        
-        if (session?.user) {
-          console.log("Setting initial user:", session.user);
-          setUser(session.user);
-          await fetchProfile(session.user.id);
-        } else {
-          console.log("No initial session found");
-          setLoading(false);
-        }
-      } catch (error) {
-        console.error("Auth initialization error:", error);
-        setLoading(false);
+    // Get initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+      if (session?.user) {
+        fetchProfile(session.user.id);
       }
-    };
-
-    // Initialize auth
-    initializeAuth();
+    });
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log("Auth state changed:", event, session?.user);
+      console.log("Auth state changed:", event, session?.user?.id);
+      setUser(session?.user ?? null);
       
       if (event === 'SIGNED_OUT') {
-        setUser(null);
         setProfile(null);
-        setLoading(false);
         navigate('/login');
       } else if (session?.user) {
-        setUser(session.user);
-        await fetchProfile(session.user.id);
-      } else {
-        setLoading(false);
+        fetchProfile(session.user.id);
       }
     });
 
@@ -81,7 +54,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const fetchProfile = async (userId: string) => {
     try {
-      console.log("Fetching profile for user:", userId);
       const { data, error } = await supabase
         .from("profiles")
         .select("*")
@@ -96,7 +68,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           variant: "destructive",
         });
       } else {
-        console.log("Profile fetched:", data);
         setProfile(data);
       }
     } catch (error) {
@@ -109,9 +80,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signOut = async () => {
     try {
       await supabase.auth.signOut();
-      setUser(null);
-      setProfile(null);
-      navigate('/login');
     } catch (error) {
       console.error("Error signing out:", error);
       throw error;

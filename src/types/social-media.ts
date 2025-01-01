@@ -3,7 +3,7 @@ export type SocialMediaPlatform = "facebook" | "linkedin" | "twitter" | "instagr
 export interface SocialMediaProfile {
   id: string;
   influencer_id: string;
-  platform: string; // Changed from SocialMediaPlatform to string to match Supabase
+  platform: SocialMediaPlatform;
   username: string;
   profile_url: string;
   follower_count: number;

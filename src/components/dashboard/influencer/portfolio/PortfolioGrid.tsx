@@ -18,23 +18,21 @@ interface PortfolioItem {
 
 interface PortfolioGridProps {
   items?: PortfolioItem[];
-  influencer_id?: string; // Changed from influencerId to match Supabase column name
 }
 
-export const PortfolioGrid = ({ items, influencer_id }: PortfolioGridProps) => {
+export const PortfolioGrid = ({ items }: PortfolioGridProps) => {
   const { data: portfolioItems, isLoading } = useQuery({
-    queryKey: ['portfolio-items', influencer_id],
+    queryKey: ['portfolio-items'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('portfolio_items')
         .select('*')
-        .eq('influencer_id', influencer_id)
         .order('created_at', { ascending: false });
       
       if (error) throw error;
       return data;
     },
-    enabled: !items && !!influencer_id, // Only fetch if items prop is not provided and influencer_id exists
+    enabled: !items, // Only fetch if items prop is not provided
   });
 
   const displayItems = items || portfolioItems;

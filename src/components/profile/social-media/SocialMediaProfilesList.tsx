@@ -3,16 +3,12 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
-import { SocialMediaProfileCard } from "./SocialMediaProfileCard";
 import { AddSocialMediaProfileDialog } from "./AddSocialMediaProfileDialog";
+import { SocialMediaProfileCard } from "./SocialMediaProfileCard";
+import { SocialMediaProfile } from "@/types/social-media";
 
-interface SocialMediaProfilesListProps {
-  userId: string;
-  viewOnly?: boolean;
-}
-
-export const SocialMediaProfilesList = ({ userId, viewOnly = false }: SocialMediaProfilesListProps) => {
-  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+export const SocialMediaProfilesList = ({ userId }: { userId: string }) => {
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const { data: profiles, isLoading } = useQuery({
     queryKey: ["social-media-profiles", userId],
@@ -20,55 +16,44 @@ export const SocialMediaProfilesList = ({ userId, viewOnly = false }: SocialMedi
       const { data, error } = await supabase
         .from("social_media_profiles")
         .select("*")
-        .eq("influencer_id", userId)
-        .order("platform");
+        .eq("influencer_id", userId);
 
       if (error) throw error;
-      return data;
+      
+      // Cast the platform string to SocialMediaPlatform type
+      return data.map(profile => ({
+        ...profile,
+        platform: profile.platform as SocialMediaProfile['platform']
+      }));
     },
   });
 
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
-
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        {!viewOnly && (
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setIsAddDialogOpen(true)}
-          >
-            <Plus className="h-4 w-4 mr-2" />
-            Add Profile
-          </Button>
-        )}
+      <div className="flex justify-between items-center">
+        <h3 className="text-lg font-semibold">Social Media Profiles</h3>
+        <Button
+          onClick={() => setIsDialogOpen(true)}
+          variant="outline"
+          size="sm"
+          className="gap-2"
+        >
+          <Plus className="h-4 w-4" />
+          Add Profile
+        </Button>
       </div>
 
-      <div className="space-y-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {profiles?.map((profile) => (
-          <SocialMediaProfileCard
-            key={profile.id}
-            profile={profile}
-            viewOnly={viewOnly}
-          />
+          <SocialMediaProfileCard key={profile.id} profile={profile} />
         ))}
-        {profiles?.length === 0 && (
-          <p className="text-gray-500 text-center py-4">
-            No social media profiles added yet.
-          </p>
-        )}
       </div>
 
-      {!viewOnly && (
-        <AddSocialMediaProfileDialog
-          open={isAddDialogOpen}
-          onOpenChange={setIsAddDialogOpen}
-          userId={userId}
-        />
-      )}
+      <AddSocialMediaProfileDialog
+        open={isDialogOpen}
+        onOpenChange={setIsDialogOpen}
+        userId={userId}
+      />
     </div>
   );
 };

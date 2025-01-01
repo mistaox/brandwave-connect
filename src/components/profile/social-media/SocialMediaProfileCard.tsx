@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Instagram, Facebook, Twitter, Youtube, Linkedin, Edit, Trash2 } from "lucide-react";
 import { EditSocialMediaProfileDialog } from "./EditSocialMediaProfileDialog";
-import { SocialMediaProfile } from "@/types/social-media";
+import { SocialMediaProfile, SocialMediaPlatform } from "@/types/social-media";
 
 const platformIcons = {
   instagram: Instagram,
@@ -16,12 +16,7 @@ const platformIcons = {
   linkedin: Linkedin,
 } as const;
 
-interface SocialMediaProfileCardProps {
-  profile: SocialMediaProfile;
-  viewOnly?: boolean;
-}
-
-export const SocialMediaProfileCard = ({ profile, viewOnly = false }: SocialMediaProfileCardProps) => {
+export const SocialMediaProfileCard = ({ profile }: { profile: SocialMediaProfile }) => {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -61,34 +56,30 @@ export const SocialMediaProfileCard = ({ profile, viewOnly = false }: SocialMedi
               <p className="text-sm text-gray-500">{profile.follower_count.toLocaleString()} followers</p>
             </div>
           </div>
-          {!viewOnly && (
-            <div className="flex gap-2">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setIsEditDialogOpen(true)}
-              >
-                <Edit className="h-4 w-4" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleDelete}
-              >
-                <Trash2 className="h-4 w-4" />
-              </Button>
-            </div>
-          )}
+          <div className="flex gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setIsEditDialogOpen(true)}
+            >
+              <Edit className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleDelete}
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
       </CardContent>
 
-      {!viewOnly && (
-        <EditSocialMediaProfileDialog
-          open={isEditDialogOpen}
-          onOpenChange={setIsEditDialogOpen}
-          profile={profile}
-        />
-      )}
+      <EditSocialMediaProfileDialog
+        open={isEditDialogOpen}
+        onOpenChange={setIsEditDialogOpen}
+        profile={profile}
+      />
     </Card>
   );
 };

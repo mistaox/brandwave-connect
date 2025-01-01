@@ -25,47 +25,16 @@ export const CampaignCard = ({ campaign }: CampaignCardProps) => {
   const { toast } = useToast();
 
   const handleApply = async () => {
-    if (!user?.id) {
-      toast({
-        title: "Authentication required",
-        description: "Please log in to apply for campaigns.",
-        variant: "destructive",
-      });
-      return;
-    }
-
     try {
-      // First check if a collaboration already exists
-      const { data: existingCollabs, error: checkError } = await supabase
-        .from("collaborations")
-        .select("id")
-        .eq("campaign_id", campaign.id)
-        .eq("influencer_id", user.id)
-        .single();
-
-      if (checkError && checkError.code !== 'PGRST116') {
-        throw checkError;
-      }
-
-      if (existingCollabs) {
-        toast({
-          title: "Already applied",
-          description: "You have already applied to this campaign.",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      // Create new collaboration
-      const { error: insertError } = await supabase
+      const { error } = await supabase
         .from("collaborations")
         .insert({
           campaign_id: campaign.id,
-          influencer_id: user.id,
+          influencer_id: user?.id,
           status: "pending",
         });
 
-      if (insertError) throw insertError;
+      if (error) throw error;
 
       toast({
         title: "Application submitted",

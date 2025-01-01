@@ -13,12 +13,10 @@ const Index = () => {
   }, [user, profile]);
 
   return (
-    <main className="min-h-screen bg-white pt-16">
-      <div className="container mx-auto px-4">
-        <Hero />
-        <FeaturedSection />
-      </div>
-    </main>
+    <div className="min-h-screen">
+      <Hero />
+      <FeaturedSection />
+    </div>
   );
 };
 

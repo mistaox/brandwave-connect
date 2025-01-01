@@ -9,7 +9,9 @@ import { MobileNav } from "./nav/MobileNav";
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
-  const { user, profile, signOut } = useAuth();
+  const { user, profile, signOut, impersonateRole } = useAuth();
+  const isDevelopment = import.meta.env.DEV;
+  const isAdmin = profile?.account_type === 'admin';
 
   const getNavItems = () => {
     if (!user) {
@@ -67,8 +69,11 @@ const Navbar = () => {
             <DesktopNav
               navItems={navItems}
               isActive={isActive}
+              isDevelopment={isDevelopment}
+              isAdmin={isAdmin}
               user={user}
               profile={profile}
+              impersonateRole={impersonateRole}
               signOut={signOut}
             />
 
@@ -89,7 +94,10 @@ const Navbar = () => {
             onSignOut={signOut}
             isAuthenticated={!!user}
             onClose={() => setIsOpen(false)}
+            isDevelopment={isDevelopment}
+            impersonateRole={impersonateRole}
             profile={profile}
+            isAdmin={isAdmin}
           />
         </div>
       </nav>
