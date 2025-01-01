@@ -12,6 +12,7 @@ import Navbar from "@/components/layout/Navbar";
 
 const AppContent = () => {
   const { loading } = useAuth();
+  console.log("AppContent rendering, loading:", loading);
 
   if (loading) {
     return (
@@ -25,8 +26,8 @@ const AppContent = () => {
 
   return (
     <div className="min-h-screen bg-white">
-      <RouteHandler />
       <Navbar />
+      <RouteHandler />
       <Routes>
         {publicRoutes.map((route) => (
           <Route
@@ -42,6 +43,7 @@ const AppContent = () => {
 };
 
 const App = () => {
+  console.log("App component rendering");
   const [queryClient] = useState(
     () =>
       new QueryClient({
