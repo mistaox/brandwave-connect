@@ -28,16 +28,18 @@ const AppContent = () => {
     <div className="min-h-screen bg-white">
       <Navbar />
       <RouteHandler />
-      <Routes>
-        {publicRoutes.map((route) => (
-          <Route
-            key={route.path}
-            path={route.path}
-            element={route.element}
-          />
-        ))}
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
+      <main className="pt-16">
+        <Routes>
+          {publicRoutes.map((route) => (
+            <Route
+              key={route.path}
+              path={route.path}
+              element={route.element}
+            />
+          ))}
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </main>
     </div>
   );
 };

@@ -13,12 +13,12 @@ const Index = () => {
   }, [user, profile]);
 
   return (
-    <div className="min-h-screen bg-white">
+    <main className="min-h-screen bg-white pt-16">
       <div className="container mx-auto px-4">
         <Hero />
         <FeaturedSection />
       </div>
-    </div>
+    </main>
   );
 };
 
