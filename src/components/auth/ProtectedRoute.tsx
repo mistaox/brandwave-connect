@@ -1,8 +1,5 @@
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Loader2 } from "lucide-react";
-import { ErrorPage } from "@/components/error/ErrorPage";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -14,21 +11,6 @@ export const ProtectedRoute = ({
   requiredAccountType 
 }: ProtectedRouteProps) => {
   const { user, profile, loading } = useAuth();
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (!loading && !user) {
-      navigate("/login");
-      return;
-    }
-
-    if (!loading && requiredAccountType && profile?.account_type !== requiredAccountType) {
-      console.log("Unauthorized access attempt:", {
-        required: requiredAccountType,
-        current: profile?.account_type
-      });
-    }
-  }, [user, profile, requiredAccountType, navigate, loading]);
 
   if (loading) {
     return (
@@ -39,7 +21,7 @@ export const ProtectedRoute = ({
   }
 
   if (!user || (requiredAccountType && profile?.account_type !== requiredAccountType)) {
-    return <ErrorPage />;
+    return null; // RouteHandler will handle the redirect
   }
 
   return <>{children}</>;
