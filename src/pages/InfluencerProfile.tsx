@@ -66,7 +66,7 @@ const InfluencerProfile = () => {
 
             <div className="mt-8">
               <h2 className="text-xl font-semibold mb-4">Portfolio</h2>
-              <PortfolioGrid influencerId={profile.id} />
+              <PortfolioGrid influencer_id={profile.id} />
             </div>
           </div>
 
