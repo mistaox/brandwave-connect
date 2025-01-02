@@ -2,9 +2,23 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
-import { Search } from "lucide-react";
+import { Search, Loader2 } from "lucide-react";
 import { InfluencerCard } from "@/components/marketplace/InfluencerCard";
-import { Loader2 } from "lucide-react";
+
+interface Influencer {
+  id: string;
+  full_name: string;
+  avatar_url: string | null;
+  influencer_categories: string[];
+  influencer_audience_size: number;
+  bio: string | null;
+  location: string | null;
+  social_links?: {
+    facebook?: string;
+    instagram?: string;
+    youtube?: string;
+  };
+}
 
 const InfluencerListing = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -18,7 +32,18 @@ const InfluencerListing = () => {
         .eq("account_type", "influencer");
 
       if (error) throw error;
-      return data;
+
+      // Transform the data to match the Influencer interface
+      return data.map((profile): Influencer => ({
+        id: profile.id,
+        full_name: profile.full_name || "",
+        avatar_url: profile.avatar_url,
+        influencer_categories: profile.influencer_categories || [],
+        influencer_audience_size: profile.influencer_audience_size || 0,
+        bio: profile.bio,
+        location: profile.location,
+        social_links: typeof profile.social_links === 'object' ? profile.social_links as Influencer['social_links'] : {},
+      }));
     },
   });
 
