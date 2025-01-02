@@ -34,8 +34,8 @@ export const ConversationsList = ({
           .from("conversations")
           .select(`
             *,
-            participant1:participant1_id(id, full_name, avatar_url),
-            participant2:participant2_id(id, full_name, avatar_url),
+            participant1:profiles!conversations_participant1_id_fkey(id, full_name, avatar_url),
+            participant2:profiles!conversations_participant2_id_fkey(id, full_name, avatar_url),
             messages(
               id,
               content,
