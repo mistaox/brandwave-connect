@@ -17,7 +17,14 @@ export type Conversation = Database["public"]["Tables"]["conversations"]["Row"] 
     created_at: string;
     sender_id: string;
   }[];
-  collaborations: any[]; // Simplified for now since we're not using it
+  campaign?: {
+    id: string;
+    title: string;
+    brand: {
+      id: string;
+      name: string;
+    };
+  };
 };
 
 export interface GroupedConversation {

@@ -224,6 +224,7 @@ export type Database = {
       }
       conversations: {
         Row: {
+          campaign_id: string | null
           created_at: string | null
           id: string
           last_message_at: string | null
@@ -232,6 +233,7 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
+          campaign_id?: string | null
           created_at?: string | null
           id?: string
           last_message_at?: string | null
@@ -240,6 +242,7 @@ export type Database = {
           updated_at?: string | null
         }
         Update: {
+          campaign_id?: string | null
           created_at?: string | null
           id?: string
           last_message_at?: string | null
@@ -248,6 +251,13 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "conversations_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "campaigns"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "conversations_participant1_id_fkey"
             columns: ["participant1_id"]

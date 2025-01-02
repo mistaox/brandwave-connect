@@ -41,6 +41,14 @@ export const ConversationsList = ({
               content,
               created_at,
               sender_id
+            ),
+            campaign:campaigns(
+              id,
+              title,
+              brand:brands(
+                id,
+                name
+              )
             )
           `)
           .or(`participant1_id.eq.${user?.id},participant2_id.eq.${user?.id}`)
@@ -48,32 +56,48 @@ export const ConversationsList = ({
 
         if (error) throw error;
 
-        // For now, we'll group conversations by date instead of campaigns
+        // Group conversations by brands and campaigns
         const grouped = conversations?.reduce((acc: GroupedConversation[], conv) => {
-          const today = new Date().toDateString();
-          const messageDate = new Date(conv.last_message_at || conv.created_at).toDateString();
-          
-          const groupTitle = messageDate === today ? "Today" : messageDate;
-          
-          let group = acc.find(g => g.brandName === groupTitle);
-          if (!group) {
-            group = {
-              brandId: groupTitle,
-              brandName: groupTitle,
-              campaigns: [{
-                campaignId: 'default',
-                campaignTitle: 'Messages',
+          if (!conv.campaign) {
+            // Handle direct messages (no campaign)
+            let directMessages = acc.find(g => g.brandId === 'direct');
+            if (!directMessages) {
+              directMessages = {
+                brandId: 'direct',
+                brandName: 'Direct Messages',
+                campaigns: [{
+                  campaignId: 'direct',
+                  campaignTitle: 'Personal',
+                  conversations: []
+                }]
+              };
+              acc.push(directMessages);
+            }
+            directMessages.campaigns[0].conversations.push(conv);
+          } else {
+            // Handle campaign-related conversations
+            let brandGroup = acc.find(g => g.brandId === conv.campaign.brand.id);
+            if (!brandGroup) {
+              brandGroup = {
+                brandId: conv.campaign.brand.id,
+                brandName: conv.campaign.brand.name,
+                campaigns: []
+              };
+              acc.push(brandGroup);
+            }
+            
+            let campaignGroup = brandGroup.campaigns.find(c => c.campaignId === conv.campaign?.id);
+            if (!campaignGroup) {
+              campaignGroup = {
+                campaignId: conv.campaign.id,
+                campaignTitle: conv.campaign.title,
                 conversations: []
-              }]
-            };
-            acc.push(group);
+              };
+              brandGroup.campaigns.push(campaignGroup);
+            }
+            
+            campaignGroup.conversations.push(conv);
           }
-          
-          group.campaigns[0].conversations.push({
-            ...conv,
-            collaborations: []
-          });
-          
           return acc;
         }, []);
 
