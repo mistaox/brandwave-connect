@@ -30,7 +30,7 @@ export const ConversationsList = ({
   useEffect(() => {
     const fetchConversations = async () => {
       try {
-        const { data, error } = await supabase
+        const { data: conversations, error } = await supabase
           .from("conversations")
           .select(`
             *,
@@ -41,18 +41,6 @@ export const ConversationsList = ({
               content,
               created_at,
               sender_id
-            ),
-            collaborations:collaborations!inner(
-              campaign_id,
-              campaigns:campaigns!inner(
-                id,
-                title,
-                brand_id,
-                brands:brands!inner(
-                  id,
-                  name
-                )
-              )
             )
           `)
           .or(`participant1_id.eq.${user?.id},participant2_id.eq.${user?.id}`)
@@ -60,35 +48,32 @@ export const ConversationsList = ({
 
         if (error) throw error;
 
-        // Group conversations by brand and campaign
-        const grouped = data?.reduce((acc: GroupedConversation[], conv) => {
-          const collaboration = conv.collaborations[0];
-          const campaign = collaboration?.campaigns;
-          const brand = campaign?.brands;
-
-          if (!brand || !campaign) return acc;
-
-          let brandGroup = acc.find(g => g.brandId === brand.id);
-          if (!brandGroup) {
-            brandGroup = {
-              brandId: brand.id,
-              brandName: brand.name,
-              campaigns: []
+        // For now, we'll group conversations by date instead of campaigns
+        const grouped = conversations?.reduce((acc: GroupedConversation[], conv) => {
+          const today = new Date().toDateString();
+          const messageDate = new Date(conv.last_message_at || conv.created_at).toDateString();
+          
+          const groupTitle = messageDate === today ? "Today" : messageDate;
+          
+          let group = acc.find(g => g.brandName === groupTitle);
+          if (!group) {
+            group = {
+              brandId: groupTitle,
+              brandName: groupTitle,
+              campaigns: [{
+                campaignId: 'default',
+                campaignTitle: 'Messages',
+                conversations: []
+              }]
             };
-            acc.push(brandGroup);
+            acc.push(group);
           }
-
-          let campaignGroup = brandGroup.campaigns.find(c => c.campaignId === campaign.id);
-          if (!campaignGroup) {
-            campaignGroup = {
-              campaignId: campaign.id,
-              campaignTitle: campaign.title,
-              conversations: []
-            };
-            brandGroup.campaigns.push(campaignGroup);
-          }
-
-          campaignGroup.conversations.push(conv);
+          
+          group.campaigns[0].conversations.push({
+            ...conv,
+            collaborations: []
+          });
+          
           return acc;
         }, []);
 
@@ -153,13 +138,13 @@ export const ConversationsList = ({
       <ScrollArea className="h-full">
         <div className="p-4">
           <Accordion type="single" collapsible className="space-y-4">
-            {groupedConversations.map((brandGroup) => (
-              <AccordionItem key={brandGroup.brandId} value={brandGroup.brandId}>
+            {groupedConversations.map((group) => (
+              <AccordionItem key={group.brandId} value={group.brandId}>
                 <AccordionTrigger className="text-lg font-semibold">
-                  {brandGroup.brandName}
+                  {group.brandName}
                 </AccordionTrigger>
                 <AccordionContent>
-                  {brandGroup.campaigns.map((campaign) => (
+                  {group.campaigns.map((campaign) => (
                     <CampaignGroup
                       key={campaign.campaignId}
                       campaignTitle={campaign.campaignTitle}
