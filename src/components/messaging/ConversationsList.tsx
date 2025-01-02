@@ -44,11 +44,11 @@ export const ConversationsList = ({
             ),
             collaborations!inner(
               campaign_id,
-              campaigns(
+              campaigns!inner(
                 id,
                 title,
                 brand_id,
-                brands(
+                brands!inner(
                   id,
                   name
                 )
