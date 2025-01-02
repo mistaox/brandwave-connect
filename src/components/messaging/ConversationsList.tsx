@@ -42,13 +42,13 @@ export const ConversationsList = ({
               created_at,
               sender_id
             ),
-            collaborations!inner(
+            collaborations:collaborations!inner(
               campaign_id,
-              campaigns!inner(
+              campaigns:campaigns!inner(
                 id,
                 title,
                 brand_id,
-                brands!inner(
+                brands:brands!inner(
                   id,
                   name
                 )
