@@ -1,26 +1,21 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { formatDistanceToNow } from "date-fns";
 import { Loader2 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { CampaignGroup } from "./CampaignGroup";
+import { GroupedConversation } from "@/types/conversation";
 
 interface ConversationsListProps {
   selectedConversation: string | null;
   onSelectConversation: (conversationId: string) => void;
-}
-
-interface GroupedConversation {
-  brandId: string;
-  brandName: string;
-  campaigns: {
-    campaignId: string;
-    campaignTitle: string;
-    conversations: any[];
-  }[];
 }
 
 export const ConversationsList = ({
@@ -142,20 +137,6 @@ export const ConversationsList = ({
     };
   }, [user, toast]);
 
-  const getOtherParticipant = (conversation: any) => {
-    return conversation.participant1.id === user?.id
-      ? conversation.participant2
-      : conversation.participant1;
-  };
-
-  const getLastMessage = (conversation: any) => {
-    if (!conversation.messages || conversation.messages.length === 0) {
-      return "No messages yet";
-    }
-    const lastMessage = conversation.messages[conversation.messages.length - 1];
-    return lastMessage.content;
-  };
-
   if (loading) {
     return (
       <div className="flex items-center justify-center h-96">
@@ -179,44 +160,13 @@ export const ConversationsList = ({
                 </AccordionTrigger>
                 <AccordionContent>
                   {brandGroup.campaigns.map((campaign) => (
-                    <div key={campaign.campaignId} className="ml-4 mb-4">
-                      <h4 className="text-sm font-medium text-muted-foreground mb-2">
-                        {campaign.campaignTitle}
-                      </h4>
-                      <div className="space-y-2">
-                        {campaign.conversations.map((conversation) => {
-                          const otherParticipant = getOtherParticipant(conversation);
-                          const lastMessage = getLastMessage(conversation);
-                          return (
-                            <button
-                              key={conversation.id}
-                              className={`w-full flex items-center gap-3 p-3 rounded-lg transition-colors ${
-                                selectedConversation === conversation.id
-                                  ? "bg-blue-50"
-                                  : "hover:bg-gray-50"
-                              }`}
-                              onClick={() => onSelectConversation(conversation.id)}
-                            >
-                              <Avatar>
-                                <AvatarImage src={otherParticipant.avatar_url} />
-                                <AvatarFallback>
-                                  {otherParticipant.full_name?.charAt(0) || "U"}
-                                </AvatarFallback>
-                              </Avatar>
-                              <div className="flex-1 text-left">
-                                <h3 className="font-medium">{otherParticipant.full_name}</h3>
-                                <p className="text-sm text-gray-500 truncate">{lastMessage}</p>
-                                <p className="text-xs text-gray-400">
-                                  {formatDistanceToNow(new Date(conversation.last_message_at), {
-                                    addSuffix: true,
-                                  })}
-                                </p>
-                              </div>
-                            </button>
-                          );
-                        })}
-                      </div>
-                    </div>
+                    <CampaignGroup
+                      key={campaign.campaignId}
+                      campaignTitle={campaign.campaignTitle}
+                      conversations={campaign.conversations}
+                      selectedConversation={selectedConversation}
+                      onSelectConversation={onSelectConversation}
+                    />
                   ))}
                 </AccordionContent>
               </AccordionItem>
