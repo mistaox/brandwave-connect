@@ -5,7 +5,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { publicRoutes } from "./routes/routes";
 import { AuthProvider } from "./contexts/AuthContext";
-import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { RouteHandler } from "@/components/auth/RouteHandler";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
@@ -24,7 +23,7 @@ const AppContent = () => {
               element={route.element}
             />
           ))}
-          <Route path="*" element={<Navigate to="/" replace />} />
+          <Route path="*" element={<Navigate to="/dashboard/brand" replace />} />
         </Routes>
       </main>
       <Footer />
