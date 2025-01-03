@@ -8,23 +8,26 @@ import { AuthProvider } from "./contexts/AuthContext";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { RouteHandler } from "@/components/auth/RouteHandler";
 import Navbar from "@/components/layout/Navbar";
-import { useState } from "react";
+import Footer from "@/components/layout/Footer";
 
 const AppContent = () => {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white flex flex-col">
       <RouteHandler />
       <Navbar />
-      <Routes>
-        {publicRoutes.map((route) => (
-          <Route
-            key={route.path}
-            path={route.path}
-            element={route.element}
-          />
-        ))}
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
+      <main className="flex-grow">
+        <Routes>
+          {publicRoutes.map((route) => (
+            <Route
+              key={route.path}
+              path={route.path}
+              element={route.element}
+            />
+          ))}
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </main>
+      <Footer />
     </div>
   );
 };
