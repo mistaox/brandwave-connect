@@ -5,6 +5,7 @@ import { BrandsList } from "@/components/dashboard/BrandsList";
 import { CollaborationsList } from "@/components/dashboard/CollaborationsList";
 import { MessagingInterface } from "@/components/messaging/MessagingInterface";
 import { ConversationsList } from "@/components/messaging/ConversationsList";
+import { InfluencerListing } from "@/pages/marketplace/InfluencerListing";
 import { useState } from "react";
 
 interface BrandDashboardTabsProps {
@@ -18,9 +19,10 @@ export const BrandDashboardTabs = ({ selectedBrandId, onBrandSelect }: BrandDash
 
   return (
     <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-8">
-      <TabsList className="grid w-full grid-cols-4 lg:w-[600px]">
+      <TabsList className="grid w-full grid-cols-5 lg:w-[800px]">
         <TabsTrigger value="overview">Overview</TabsTrigger>
         <TabsTrigger value="brands">Brands</TabsTrigger>
+        <TabsTrigger value="influencers">Find Influencers</TabsTrigger>
         <TabsTrigger value="collaborations">Collaborations</TabsTrigger>
         <TabsTrigger value="messages">Messages</TabsTrigger>
       </TabsList>
@@ -32,6 +34,10 @@ export const BrandDashboardTabs = ({ selectedBrandId, onBrandSelect }: BrandDash
       
       <TabsContent value="brands" className="mt-6">
         <BrandsList onBrandSelect={onBrandSelect} />
+      </TabsContent>
+
+      <TabsContent value="influencers" className="mt-6">
+        <InfluencerListing />
       </TabsContent>
 
       <TabsContent value="collaborations" className="mt-6">

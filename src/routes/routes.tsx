@@ -2,13 +2,8 @@ import { RouteProps } from "react-router-dom";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { ErrorPage } from "@/components/error/ErrorPage";
 import Index from "@/pages/Index";
-import About from "@/pages/About";
-import FAQ from "@/pages/FAQ";
-import Blogs from "@/pages/Blogs";
-import Contact from "@/pages/Contact";
 import BrandDashboard from "@/pages/dashboard/BrandDashboard";
 import InfluencerDashboard from "@/pages/dashboard/InfluencerDashboard";
-import { MarketplaceRedirect } from "@/components/marketplace/MarketplaceRedirect";
 import BrandListing from "@/pages/marketplace/BrandListing";
 import InfluencerListing from "@/pages/marketplace/InfluencerListing";
 import Messages from "@/pages/Messages";
@@ -23,10 +18,6 @@ import AdminSettings from "@/pages/admin/Settings";
 // Public routes that don't require authentication
 const publicPaths = [
   { path: "/", element: <Index /> },
-  { path: "/about", element: <About /> },
-  { path: "/faq", element: <FAQ /> },
-  { path: "/blogs", element: <Blogs /> },
-  { path: "/contact", element: <Contact /> },
   { path: "/login", element: <Login /> },
   { path: "/register", element: <Register /> },
   { path: "/forgot-password", element: <ForgotPassword /> },
@@ -60,22 +51,10 @@ const protectedPaths = [
     element: <ProtectedRoute><Profile /></ProtectedRoute> 
   },
   { 
-    path: "/marketplace", 
-    element: <ProtectedRoute><MarketplaceRedirect /></ProtectedRoute> 
-  },
-  { 
-    path: "/marketplace/brands", 
+    path: "/campaigns", 
     element: (
       <ProtectedRoute requiredAccountType="influencer">
         <BrandListing />
-      </ProtectedRoute>
-    )
-  },
-  { 
-    path: "/marketplace/influencers", 
-    element: (
-      <ProtectedRoute requiredAccountType="brand">
-        <InfluencerListing />
       </ProtectedRoute>
     )
   },

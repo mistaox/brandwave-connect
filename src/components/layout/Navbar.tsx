@@ -33,15 +33,12 @@ const Navbar = () => {
     }
 
     if (profile?.account_type === "brand") {
-      return [
-        ...commonItems,
-        { name: "Marketplace", path: "/marketplace/influencers" },
-      ];
+      return commonItems;
     }
 
     return [
       ...commonItems,
-      { name: "Marketplace", path: "/marketplace/brands" },
+      { name: "Find Campaigns", path: "/campaigns" },
     ];
   };
 
