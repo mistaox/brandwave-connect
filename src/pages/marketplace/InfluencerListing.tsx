@@ -20,7 +20,7 @@ interface Influencer {
   };
 }
 
-const InfluencerListing = () => {
+export const InfluencerListing = () => {
   const [searchQuery, setSearchQuery] = useState("");
 
   const { data: influencers, isLoading } = useQuery({

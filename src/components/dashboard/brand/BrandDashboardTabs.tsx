@@ -5,7 +5,7 @@ import { BrandsList } from "@/components/dashboard/BrandsList";
 import { CollaborationsList } from "@/components/dashboard/CollaborationsList";
 import { MessagingInterface } from "@/components/messaging/MessagingInterface";
 import { ConversationsList } from "@/components/messaging/ConversationsList";
-import { InfluencerListing } from "@/pages/marketplace/InfluencerListing";
+import InfluencerListing from "@/pages/marketplace/InfluencerListing";
 import { useState } from "react";
 
 interface BrandDashboardTabsProps {
