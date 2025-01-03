@@ -26,6 +26,28 @@ export const CampaignCard = ({ campaign }: CampaignCardProps) => {
 
   const handleApply = async () => {
     try {
+      // First check if a collaboration already exists
+      const { data: existingCollaboration, error: checkError } = await supabase
+        .from("collaborations")
+        .select()
+        .eq("campaign_id", campaign.id)
+        .eq("influencer_id", user?.id)
+        .single();
+
+      if (checkError && checkError.code !== 'PGRST116') {
+        throw checkError;
+      }
+
+      if (existingCollaboration) {
+        toast({
+          title: "Already applied",
+          description: "You have already applied to this campaign.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // If no existing collaboration, create a new one
       const { error } = await supabase
         .from("collaborations")
         .insert({
