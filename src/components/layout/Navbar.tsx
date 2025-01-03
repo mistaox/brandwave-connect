@@ -17,17 +17,11 @@ const Navbar = () => {
     if (!user) {
       return [
         { name: "Home", path: "/" },
-        { name: "About", path: "/about" },
-        { name: "FAQ", path: "/faq" },
-        { name: "Contact", path: "/contact" },
       ];
     }
 
     const commonItems = [
       { name: "Home", path: "/" },
-      { name: "About", path: "/about" },
-      { name: "FAQ", path: "/faq" },
-      { name: "Contact", path: "/contact" },
       { name: "Dashboard", path: "/dashboard" },
     ];
 
